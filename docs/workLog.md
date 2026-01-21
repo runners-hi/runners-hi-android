@@ -144,3 +144,60 @@ presentation/
 - assembleDebug: SUCCESS (292 tasks)
 
 ---
+
+## Entry #3
+
+### Date: 2026-01-22
+
+### Task: Splash 화면 프로그레스 바 및 화면 전환 애니메이션 구현
+
+### Token Statistics
+| Model | Input | Output | Cache Creation | Cache Read | Cost |
+|-------|-------|--------|----------------|------------|------|
+| claude-opus-4-5 | 5,254 | 2,105 | 1,024,556 | 30,228,759 | $21.60 |
+
+### Description
+디자인 요청서(docs/design-requests/2026-01-22-figma-357-5543.md)에 따라 Splash 화면에 프로그레스 바 애니메이션 및 화면 전환 효과 구현
+
+### Changes Made
+
+#### 1. SplashUiState 수정
+- `presentation/splash/src/main/java/.../SplashUiState.kt`
+- 모든 상태에 `progress: Float` 속성 추가 (0.0 ~ 1.0)
+
+#### 2. SplashViewModel 수정
+- `presentation/splash/src/main/java/.../SplashViewModel.kt`
+- API 호출 단계별 progress 업데이트: 0% → 20% → 50% → 70% → 100%
+- 애니메이션 완료 대기를 위한 delay(300) 추가
+
+#### 3. SplashScreen UI 수정
+- `presentation/splash/src/main/java/.../SplashScreen.kt`
+- LinearProgressIndicator 추가 (하단 배치)
+- animateFloatAsState로 부드러운 progress 애니메이션
+- 퍼센트 텍스트 표시
+
+#### 4. MainActivity 화면 전환 애니메이션
+- `app/src/main/java/com/runnersHi/MainActivity.kt`
+- AnimatedContent로 화면 전환 래핑
+- Splash → Home/Login: fadeOut + slideInHorizontally
+- 기타 전환: fadeIn + fadeOut
+
+#### 5. Mock API delay 추가
+- `data/splash/impl/.../MockAppConfigDataSource.kt`: 500ms → 1500ms
+- `data/auth/impl/.../MockAuthDataSource.kt`: getToken()에 800ms delay 추가
+
+#### 6. JVM target 호환성 수정
+- 13개 JVM 모듈의 build.gradle.kts 수정
+- `java { sourceCompatibility/targetCompatibility }` → `kotlin { jvmToolchain(17) }`
+- Kotlin 2.0+ 기본 jvmTarget(21)과 Java(17) 불일치 해결
+
+### 커밋 내역
+1. `feat: Splash 화면 프로그레스 바 및 화면 전환 애니메이션 구현`
+2. `chore: Mock API에 delay 추가 (progress 확인용)`
+3. `fix: JVM target 호환성 문제 수정`
+
+### Build Status
+- installDebug: SUCCESS (202 tasks)
+- 에뮬레이터 설치 완료
+
+---
