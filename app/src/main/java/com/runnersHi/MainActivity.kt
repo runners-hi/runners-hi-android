@@ -6,6 +6,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -51,54 +58,85 @@ fun RunnersHiNavHost() {
     var currentScreen by remember { mutableStateOf<Screen>(Screen.Splash) }
     val context = LocalContext.current
 
-    when (val screen = currentScreen) {
-        is Screen.Splash -> {
-            val viewModel: SplashViewModel = hiltViewModel()
-            val uiState by viewModel.uiState.collectAsState()
-
-            LaunchedEffect(Unit) {
-                // 앱 버전 가져오기 (실제로는 BuildConfig 사용)
-                val currentVersion = "1.0.0"
-                viewModel.checkAppStatus(currentVersion)
-            }
-
-            SplashScreen()
-
-            when (uiState) {
-                is SplashUiState.ForceUpdate -> {
-                    ForceUpdateDialog(
-                        onUpdateClick = {
-                            val intent = Intent(
-                                Intent.ACTION_VIEW,
-                                Uri.parse("market://details?id=${context.packageName}")
-                            )
-                            context.startActivity(intent)
-                        }
+    AnimatedContent(
+        targetState = currentScreen,
+        transitionSpec = {
+            when {
+                // Splash -> Home/Login: fade out splash, slide in next screen
+                initialState == Screen.Splash -> {
+                    (fadeIn(animationSpec = tween(300)) +
+                            slideInHorizontally(
+                                animationSpec = tween(300),
+                                initialOffsetX = { fullWidth -> fullWidth }
+                            )).togetherWith(
+                        fadeOut(animationSpec = tween(300))
                     )
                 }
-                SplashUiState.NavigateToHome -> {
-                    currentScreen = Screen.Home
-                }
-                SplashUiState.NavigateToLogin -> {
-                    // TODO: 로그인 화면으로 이동
-                    // 현재는 홈으로 이동 (로그인 화면 미구현)
-                    currentScreen = Screen.Home
-                }
-                is SplashUiState.Error -> {
-                    // TODO: 에러 처리
-                    currentScreen = Screen.Home
-                }
-                SplashUiState.Loading -> {
-                    // 로딩 중
+                // Default transition
+                else -> {
+                    fadeIn(animationSpec = tween(300)).togetherWith(
+                        fadeOut(animationSpec = tween(300))
+                    )
                 }
             }
-        }
-        is Screen.Home -> {
-            RunnersHiApp()
-        }
-        is Screen.Login -> {
-            // TODO: 로그인 화면 구현
-            RunnersHiApp()
+        },
+        label = "screen_transition"
+    ) { screen ->
+        when (screen) {
+            is Screen.Splash -> {
+                val viewModel: SplashViewModel = hiltViewModel()
+                val uiState by viewModel.uiState.collectAsState()
+
+                LaunchedEffect(Unit) {
+                    // 앱 버전 가져오기 (실제로는 BuildConfig 사용)
+                    val currentVersion = "1.0.0"
+                    viewModel.checkAppStatus(currentVersion)
+                }
+
+                SplashScreen(progress = uiState.progress)
+
+                when (uiState) {
+                    is SplashUiState.ForceUpdate -> {
+                        ForceUpdateDialog(
+                            onUpdateClick = {
+                                val intent = Intent(
+                                    Intent.ACTION_VIEW,
+                                    Uri.parse("market://details?id=${context.packageName}")
+                                )
+                                context.startActivity(intent)
+                            }
+                        )
+                    }
+                    is SplashUiState.NavigateToHome -> {
+                        LaunchedEffect(Unit) {
+                            currentScreen = Screen.Home
+                        }
+                    }
+                    is SplashUiState.NavigateToLogin -> {
+                        LaunchedEffect(Unit) {
+                            // TODO: 로그인 화면으로 이동
+                            // 현재는 홈으로 이동 (로그인 화면 미구현)
+                            currentScreen = Screen.Home
+                        }
+                    }
+                    is SplashUiState.Error -> {
+                        LaunchedEffect(Unit) {
+                            // TODO: 에러 처리
+                            currentScreen = Screen.Home
+                        }
+                    }
+                    is SplashUiState.Loading -> {
+                        // 로딩 중
+                    }
+                }
+            }
+            is Screen.Home -> {
+                RunnersHiApp()
+            }
+            is Screen.Login -> {
+                // TODO: 로그인 화면 구현
+                RunnersHiApp()
+            }
         }
     }
 }

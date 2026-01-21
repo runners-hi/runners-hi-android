@@ -7,6 +7,7 @@ import com.runnersHi.domain.auth.usecase.LoginCheckResult
 import com.runnersHi.domain.splash.usecase.CheckAppVersionUseCase
 import com.runnersHi.domain.splash.usecase.VersionCheckResult
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,14 +20,17 @@ class SplashViewModel @Inject constructor(
     private val checkLoginStatusUseCase: CheckLoginStatusUseCase
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<SplashUiState>(SplashUiState.Loading)
+    private val _uiState = MutableStateFlow<SplashUiState>(SplashUiState.Loading(0f))
     val uiState: StateFlow<SplashUiState> = _uiState.asStateFlow()
 
     fun checkAppStatus(currentVersion: String) {
         viewModelScope.launch {
-            _uiState.value = SplashUiState.Loading
+            // 시작: 0%
+            _uiState.value = SplashUiState.Loading(0f)
 
-            // 1. 버전 체크
+            // 1. 버전 체크 (0% -> 50%)
+            _uiState.value = SplashUiState.Loading(0.2f)
+
             when (val versionResult = checkAppVersionUseCase(currentVersion)) {
                 is VersionCheckResult.NeedsUpdate -> {
                     _uiState.value = SplashUiState.ForceUpdate(
@@ -46,18 +50,25 @@ class SplashViewModel @Inject constructor(
                     return@launch
                 }
                 VersionCheckResult.UpToDate -> {
-                    // 버전 체크 통과, 로그인 상태 확인으로 진행
+                    // 버전 체크 통과: 50%
+                    _uiState.value = SplashUiState.Loading(0.5f)
                 }
             }
 
-            // 2. 로그인 상태 확인
+            // 2. 로그인 상태 확인 (50% -> 100%)
+            _uiState.value = SplashUiState.Loading(0.7f)
+
             when (checkLoginStatusUseCase()) {
                 LoginCheckResult.NotLoggedIn,
                 LoginCheckResult.TokenRefreshFailed -> {
-                    _uiState.value = SplashUiState.NavigateToLogin
+                    _uiState.value = SplashUiState.Loading(1f)
+                    delay(300) // 애니메이션 완료 대기
+                    _uiState.value = SplashUiState.NavigateToLogin()
                 }
                 LoginCheckResult.LoggedIn -> {
-                    _uiState.value = SplashUiState.NavigateToHome
+                    _uiState.value = SplashUiState.Loading(1f)
+                    delay(300) // 애니메이션 완료 대기
+                    _uiState.value = SplashUiState.NavigateToHome()
                 }
             }
         }
