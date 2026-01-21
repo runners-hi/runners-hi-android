@@ -14,14 +14,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.runnersHi.model.RankChange
-import com.runnersHi.model.RankingItem
-import com.runnersHi.model.User
-import com.runnersHi.ui.navigation.RunnersHiBottomNavigation
-import com.runnersHi.ui.screen.home.HomeScreen
-import com.runnersHi.ui.screen.home.HomeUiState
-import com.runnersHi.ui.theme.Background
-import com.runnersHi.ui.theme.RunnersHiTheme
+import com.runnersHi.presentation.model.RankChangeUiModel
+import com.runnersHi.presentation.model.RankingItemUiModel
+import com.runnersHi.presentation.model.UserUiModel
+import com.runnersHi.presentation.ui.navigation.RunnersHiBottomNavigation
+import com.runnersHi.presentation.ui.screen.home.HomeScreen
+import com.runnersHi.presentation.ui.screen.home.HomeUiState
+import com.runnersHi.presentation.ui.theme.Background
+import com.runnersHi.presentation.ui.theme.RunnersHiTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,17 +41,17 @@ fun RunnersHiApp() {
 
     val mockRankings = remember {
         listOf(
-            RankingItem(1, User("1", "김러너", null, 156.5, 42), 156.5, RankChange.NONE),
-            RankingItem(2, User("2", "박조깅", null, 142.3, 38), 142.3, RankChange.UP),
-            RankingItem(3, User("3", "이마라톤", null, 128.7, 35), 128.7, RankChange.DOWN),
-            RankingItem(4, User("4", "최달리기", null, 115.2, 30), 115.2, RankChange.UP),
-            RankingItem(5, User("5", "정스프린트", null, 98.4, 28), 98.4, RankChange.NONE)
+            RankingItemUiModel(1, UserUiModel("1", "김러너", null, 156.5, 42), 156.5, RankChangeUiModel.NONE),
+            RankingItemUiModel(2, UserUiModel("2", "박조깅", null, 142.3, 38), 142.3, RankChangeUiModel.UP),
+            RankingItemUiModel(3, UserUiModel("3", "이마라톤", null, 128.7, 35), 128.7, RankChangeUiModel.DOWN),
+            RankingItemUiModel(4, UserUiModel("4", "최달리기", null, 115.2, 30), 115.2, RankChangeUiModel.UP),
+            RankingItemUiModel(5, UserUiModel("5", "정스프린트", null, 98.4, 28), 98.4, RankChangeUiModel.NONE)
         )
     }
 
     val homeUiState = remember {
         HomeUiState(
-            currentUser = User("0", "테스트유저", null, 45.2, 12),
+            currentUser = UserUiModel("0", "테스트유저", null, 45.2, 12),
             weeklyRanking = mockRankings,
             myRank = 8,
             myWeeklyDistance = 45.2

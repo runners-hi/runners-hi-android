@@ -20,4 +20,11 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "RunnersHi"
+
 include(":app")
+include(":core:common")
+include(":domain:api")
+include(":domain:impl")
+include(":data:api")
+include(":data:impl")
+include(":presentation")
