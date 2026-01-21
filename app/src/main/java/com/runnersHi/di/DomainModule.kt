@@ -1,13 +1,13 @@
 package com.runnersHi.di
 
-import com.runnersHi.domain.usecase.CheckAppVersionUseCase
-import com.runnersHi.domain.usecase.CheckAppVersionUseCaseImpl
-import com.runnersHi.domain.usecase.CheckLoginStatusUseCase
-import com.runnersHi.domain.usecase.CheckLoginStatusUseCaseImpl
-import com.runnersHi.domain.usecase.GetCurrentUserUseCase
-import com.runnersHi.domain.usecase.GetCurrentUserUseCaseImpl
-import com.runnersHi.domain.usecase.GetWeeklyRankingUseCase
-import com.runnersHi.domain.usecase.GetWeeklyRankingUseCaseImpl
+import com.runnersHi.domain.auth.CheckLoginStatusUseCaseImpl
+import com.runnersHi.domain.auth.usecase.CheckLoginStatusUseCase
+import com.runnersHi.domain.ranking.GetWeeklyRankingUseCaseImpl
+import com.runnersHi.domain.ranking.usecase.GetWeeklyRankingUseCase
+import com.runnersHi.domain.splash.CheckAppVersionUseCaseImpl
+import com.runnersHi.domain.splash.usecase.CheckAppVersionUseCase
+import com.runnersHi.domain.user.GetCurrentUserUseCaseImpl
+import com.runnersHi.domain.user.usecase.GetCurrentUserUseCase
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -18,16 +18,6 @@ import dagger.hilt.components.SingletonComponent
 abstract class DomainModule {
 
     @Binds
-    abstract fun bindGetCurrentUserUseCase(
-        impl: GetCurrentUserUseCaseImpl
-    ): GetCurrentUserUseCase
-
-    @Binds
-    abstract fun bindGetWeeklyRankingUseCase(
-        impl: GetWeeklyRankingUseCaseImpl
-    ): GetWeeklyRankingUseCase
-
-    @Binds
     abstract fun bindCheckAppVersionUseCase(
         impl: CheckAppVersionUseCaseImpl
     ): CheckAppVersionUseCase
@@ -36,4 +26,14 @@ abstract class DomainModule {
     abstract fun bindCheckLoginStatusUseCase(
         impl: CheckLoginStatusUseCaseImpl
     ): CheckLoginStatusUseCase
+
+    @Binds
+    abstract fun bindGetCurrentUserUseCase(
+        impl: GetCurrentUserUseCaseImpl
+    ): GetCurrentUserUseCase
+
+    @Binds
+    abstract fun bindGetWeeklyRankingUseCase(
+        impl: GetWeeklyRankingUseCaseImpl
+    ): GetWeeklyRankingUseCase
 }

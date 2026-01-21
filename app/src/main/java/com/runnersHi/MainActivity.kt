@@ -18,20 +18,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.runnersHi.presentation.model.RankChangeUiModel
-import com.runnersHi.presentation.model.RankingItemUiModel
-import com.runnersHi.presentation.model.UserUiModel
-import com.runnersHi.presentation.ui.navigation.RunnersHiBottomNavigation
-import com.runnersHi.presentation.ui.screen.home.HomeScreen
-import com.runnersHi.presentation.ui.screen.home.HomeUiState
-import com.runnersHi.presentation.ui.splash.ForceUpdateDialog
-import com.runnersHi.presentation.ui.splash.SplashScreen
-import com.runnersHi.presentation.ui.splash.SplashUiState
-import com.runnersHi.presentation.ui.splash.SplashViewModel
-import com.runnersHi.presentation.ui.theme.Background
-import com.runnersHi.presentation.ui.theme.RunnersHiTheme
+import com.runnersHi.presentation.common.model.RankChangeUiModel
+import com.runnersHi.presentation.common.model.RankingItemUiModel
+import com.runnersHi.presentation.common.model.UserUiModel
+import com.runnersHi.presentation.common.navigation.RunnersHiBottomNavigation
+import com.runnersHi.presentation.common.theme.Background
+import com.runnersHi.presentation.common.theme.RunnersHiTheme
+import com.runnersHi.presentation.home.HomeScreen
+import com.runnersHi.presentation.home.HomeUiState
+import com.runnersHi.presentation.splash.ForceUpdateDialog
+import com.runnersHi.presentation.splash.SplashScreen
+import com.runnersHi.presentation.splash.SplashUiState
+import com.runnersHi.presentation.splash.SplashViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -156,13 +155,5 @@ fun RunnersHiApp() {
                     .padding(innerPadding)
             )
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun RunnersHiAppPreview() {
-    RunnersHiTheme {
-        RunnersHiApp()
     }
 }
