@@ -42,11 +42,31 @@ android {
 dependencies {
     // Module dependencies
     implementation(project(":core:common"))
-    implementation(project(":domain:api"))
-    implementation(project(":domain:impl"))
-    implementation(project(":data:api"))
-    implementation(project(":data:impl"))
-    implementation(project(":presentation"))
+
+    // Domain modules
+    implementation(project(":domain:splash:api"))
+    implementation(project(":domain:splash:impl"))
+    implementation(project(":domain:auth:api"))
+    implementation(project(":domain:auth:impl"))
+    implementation(project(":domain:user:api"))
+    implementation(project(":domain:user:impl"))
+    implementation(project(":domain:ranking:api"))
+    implementation(project(":domain:ranking:impl"))
+
+    // Data modules
+    implementation(project(":data:splash:api"))
+    implementation(project(":data:splash:impl"))
+    implementation(project(":data:auth:api"))
+    implementation(project(":data:auth:impl"))
+    implementation(project(":data:user:api"))
+    implementation(project(":data:user:impl"))
+    implementation(project(":data:ranking:api"))
+    implementation(project(":data:ranking:impl"))
+
+    // Presentation modules
+    implementation(project(":presentation:common"))
+    implementation(project(":presentation:splash"))
+    implementation(project(":presentation:home"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

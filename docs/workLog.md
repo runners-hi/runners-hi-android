@@ -73,3 +73,74 @@
 - assembleDebug: SUCCESS
 
 ---
+
+## Entry #2
+
+### Date: 2026-01-21
+
+### Task: 기능별 Gradle 모듈 분리
+
+### Description
+기존 레이어별 Gradle 모듈(data/api, data/impl, domain/api, domain/impl, presentation)을
+기능별 독립 Gradle 모듈로 완전 분리
+
+### 변경 전 구조
+```
+data/api/          # 모든 기능의 DataSource 인터페이스
+data/impl/         # 모든 기능의 구현체
+domain/api/        # 모든 기능의 Model, Repository, UseCase 인터페이스
+domain/impl/       # 모든 기능의 UseCase 구현체
+presentation/      # 모든 화면
+```
+
+### 변경 후 구조
+```
+data/
+├── splash/api/    # Splash DataSource 인터페이스
+├── splash/impl/   # Splash 구현체
+├── auth/api/
+├── auth/impl/
+├── user/api/
+├── user/impl/
+├── ranking/api/
+└── ranking/impl/
+
+domain/
+├── splash/api/    # Splash Model, Repository, UseCase 인터페이스
+├── splash/impl/   # Splash UseCase 구현체
+├── auth/api/
+├── auth/impl/
+├── user/api/
+├── user/impl/
+├── ranking/api/
+└── ranking/impl/
+
+presentation/
+├── common/        # 공통 컴포넌트, 테마, 모델
+├── splash/        # Splash 화면
+└── home/          # Home 화면
+```
+
+### 생성된 Gradle 모듈 (19개)
+- `:data:splash:api`, `:data:splash:impl`
+- `:data:auth:api`, `:data:auth:impl`
+- `:data:user:api`, `:data:user:impl`
+- `:data:ranking:api`, `:data:ranking:impl`
+- `:domain:splash:api`, `:domain:splash:impl`
+- `:domain:auth:api`, `:domain:auth:impl`
+- `:domain:user:api`, `:domain:user:impl`
+- `:domain:ranking:api`, `:domain:ranking:impl`
+- `:presentation:common`
+- `:presentation:splash`
+- `:presentation:home`
+
+### 장점
+- 기능별 독립적인 빌드 캐싱
+- 명확한 의존성 관리
+- 팀원별 기능 분담 용이
+- 기능 단위 테스트 용이
+
+### Build Status
+- assembleDebug: SUCCESS (292 tasks)
+
+---
