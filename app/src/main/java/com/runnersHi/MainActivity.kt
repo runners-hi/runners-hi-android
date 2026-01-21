@@ -1,5 +1,7 @@
 package com.runnersHi
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -8,31 +10,104 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.runnersHi.presentation.model.RankChangeUiModel
 import com.runnersHi.presentation.model.RankingItemUiModel
 import com.runnersHi.presentation.model.UserUiModel
 import com.runnersHi.presentation.ui.navigation.RunnersHiBottomNavigation
 import com.runnersHi.presentation.ui.screen.home.HomeScreen
 import com.runnersHi.presentation.ui.screen.home.HomeUiState
+import com.runnersHi.presentation.ui.splash.ForceUpdateDialog
+import com.runnersHi.presentation.ui.splash.SplashScreen
+import com.runnersHi.presentation.ui.splash.SplashUiState
+import com.runnersHi.presentation.ui.splash.SplashViewModel
 import com.runnersHi.presentation.ui.theme.Background
 import com.runnersHi.presentation.ui.theme.RunnersHiTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             RunnersHiTheme {
-                RunnersHiApp()
+                RunnersHiNavHost()
             }
         }
     }
+}
+
+@Composable
+fun RunnersHiNavHost() {
+    var currentScreen by remember { mutableStateOf<Screen>(Screen.Splash) }
+    val context = LocalContext.current
+
+    when (val screen = currentScreen) {
+        is Screen.Splash -> {
+            val viewModel: SplashViewModel = hiltViewModel()
+            val uiState by viewModel.uiState.collectAsState()
+
+            LaunchedEffect(Unit) {
+                // 앱 버전 가져오기 (실제로는 BuildConfig 사용)
+                val currentVersion = "1.0.0"
+                viewModel.checkAppStatus(currentVersion)
+            }
+
+            SplashScreen()
+
+            when (uiState) {
+                is SplashUiState.ForceUpdate -> {
+                    ForceUpdateDialog(
+                        onUpdateClick = {
+                            val intent = Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.parse("market://details?id=${context.packageName}")
+                            )
+                            context.startActivity(intent)
+                        }
+                    )
+                }
+                SplashUiState.NavigateToHome -> {
+                    currentScreen = Screen.Home
+                }
+                SplashUiState.NavigateToLogin -> {
+                    // TODO: 로그인 화면으로 이동
+                    // 현재는 홈으로 이동 (로그인 화면 미구현)
+                    currentScreen = Screen.Home
+                }
+                is SplashUiState.Error -> {
+                    // TODO: 에러 처리
+                    currentScreen = Screen.Home
+                }
+                SplashUiState.Loading -> {
+                    // 로딩 중
+                }
+            }
+        }
+        is Screen.Home -> {
+            RunnersHiApp()
+        }
+        is Screen.Login -> {
+            // TODO: 로그인 화면 구현
+            RunnersHiApp()
+        }
+    }
+}
+
+sealed class Screen {
+    data object Splash : Screen()
+    data object Login : Screen()
+    data object Home : Screen()
 }
 
 @Composable
