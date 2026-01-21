@@ -10,7 +10,11 @@ class MockAuthLocalDataSource @Inject constructor() : AuthLocalDataSource {
 
     private var storedToken: AuthToken? = null
 
-    override suspend fun getToken(): AuthToken? = storedToken
+    override suspend fun getToken(): AuthToken? {
+        // 토큰 조회 지연 시뮬레이션 (progress 확인용)
+        delay(800)
+        return storedToken
+    }
 
     override suspend fun saveToken(token: AuthToken) {
         storedToken = token
