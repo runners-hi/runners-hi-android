@@ -26,6 +26,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.OAuthProvider
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
@@ -102,10 +104,37 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun loginWithApple(onTokenReceived: (String) -> Unit) {
-        // Apple 로그인은 Android에서 웹 기반으로 구현 필요
-        // 현재는 Mock으로 처리
-        Log.i(TAG, "Apple 로그인 (Mock)")
-        onTokenReceived("mock_apple_token_${System.currentTimeMillis()}")
+        val provider = OAuthProvider.newBuilder("apple.com")
+            .setScopes(listOf("email", "name"))
+            .build()
+
+        val auth = FirebaseAuth.getInstance()
+
+        // 이미 진행 중인 로그인이 있는지 확인
+        val pending = auth.pendingAuthResult
+        if (pending != null) {
+            pending
+                .addOnSuccessListener { result ->
+                    Log.i(TAG, "Apple 로그인 성공 (pending)")
+                    result.user?.getIdToken(true)?.addOnSuccessListener { tokenResult ->
+                        tokenResult.token?.let { onTokenReceived(it) }
+                    }
+                }
+                .addOnFailureListener { error ->
+                    Log.e(TAG, "Apple 로그인 실패 (pending)", error)
+                }
+        } else {
+            auth.startActivityForSignInWithProvider(this, provider)
+                .addOnSuccessListener { result ->
+                    Log.i(TAG, "Apple 로그인 성공")
+                    result.user?.getIdToken(true)?.addOnSuccessListener { tokenResult ->
+                        tokenResult.token?.let { onTokenReceived(it) }
+                    }
+                }
+                .addOnFailureListener { error ->
+                    Log.e(TAG, "Apple 로그인 실패", error)
+                }
+        }
     }
 }
 
