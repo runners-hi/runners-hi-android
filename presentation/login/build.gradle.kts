@@ -30,6 +30,7 @@ android {
 
 dependencies {
     implementation(project(":core:common"))
+    implementation(project(":domain:auth:api"))
     implementation(project(":presentation:common"))
 
     implementation(libs.androidx.core.ktx)
@@ -46,4 +47,5 @@ dependencies {
     // Hilt
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+    implementation(libs.hilt.navigation.compose)
 }

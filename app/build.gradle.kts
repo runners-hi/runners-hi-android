@@ -16,6 +16,15 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
+
+        // 카카오 앱 키 (local.properties에서 읽거나 placeholder 사용)
+        val kakaoAppKey = project.findProperty("KAKAO_APP_KEY") as? String ?: "your_kakao_app_key"
+        manifestPlaceholders["KAKAO_APP_KEY"] = kakaoAppKey
+        buildConfigField("String", "KAKAO_APP_KEY", "\"$kakaoAppKey\"")
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {
@@ -84,4 +93,7 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
+
+    // Kakao SDK
+    implementation(libs.kakao.user)
 }

@@ -3,6 +3,7 @@ package com.runnersHi
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -11,7 +12,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -26,6 +26,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.kakao.sdk.auth.model.OAuthToken
+import com.kakao.sdk.common.model.ClientError
+import com.kakao.sdk.common.model.ClientErrorCause
+import com.kakao.sdk.user.UserApiClient
 import com.runnersHi.presentation.common.model.RankChangeUiModel
 import com.runnersHi.presentation.common.model.RankingItemUiModel
 import com.runnersHi.presentation.common.model.UserUiModel
@@ -34,12 +38,14 @@ import com.runnersHi.presentation.common.theme.Background
 import com.runnersHi.presentation.common.theme.RunnersHiTheme
 import com.runnersHi.presentation.home.HomeScreen
 import com.runnersHi.presentation.home.HomeUiState
+import com.runnersHi.presentation.login.LoginScreen
 import com.runnersHi.presentation.splash.ForceUpdateDialog
 import com.runnersHi.presentation.splash.SplashScreen
 import com.runnersHi.presentation.splash.SplashUiState
 import com.runnersHi.presentation.splash.SplashViewModel
-import com.runnersHi.presentation.login.LoginScreen
 import dagger.hilt.android.AndroidEntryPoint
+
+private const val TAG = "MainActivity"
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -48,14 +54,66 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             RunnersHiTheme {
-                RunnersHiNavHost()
+                RunnersHiNavHost(
+                    onKakaoLogin = { onTokenReceived ->
+                        loginWithKakao(onTokenReceived)
+                    },
+                    onAppleLogin = { onTokenReceived ->
+                        loginWithApple(onTokenReceived)
+                    }
+                )
             }
         }
+    }
+
+    private fun loginWithKakao(onTokenReceived: (String) -> Unit) {
+        val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
+            if (error != null) {
+                Log.e(TAG, "카카오 로그인 실패", error)
+            } else if (token != null) {
+                Log.i(TAG, "카카오 로그인 성공: ${token.accessToken}")
+                onTokenReceived(token.accessToken)
+            }
+        }
+
+        // 카카오톡 설치 여부 확인
+        if (UserApiClient.instance.isKakaoTalkLoginAvailable(this)) {
+            // 카카오톡으로 로그인
+            UserApiClient.instance.loginWithKakaoTalk(this) { token, error ->
+                if (error != null) {
+                    Log.e(TAG, "카카오톡으로 로그인 실패", error)
+
+                    // 사용자가 카카오톡 설치 후 디바이스 권한 요청 화면에서 로그인을 취소한 경우
+                    if (error is ClientError && error.reason == ClientErrorCause.Cancelled) {
+                        return@loginWithKakaoTalk
+                    }
+
+                    // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인 시도
+                    UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
+                } else if (token != null) {
+                    Log.i(TAG, "카카오톡으로 로그인 성공: ${token.accessToken}")
+                    onTokenReceived(token.accessToken)
+                }
+            }
+        } else {
+            // 카카오계정으로 로그인
+            UserApiClient.instance.loginWithKakaoAccount(this, callback = callback)
+        }
+    }
+
+    private fun loginWithApple(onTokenReceived: (String) -> Unit) {
+        // Apple 로그인은 Android에서 웹 기반으로 구현 필요
+        // 현재는 Mock으로 처리
+        Log.i(TAG, "Apple 로그인 (Mock)")
+        onTokenReceived("mock_apple_token_${System.currentTimeMillis()}")
     }
 }
 
 @Composable
-fun RunnersHiNavHost() {
+fun RunnersHiNavHost(
+    onKakaoLogin: (onTokenReceived: (String) -> Unit) -> Unit,
+    onAppleLogin: (onTokenReceived: (String) -> Unit) -> Unit
+) {
     var currentScreen by remember { mutableStateOf<Screen>(Screen.Splash) }
     val context = LocalContext.current
 
@@ -134,14 +192,11 @@ fun RunnersHiNavHost() {
             }
             is Screen.Login -> {
                 LoginScreen(
-                    onKakaoLoginClick = {
-                        // TODO: 카카오 로그인 처리
+                    onLoginSuccess = {
                         currentScreen = Screen.Home
                     },
-                    onAppleLoginClick = {
-                        // TODO: Apple 로그인 처리
-                        currentScreen = Screen.Home
-                    }
+                    onKakaoLoginRequest = onKakaoLogin,
+                    onAppleLoginRequest = onAppleLogin
                 )
             }
         }

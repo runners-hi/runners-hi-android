@@ -16,8 +16,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
@@ -30,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.runnersHi.presentation.common.theme.Background
 import com.runnersHi.presentation.common.theme.Primary
 import com.runnersHi.presentation.common.theme.RunnersHiTheme
@@ -39,10 +44,49 @@ private val KakaoBrown = Color(0xFF3C1E1E)
 
 @Composable
 fun LoginScreen(
-    onKakaoLoginClick: () -> Unit = {},
-    onAppleLoginClick: () -> Unit = {},
+    onLoginSuccess: () -> Unit,
+    onKakaoLoginRequest: (onTokenReceived: (String) -> Unit) -> Unit,
+    onAppleLoginRequest: (onTokenReceived: (String) -> Unit) -> Unit,
+    viewModel: LoginViewModel = hiltViewModel(),
     modifier: Modifier = Modifier
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(uiState) {
+        when (uiState) {
+            is LoginUiState.Success,
+            is LoginUiState.NewUser -> {
+                onLoginSuccess()
+            }
+            else -> {}
+        }
+    }
+
+    LoginScreenContent(
+        uiState = uiState,
+        onKakaoLoginClick = {
+            onKakaoLoginRequest { token ->
+                viewModel.loginWithKakao(token)
+            }
+        },
+        onAppleLoginClick = {
+            onAppleLoginRequest { token ->
+                viewModel.loginWithApple(token)
+            }
+        },
+        modifier = modifier
+    )
+}
+
+@Composable
+fun LoginScreenContent(
+    uiState: LoginUiState,
+    onKakaoLoginClick: () -> Unit,
+    onAppleLoginClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val isLoading = uiState is LoginUiState.Loading
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -86,21 +130,31 @@ fun LoginScreen(
                         .height(52.dp),
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = KakaoYellow
-                    )
+                        containerColor = KakaoYellow,
+                        disabledContainerColor = KakaoYellow.copy(alpha = 0.5f)
+                    ),
+                    enabled = !isLoading
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        KakaoIcon()
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "카카오로 시작하기",
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
                             color = KakaoBrown,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium
+                            strokeWidth = 2.dp
                         )
+                    } else {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            KakaoIcon()
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "카카오로 시작하기",
+                                color = KakaoBrown,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
                     }
                 }
 
@@ -112,22 +166,42 @@ fun LoginScreen(
                         .height(52.dp),
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White
-                    )
+                        containerColor = Color.White,
+                        disabledContainerColor = Color.White.copy(alpha = 0.5f)
+                    ),
+                    enabled = !isLoading
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        AppleIcon()
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "Apple ID로 시작하기",
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
                             color = Color.Black,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium
+                            strokeWidth = 2.dp
                         )
+                    } else {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            AppleIcon()
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Apple ID로 시작하기",
+                                color = Color.Black,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
                     }
+                }
+
+                // Error Message
+                if (uiState is LoginUiState.Error) {
+                    Text(
+                        text = uiState.message,
+                        color = Color.Red,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
                 }
             }
         }
@@ -142,8 +216,6 @@ private fun RunnersHiLogo(
         modifier = modifier.size(80.dp, 60.dp)
     ) {
         val strokeWidth = 3.dp.toPx()
-        val centerX = size.width / 2
-        val centerY = size.height / 2
 
         // Outer track (oval outline)
         drawRoundRect(
@@ -247,6 +319,22 @@ private fun AppleIcon(
 @Composable
 private fun LoginScreenPreview() {
     RunnersHiTheme {
-        LoginScreen()
+        LoginScreenContent(
+            uiState = LoginUiState.Idle,
+            onKakaoLoginClick = {},
+            onAppleLoginClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF121212)
+@Composable
+private fun LoginScreenLoadingPreview() {
+    RunnersHiTheme {
+        LoginScreenContent(
+            uiState = LoginUiState.Loading,
+            onKakaoLoginClick = {},
+            onAppleLoginClick = {}
+        )
     }
 }

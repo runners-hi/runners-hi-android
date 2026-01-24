@@ -1,7 +1,9 @@
 package com.runnersHi.data.auth
 
 import com.runnersHi.domain.auth.model.AuthToken
+import com.runnersHi.domain.auth.model.SocialLoginType
 import com.runnersHi.domain.auth.repository.AuthRepository
+import com.runnersHi.domain.auth.usecase.LoginResult
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
@@ -34,5 +36,18 @@ class AuthRepositoryImpl @Inject constructor(
 
     override fun isLoggedIn(): Boolean {
         return localDataSource.hasToken()
+    }
+
+    override suspend fun loginWithSocial(
+        type: SocialLoginType,
+        socialToken: String
+    ): Result<LoginResult> {
+        return try {
+            val (token, loginResult) = remoteDataSource.loginWithSocial(type, socialToken)
+            localDataSource.saveToken(token)
+            Result.success(loginResult)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 }
