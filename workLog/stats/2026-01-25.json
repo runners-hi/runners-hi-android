@@ -1,0 +1,61 @@
+{
+  "date": "2026-01-25",
+  "sessionId": "-Users-ram-programming-vibecoding-RunnersHi",
+  "model": "claude-opus-4-5-20251101",
+  "requests": [
+    {
+      "id": 1,
+      "time": "2026-01-25",
+      "title": "소셜 로그인 기능 구현",
+      "tokens": {
+        "input": 3500,
+        "output": 800,
+        "cacheCreation": 150000,
+        "cacheRead": 4345700,
+        "total": 4500000
+      },
+      "cost": 3.20
+    },
+    {
+      "id": 2,
+      "time": "2026-01-25",
+      "title": "Firebase Authentication 연동",
+      "tokens": {
+        "input": 1200,
+        "output": 300,
+        "cacheCreation": 100000,
+        "cacheRead": 2398500,
+        "total": 2500000
+      },
+      "cost": 1.80
+    },
+    {
+      "id": 3,
+      "time": "2026-01-25",
+      "title": "PR 생성",
+      "tokens": {
+        "input": 500,
+        "output": 200,
+        "cacheCreation": 50000,
+        "cacheRead": 860994,
+        "total": 911694
+      },
+      "cost": 0.50
+    }
+  ],
+  "cumulative": {
+    "inputTokens": 9747,
+    "outputTokens": 2555,
+    "cacheCreationTokens": 1517508,
+    "cacheReadTokens": 42011335,
+    "totalTokens": 43541145,
+    "totalCost": 30.60
+  },
+  "statistics": {
+    "requestCount": 3,
+    "avgTokensPerRequest": 2637231,
+    "medianTokensPerRequest": 2500000,
+    "avgCostPerRequest": 1.83,
+    "medianCostPerRequest": 1.80
+  }
+}
