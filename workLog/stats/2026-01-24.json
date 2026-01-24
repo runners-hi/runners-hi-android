@@ -1,0 +1,35 @@
+{
+  "date": "2026-01-24",
+  "sessionId": "-Users-ram-programming-vibecoding-RunnersHi",
+  "model": "claude-opus-4-5-20251101",
+  "requests": [
+    {
+      "id": 1,
+      "time": "2026-01-24",
+      "title": "workLog 토큰 통계 기록 규칙 강화",
+      "tokens": {
+        "input": 1056,
+        "output": 8,
+        "cacheCreation": 5361,
+        "cacheRead": 160408,
+        "total": 166833
+      },
+      "cost": 0.12
+    }
+  ],
+  "cumulative": {
+    "inputTokens": 8408,
+    "outputTokens": 2197,
+    "cacheCreationTokens": 1083196,
+    "cacheReadTokens": 31878106,
+    "totalTokens": 32971907,
+    "totalCost": 22.81
+  },
+  "statistics": {
+    "requestCount": 1,
+    "avgTokensPerRequest": 166833,
+    "medianTokensPerRequest": 166833,
+    "avgCostPerRequest": 0.12,
+    "medianCostPerRequest": 0.12
+  }
+}
