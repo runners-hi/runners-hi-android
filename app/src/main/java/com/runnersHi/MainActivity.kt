@@ -38,6 +38,7 @@ import com.runnersHi.presentation.splash.ForceUpdateDialog
 import com.runnersHi.presentation.splash.SplashScreen
 import com.runnersHi.presentation.splash.SplashUiState
 import com.runnersHi.presentation.splash.SplashViewModel
+import com.runnersHi.presentation.login.LoginScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -114,9 +115,7 @@ fun RunnersHiNavHost() {
                     }
                     is SplashUiState.NavigateToLogin -> {
                         LaunchedEffect(Unit) {
-                            // TODO: 로그인 화면으로 이동
-                            // 현재는 홈으로 이동 (로그인 화면 미구현)
-                            currentScreen = Screen.Home
+                            currentScreen = Screen.Login
                         }
                     }
                     is SplashUiState.Error -> {
@@ -134,8 +133,16 @@ fun RunnersHiNavHost() {
                 RunnersHiApp()
             }
             is Screen.Login -> {
-                // TODO: 로그인 화면 구현
-                RunnersHiApp()
+                LoginScreen(
+                    onKakaoLoginClick = {
+                        // TODO: 카카오 로그인 처리
+                        currentScreen = Screen.Home
+                    },
+                    onAppleLoginClick = {
+                        // TODO: Apple 로그인 처리
+                        currentScreen = Screen.Home
+                    }
+                )
             }
         }
     }
