@@ -149,6 +149,23 @@ docs/
 
 ---
 
+## MVI 아키텍처 규칙
+
+> `/mvi` 스킬 참조 (`.claude/skills/mvi.md`)
+
+### 필수 규칙
+- **모든 화면은 MVI 패턴 적용**
+- 베이스 컴포넌트: `presentation/common/src/.../mvi/`
+
+### 화면 구성
+| 파일 | 역할 |
+|------|------|
+| `<Screen>Contract.kt` | State, Event, Effect 정의 |
+| `<Screen>ViewModel.kt` | MviViewModel 상속 |
+| `<Screen>Screen.kt` | Route (상태/이펙트) + Screen (순수 UI) |
+
+---
+
 ## Figma 디자인 작업 규칙
 
 Figma URL이 제공되면 `/figma` 스킬 사용 (`.claude/skills/figma.md`)
