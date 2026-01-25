@@ -48,7 +48,7 @@ class LoginViewModel @Inject constructor(
                             sendEffect(LoginContract.Effect.NavigateToHome)
                         }
                         is LoginResult.NewUser -> {
-                            sendEffect(LoginContract.Effect.NavigateToOnboarding)
+                            sendEffect(LoginContract.Effect.NavigateToTermsAgreement)
                         }
                         is LoginResult.Error -> {
                             updateState { copy(errorMessage = result.message) }

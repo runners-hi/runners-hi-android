@@ -23,7 +23,7 @@ class LoginContract {
         data object RequestKakaoLogin : Effect
         data object RequestAppleLogin : Effect
         data object NavigateToHome : Effect
-        data object NavigateToOnboarding : Effect
+        data object NavigateToTermsAgreement : Effect  // 신규 유저 → 이용약관 화면
         data class ShowToast(val message: String) : Effect
     }
 }

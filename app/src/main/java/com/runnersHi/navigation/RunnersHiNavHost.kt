@@ -68,9 +68,8 @@ fun RunnersHiNavHost() {
                     onNavigateToHome = {
                         currentScreen = Screen.Main
                     },
-                    onNavigateToOnboarding = {
-                        // TODO: 온보딩 화면 구현 후 연결
-                        currentScreen = Screen.Main
+                    onNavigateToTermsAgreement = {
+                        currentScreen = Screen.TermsAgreement
                     },
                     onKakaoLoginRequest = {
                         // TODO: 카카오 SDK 연동
@@ -79,6 +78,12 @@ fun RunnersHiNavHost() {
                         // TODO: Apple Sign In 연동
                     }
                 )
+            }
+            is Screen.TermsAgreement -> {
+                // TODO: 이용약관 화면 구현 후 연결
+                // TermsAgreementRoute(
+                //     onNavigateToMain = { currentScreen = Screen.Main }
+                // )
             }
             is Screen.Main -> {
                 MainScreen()
@@ -93,5 +98,6 @@ fun RunnersHiNavHost() {
 sealed class Screen {
     data object Splash : Screen()
     data object Login : Screen()
+    data object TermsAgreement : Screen()  // 신규 유저 이용약관 동의
     data object Main : Screen()
 }
