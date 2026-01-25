@@ -1,17 +1,21 @@
 package com.runnersHi.auth
 
 import android.content.Context
+import com.kakao.sdk.auth.model.OAuthToken
+import com.kakao.sdk.common.model.ClientError
+import com.kakao.sdk.common.model.ClientErrorCause
+import com.kakao.sdk.user.UserApiClient
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 /**
  * 카카오 로그인 핸들러
- *
- * TODO: 실제 카카오 SDK 연동 시 주석 해제
- * 현재는 Mock 모드로 동작
  */
 object KakaoLoginHandler {
 
-    // Mock 모드 플래그 (실제 연동 시 false로 변경)
+    // TODO: 실제 SDK 연동 시 false로 변경
     private const val USE_MOCK = true
 
     /**
@@ -19,14 +23,13 @@ object KakaoLoginHandler {
      * @return 카카오 액세스 토큰
      */
     suspend fun login(context: Context): String {
+        // Mock 모드: delay 후 mock 토큰 반환
         if (USE_MOCK) {
-            // Mock: 로그인 지연 시뮬레이션
             delay(1500)
             return "mock_kakao_access_token_${System.currentTimeMillis()}"
         }
 
-        // TODO: 실제 카카오 SDK 연동
-        /*
+        // 실제 카카오 SDK 로그인
         return suspendCancellableCoroutine { continuation ->
             val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
                 if (error != null) {
@@ -38,45 +41,52 @@ object KakaoLoginHandler {
                 }
             }
 
+            // 카카오톡 설치 여부 확인
             if (UserApiClient.instance.isKakaoTalkLoginAvailable(context)) {
+                // 카카오톡으로 로그인
                 UserApiClient.instance.loginWithKakaoTalk(context) { token, error ->
                     if (error != null) {
+                        // 사용자가 카카오톡 설치 후 디바이스 권한 요청 화면에서 로그인을 취소한 경우
                         if (error is ClientError && error.reason == ClientErrorCause.Cancelled) {
                             continuation.resumeWithException(error)
                             return@loginWithKakaoTalk
                         }
+                        // 카카오톡에 연결된 카카오 계정이 없는 경우, 카카오 계정으로 로그인 시도
                         UserApiClient.instance.loginWithKakaoAccount(context, callback = callback)
                     } else if (token != null) {
                         continuation.resume(token.accessToken)
                     }
                 }
             } else {
+                // 카카오톡 미설치 시 카카오 계정으로 로그인
                 UserApiClient.instance.loginWithKakaoAccount(context, callback = callback)
             }
         }
-        */
-        throw NotImplementedError("Kakao SDK not configured")
     }
 
     /**
      * 카카오 로그아웃
      */
-    suspend fun logout() {
-        if (USE_MOCK) {
-            delay(300)
-            return
+    suspend fun logout(): Unit = suspendCancellableCoroutine { continuation ->
+        UserApiClient.instance.logout { error ->
+            if (error != null) {
+                continuation.resumeWithException(error)
+            } else {
+                continuation.resume(Unit)
+            }
         }
-        // TODO: 실제 구현
     }
 
     /**
      * 카카오 연결 끊기 (회원 탈퇴)
      */
-    suspend fun unlink() {
-        if (USE_MOCK) {
-            delay(300)
-            return
+    suspend fun unlink(): Unit = suspendCancellableCoroutine { continuation ->
+        UserApiClient.instance.unlink { error ->
+            if (error != null) {
+                continuation.resumeWithException(error)
+            } else {
+                continuation.resume(Unit)
+            }
         }
-        // TODO: 실제 구현
     }
 }
