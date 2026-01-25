@@ -21,21 +21,12 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -46,7 +37,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -56,6 +46,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.runnersHi.domain.home.model.Tier
 import com.runnersHi.presentation.common.mvi.collectEffect
 import com.runnersHi.presentation.common.mvi.collectState
+import com.runnersHi.presentation.common.navigation.BottomNavTab
+import com.runnersHi.presentation.common.navigation.RunnersHiBottomNavigation
 import com.runnersHi.presentation.common.theme.BlueGray70
 import com.runnersHi.presentation.common.theme.BlueGray80
 import com.runnersHi.presentation.common.theme.BlueGray90
@@ -72,7 +64,6 @@ private val ProgressBackground = BlueGray70
 private val TextPrimary = Color.White
 private val TextSecondary = Color(0xFFC7CBD1)
 private val TextTertiary = Color(0xFF8F97A3)
-private val InactiveColor = Color(0xFF75808B)
 private val DayActiveBackground = Color(0xFF255860)
 private val MissionCompletedBackground = Color(0x33FFCB2F)
 private val MissionCompletedBorder = Color(0xFFFFCB2F)
@@ -148,7 +139,7 @@ fun MainScreen(
     Scaffold(
         containerColor = BlueGray90,
         bottomBar = {
-            MainBottomNavigation(
+            RunnersHiBottomNavigation(
                 currentTab = state.currentTab,
                 onTabSelected = { onEvent(MainContract.Event.BottomNavClicked(it)) }
             )
@@ -1056,65 +1047,6 @@ private fun PlaceholderContent(
             fontSize = 18.sp,
             textAlign = TextAlign.Center
         )
-    }
-}
-
-@Composable
-private fun MainBottomNavigation(
-    currentTab: BottomNavTab,
-    onTabSelected: (BottomNavTab) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    NavigationBar(
-        modifier = modifier,
-        containerColor = BlueGray90,
-        contentColor = Primary
-    ) {
-        BottomNavTab.entries.forEach { tab ->
-            val selected = currentTab == tab
-
-            NavigationBarItem(
-                selected = selected,
-                onClick = { onTabSelected(tab) },
-                icon = {
-                    Icon(
-                        imageVector = tab.toIcon(selected),
-                        contentDescription = tab.toLabel(),
-                        modifier = Modifier.size(24.dp)
-                    )
-                },
-                label = {
-                    Text(text = tab.toLabel())
-                },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Primary,
-                    selectedTextColor = Primary,
-                    unselectedIconColor = InactiveColor,
-                    unselectedTextColor = InactiveColor,
-                    indicatorColor = BlueGray90
-                )
-            )
-        }
-    }
-}
-
-private fun BottomNavTab.toIcon(selected: Boolean): ImageVector {
-    return when (this) {
-        BottomNavTab.HOME -> if (selected) Icons.Filled.Home else Icons.Outlined.Home
-        BottomNavTab.RANKING -> if (selected) Icons.Filled.Star else Icons.Outlined.Star
-        BottomNavTab.RECORD -> if (selected) Icons.Filled.Star else Icons.Outlined.Star
-        BottomNavTab.MISSION -> if (selected) Icons.Filled.Star else Icons.Outlined.Star
-        BottomNavTab.MY_PAGE -> if (selected) Icons.Filled.Person else Icons.Outlined.Person
-    }
-}
-
-private fun BottomNavTab.toLabel(): String {
-    return when (this) {
-        BottomNavTab.HOME -> "홈"
-        BottomNavTab.RANKING -> "랭킹"
-        BottomNavTab.RECORD -> "기록"
-        BottomNavTab.MISSION -> "미션"
-        BottomNavTab.MY_PAGE -> "마이페이지"
     }
 }
 

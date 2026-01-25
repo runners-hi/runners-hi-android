@@ -5,6 +5,7 @@ import com.runnersHi.domain.home.model.Tier
 import com.runnersHi.presentation.common.mvi.UiEffect
 import com.runnersHi.presentation.common.mvi.UiEvent
 import com.runnersHi.presentation.common.mvi.UiState
+import com.runnersHi.presentation.common.navigation.BottomNavTab
 
 object MainContract {
 
@@ -54,10 +55,6 @@ object MainContract {
         data object OpenHealthConnectSettings : Effect
         data object OpenPlayStoreForHealthConnect : Effect
     }
-}
-
-enum class BottomNavTab {
-    HOME, RANKING, RECORD, MISSION, MY_PAGE
 }
 
 @Immutable
