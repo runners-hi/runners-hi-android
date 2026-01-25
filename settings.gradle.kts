@@ -34,6 +34,8 @@ include(":domain:user:api")
 include(":domain:user:impl")
 include(":domain:ranking:api")
 include(":domain:ranking:impl")
+include(":domain:terms:api")
+include(":domain:terms:impl")
 
 // Data modules
 include(":data:splash:api")
@@ -44,6 +46,8 @@ include(":data:user:api")
 include(":data:user:impl")
 include(":data:ranking:api")
 include(":data:ranking:impl")
+include(":data:terms:api")
+include(":data:terms:impl")
 
 // Presentation modules
 include(":presentation:splash:api")

@@ -8,6 +8,10 @@ import com.runnersHi.domain.ranking.GetWeeklyRankingUseCaseImpl
 import com.runnersHi.domain.ranking.usecase.GetWeeklyRankingUseCase
 import com.runnersHi.domain.splash.CheckAppVersionUseCaseImpl
 import com.runnersHi.domain.splash.usecase.CheckAppVersionUseCase
+import com.runnersHi.domain.terms.AgreeTermsUseCaseImpl
+import com.runnersHi.domain.terms.GetTermsListUseCaseImpl
+import com.runnersHi.domain.terms.usecase.AgreeTermsUseCase
+import com.runnersHi.domain.terms.usecase.GetTermsListUseCase
 import com.runnersHi.domain.user.GetCurrentUserUseCaseImpl
 import com.runnersHi.domain.user.usecase.GetCurrentUserUseCase
 import dagger.Binds
@@ -43,4 +47,14 @@ abstract class DomainModule {
     abstract fun bindGetWeeklyRankingUseCase(
         impl: GetWeeklyRankingUseCaseImpl
     ): GetWeeklyRankingUseCase
+
+    @Binds
+    abstract fun bindGetTermsListUseCase(
+        impl: GetTermsListUseCaseImpl
+    ): GetTermsListUseCase
+
+    @Binds
+    abstract fun bindAgreeTermsUseCase(
+        impl: AgreeTermsUseCaseImpl
+    ): AgreeTermsUseCase
 }

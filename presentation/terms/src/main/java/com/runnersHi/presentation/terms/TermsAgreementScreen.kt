@@ -4,7 +4,6 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,11 +19,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -40,12 +38,17 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.runnersHi.presentation.common.mvi.collectEffect
 import com.runnersHi.presentation.common.mvi.collectState
-import com.runnersHi.presentation.common.theme.BlueGray40
+import com.runnersHi.presentation.common.theme.BlueGray5
 import com.runnersHi.presentation.common.theme.BlueGray70
 import com.runnersHi.presentation.common.theme.BlueGray90
 import com.runnersHi.presentation.common.theme.BlueGrayWhite
 import com.runnersHi.presentation.common.theme.Primary
 import com.runnersHi.presentation.common.theme.RunnersHiTheme
+import com.runnersHi.presentation.terms.R
+
+// Figma 색상
+private val ButtonDisabled = Color(0xFF255860)
+private val ButtonTextDisabled = Color(0xFF17191C)
 
 /**
  * Terms Agreement Route: 상태 수집 및 이펙트 처리
@@ -53,7 +56,8 @@ import com.runnersHi.presentation.common.theme.RunnersHiTheme
 @Composable
 fun TermsAgreementRoute(
     viewModel: TermsAgreementViewModel = hiltViewModel(),
-    onNavigateToMain: () -> Unit
+    onNavigateToMain: () -> Unit,
+    onNavigateBack: (() -> Unit)? = null
 ) {
     val state by viewModel.collectState()
     val context = LocalContext.current
@@ -61,6 +65,7 @@ fun TermsAgreementRoute(
     viewModel.collectEffect { effect ->
         when (effect) {
             is TermsAgreementContract.Effect.NavigateToMain -> onNavigateToMain()
+            is TermsAgreementContract.Effect.NavigateBack -> onNavigateBack?.invoke()
             is TermsAgreementContract.Effect.OpenTermsWebView -> {
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(effect.url))
                 context.startActivity(intent)
@@ -78,7 +83,7 @@ fun TermsAgreementRoute(
 }
 
 /**
- * Terms Agreement Screen: 순수 UI
+ * Terms Agreement Screen: 순수 UI (Figma 디자인 적용)
  */
 @Composable
 fun TermsAgreementScreen(
@@ -92,19 +97,23 @@ fun TermsAgreementScreen(
             .background(BlueGray90)
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 24.dp)
+            modifier = Modifier.fillMaxSize()
         ) {
-            Spacer(modifier = Modifier.height(60.dp))
+            // 상단 네비게이션 바
+            TopNavigationBar(
+                onBackClick = { onEvent(TermsAgreementContract.Event.BackClicked) }
+            )
 
-            // 제목
+            // 타이틀
             Text(
-                text = "서비스 이용을 위해\n약관에 동의해주세요",
-                color = BlueGrayWhite,
+                text = "가입을 위해\n약관 동의가 필요해요",
+                color = BlueGray5,
                 fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                lineHeight = 32.sp
+                fontWeight = FontWeight.SemiBold,
+                lineHeight = 36.sp,
+                modifier = Modifier
+                    .padding(horizontal = 24.dp)
+                    .padding(top = 24.dp)
             )
 
             Spacer(modifier = Modifier.height(40.dp))
@@ -112,11 +121,15 @@ fun TermsAgreementScreen(
             // 전체 동의
             AllAgreeRow(
                 isChecked = state.allAgreed,
-                onCheckedChange = { onEvent(TermsAgreementContract.Event.ToggleAllAgreed) }
+                onCheckedChange = { onEvent(TermsAgreementContract.Event.ToggleAllAgreed) },
+                onArrowClick = { /* 전체 약관 상세 */ },
+                modifier = Modifier.padding(horizontal = 24.dp)
             )
 
+            // 구분선
             HorizontalDivider(
-                modifier = Modifier.padding(vertical = 16.dp),
+                modifier = Modifier.padding(vertical = 8.dp),
+                thickness = 1.dp,
                 color = BlueGray70
             )
 
@@ -132,8 +145,9 @@ fun TermsAgreementScreen(
                 }
             } else {
                 LazyColumn(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 24.dp)
                 ) {
                     items(state.termsItems) { item ->
                         TermsItemRow(
@@ -141,7 +155,7 @@ fun TermsAgreementScreen(
                             onCheckedChange = {
                                 onEvent(TermsAgreementContract.Event.ToggleTermItem(item.id))
                             },
-                            onViewDetail = {
+                            onArrowClick = {
                                 onEvent(TermsAgreementContract.Event.ViewTermsDetail(item))
                             }
                         )
@@ -155,21 +169,24 @@ fun TermsAgreementScreen(
                     text = error,
                     color = Color.Red,
                     fontSize = 14.sp,
-                    modifier = Modifier.padding(vertical = 8.dp)
+                    modifier = Modifier
+                        .padding(horizontal = 24.dp)
+                        .padding(vertical = 8.dp)
                 )
             }
 
-            // 동의하고 시작하기 버튼
+            // 다음 버튼
             Button(
                 onClick = { onEvent(TermsAgreementContract.Event.ProceedClicked) },
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
                     .padding(bottom = 40.dp)
                     .height(56.dp),
                 shape = RoundedCornerShape(71.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = if (state.canProceed) Primary else BlueGray70,
-                    disabledContainerColor = BlueGray70
+                    containerColor = if (state.canProceed) Primary else ButtonDisabled,
+                    disabledContainerColor = ButtonDisabled
                 ),
                 enabled = state.canProceed && !state.isLoading
             ) {
@@ -181,8 +198,8 @@ fun TermsAgreementScreen(
                     )
                 } else {
                     Text(
-                        text = "동의하고 시작하기",
-                        color = if (state.canProceed) Color.Black else BlueGray40,
+                        text = "다음",
+                        color = if (state.canProceed) ButtonTextDisabled else ButtonTextDisabled,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -193,89 +210,117 @@ fun TermsAgreementScreen(
 }
 
 @Composable
+private fun TopNavigationBar(
+    onBackClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(56.dp)
+            .background(BlueGray90)
+    ) {
+        IconButton(
+            onClick = onBackClick,
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .padding(start = 12.dp)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_arrow_back),
+                contentDescription = "뒤로가기",
+                tint = BlueGrayWhite,
+                modifier = Modifier.size(24.dp)
+            )
+        }
+    }
+}
+
+@Composable
 private fun AllAgreeRow(
     isChecked: Boolean,
     onCheckedChange: () -> Unit,
+    onArrowClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .clickable { onCheckedChange() }
-            .padding(vertical = 8.dp),
+            .padding(vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Checkbox(
-            checked = isChecked,
-            onCheckedChange = { onCheckedChange() },
-            colors = CheckboxDefaults.colors(
-                checkedColor = Primary,
-                uncheckedColor = BlueGray40,
-                checkmarkColor = Color.Black
-            )
+        Icon(
+            painter = painterResource(
+                id = if (isChecked) R.drawable.ic_check_on else R.drawable.ic_check_off
+            ),
+            contentDescription = if (isChecked) "선택됨" else "선택 안됨",
+            tint = Color.Unspecified,
+            modifier = Modifier.size(24.dp)
         )
-        Spacer(modifier = Modifier.width(12.dp))
+        Spacer(modifier = Modifier.width(16.dp))
         Text(
-            text = "전체 동의",
+            text = "약관에 모두 동의합니다.",
             color = BlueGrayWhite,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.SemiBold
+            fontSize = 16.sp,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.weight(1f)
+        )
+        Icon(
+            painter = painterResource(id = R.drawable.ic_arrow_right),
+            contentDescription = "상세보기",
+            tint = BlueGrayWhite,
+            modifier = Modifier
+                .size(24.dp)
+                .clickable { onArrowClick() }
         )
     }
 }
 
 @Composable
 private fun TermsItemRow(
-    item: TermsItem,
+    item: TermsItemUiModel,
     onCheckedChange: () -> Unit,
-    onViewDetail: () -> Unit,
+    onArrowClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
             .clickable { onCheckedChange() }
-            .padding(vertical = 8.dp),
+            .padding(vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Checkbox(
-            checked = item.isAgreed,
-            onCheckedChange = { onCheckedChange() },
-            colors = CheckboxDefaults.colors(
-                checkedColor = Primary,
-                uncheckedColor = BlueGray40,
-                checkmarkColor = Color.Black
-            )
+        Icon(
+            painter = painterResource(
+                id = if (item.isAgreed) R.drawable.ic_check_on else R.drawable.ic_check_off
+            ),
+            contentDescription = if (item.isAgreed) "동의함" else "동의 안함",
+            tint = Color.Unspecified,
+            modifier = Modifier.size(24.dp)
         )
-        Spacer(modifier = Modifier.width(12.dp))
-
-        // 필수/선택 태그
+        Spacer(modifier = Modifier.width(16.dp))
         Text(
-            text = if (item.isRequired) "[필수]" else "[선택]",
-            color = if (item.isRequired) Primary else BlueGray40,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Medium
-        )
-        Spacer(modifier = Modifier.width(4.dp))
-
-        // 약관 제목
-        Text(
-            text = item.title,
+            text = buildTermsTitle(item.title, item.required),
             color = BlueGrayWhite,
-            fontSize = 14.sp,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Normal,
             modifier = Modifier.weight(1f)
         )
-
-        // 상세보기 버튼
-        if (item.detailUrl != null) {
-            Text(
-                text = "보기",
-                color = BlueGray40,
-                fontSize = 14.sp,
-                modifier = Modifier.clickable { onViewDetail() }
-            )
-        }
+        Icon(
+            painter = painterResource(id = R.drawable.ic_arrow_right),
+            contentDescription = "상세보기",
+            tint = BlueGrayWhite,
+            modifier = Modifier
+                .size(24.dp)
+                .clickable { onArrowClick() }
+        )
     }
+}
+
+private fun buildTermsTitle(title: String, required: Boolean): String {
+    val suffix = if (required) " (필수)" else " (선택)"
+    return "$title$suffix"
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFF17191C)
@@ -284,11 +329,13 @@ private fun TermsAgreementScreenPreview() {
     RunnersHiTheme {
         TermsAgreementScreen(
             state = TermsAgreementContract.State(
+                isLoading = false,
                 termsItems = listOf(
-                    TermsItem("1", "서비스 이용약관", true, false, "https://example.com"),
-                    TermsItem("2", "개인정보 처리방침", true, false, "https://example.com"),
-                    TermsItem("3", "위치정보 이용약관", true, false, "https://example.com"),
-                    TermsItem("4", "마케팅 정보 수신 동의", false, false, "https://example.com")
+                    TermsItemUiModel("1", "서비스 이용약관 동의", "https://example.com", true, false),
+                    TermsItemUiModel("2", "개인정보 수집 및 이용 동의", "https://example.com", true, false),
+                    TermsItemUiModel("3", "마케팅 정보 수신 동의", "https://example.com", false, false),
+                    TermsItemUiModel("4", "SNS 수신 동의", "https://example.com", false, false),
+                    TermsItemUiModel("5", "만 14세 이상입니다", "https://example.com", true, false)
                 )
             ),
             onEvent = {}
@@ -302,13 +349,15 @@ private fun TermsAgreementScreenAllAgreedPreview() {
     RunnersHiTheme {
         TermsAgreementScreen(
             state = TermsAgreementContract.State(
+                isLoading = false,
                 allAgreed = true,
                 canProceed = true,
                 termsItems = listOf(
-                    TermsItem("1", "서비스 이용약관", true, true, "https://example.com"),
-                    TermsItem("2", "개인정보 처리방침", true, true, "https://example.com"),
-                    TermsItem("3", "위치정보 이용약관", true, true, "https://example.com"),
-                    TermsItem("4", "마케팅 정보 수신 동의", false, true, "https://example.com")
+                    TermsItemUiModel("1", "서비스 이용약관 동의", "https://example.com", true, true),
+                    TermsItemUiModel("2", "개인정보 수집 및 이용 동의", "https://example.com", true, true),
+                    TermsItemUiModel("3", "마케팅 정보 수신 동의", "https://example.com", false, true),
+                    TermsItemUiModel("4", "SNS 수신 동의", "https://example.com", false, true),
+                    TermsItemUiModel("5", "만 14세 이상입니다", "https://example.com", true, true)
                 )
             ),
             onEvent = {}
