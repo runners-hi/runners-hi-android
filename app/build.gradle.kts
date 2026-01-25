@@ -65,6 +65,8 @@ dependencies {
     implementation(project(":domain:terms:impl"))
     implementation(project(":domain:region:api"))
     implementation(project(":domain:region:impl"))
+    implementation(project(":domain:home:api"))
+    implementation(project(":domain:home:impl"))
 
     // Data modules
     implementation(project(":data:splash:api"))
@@ -79,6 +81,8 @@ dependencies {
     implementation(project(":data:terms:impl"))
     implementation(project(":data:region:api"))
     implementation(project(":data:region:impl"))
+    implementation(project(":data:home:api"))
+    implementation(project(":data:home:impl"))
 
     // Presentation modules
     implementation(project(":presentation:common"))

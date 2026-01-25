@@ -14,7 +14,7 @@ import com.runnersHi.auth.AppleLoginHandler
 import com.runnersHi.auth.KakaoLoginHandler
 import com.runnersHi.presentation.launcher.LauncherRoute
 import com.runnersHi.presentation.login.LoginContentImpl
-import com.runnersHi.presentation.main.MainScreen
+import com.runnersHi.presentation.main.MainRoute
 import com.runnersHi.presentation.splash.SplashContentImpl
 import com.runnersHi.presentation.terms.TermsAgreementRoute
 import com.runnersHi.presentation.region.RegionSelectionRoute
@@ -67,7 +67,7 @@ fun RunnersHiNavHost() {
                 )
             }
             is Screen.Main -> {
-                MainScreen()
+                MainRoute()
             }
         }
     }

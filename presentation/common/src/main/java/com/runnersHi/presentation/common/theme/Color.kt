@@ -22,7 +22,9 @@ val BlueGray5 = Color(0xFFF1F2F4)
 val BlueGrayWhite = Color(0xFFFFFFFF)
 
 // Primary Palette
-val Primary = Color(0xFF00EEFF)
+val Primary = Color(0xFFF5FF66)         // 메인 컬러 (Yellow)
+val PrimaryCyan = Color(0xFF00EEFF)     // 시안 컬러
+val PrimaryRed = Color(0xFFFF6363)      // 빨강 컬러
 val PrimarySecondary = Color(0xFF255860)
 
 // ============================================

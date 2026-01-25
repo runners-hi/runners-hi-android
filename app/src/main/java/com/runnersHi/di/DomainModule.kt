@@ -12,6 +12,8 @@ import com.runnersHi.domain.terms.AgreeTermsUseCaseImpl
 import com.runnersHi.domain.terms.GetTermsListUseCaseImpl
 import com.runnersHi.domain.terms.usecase.AgreeTermsUseCase
 import com.runnersHi.domain.terms.usecase.GetTermsListUseCase
+import com.runnersHi.domain.home.GetHomeDataUseCaseImpl
+import com.runnersHi.domain.home.usecase.GetHomeDataUseCase
 import com.runnersHi.domain.region.SearchRegionsUseCaseImpl
 import com.runnersHi.domain.region.SelectRegionUseCaseImpl
 import com.runnersHi.domain.region.usecase.SearchRegionsUseCase
@@ -71,4 +73,9 @@ abstract class DomainModule {
     abstract fun bindSelectRegionUseCase(
         impl: SelectRegionUseCaseImpl
     ): SelectRegionUseCase
+
+    @Binds
+    abstract fun bindGetHomeDataUseCase(
+        impl: GetHomeDataUseCaseImpl
+    ): GetHomeDataUseCase
 }

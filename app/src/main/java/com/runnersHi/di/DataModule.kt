@@ -16,6 +16,9 @@ import com.runnersHi.data.splash.MockAppConfigRemoteDataSource
 import com.runnersHi.data.terms.MockTermsDataSource
 import com.runnersHi.data.terms.TermsRemoteDataSource
 import com.runnersHi.data.terms.TermsRepositoryImpl
+import com.runnersHi.data.home.HomeDataSource
+import com.runnersHi.data.home.HomeRepositoryImpl
+import com.runnersHi.data.home.MockHomeDataSource
 import com.runnersHi.data.region.MockRegionDataSource
 import com.runnersHi.data.region.RegionRemoteDataSource
 import com.runnersHi.data.region.RegionRepositoryImpl
@@ -28,6 +31,7 @@ import com.runnersHi.domain.auth.repository.AuthRepository
 import com.runnersHi.domain.ranking.repository.RankingRepository
 import com.runnersHi.domain.splash.repository.AppConfigRepository
 import com.runnersHi.domain.terms.repository.TermsRepository
+import com.runnersHi.domain.home.repository.HomeRepository
 import com.runnersHi.domain.region.repository.RegionRepository
 import com.runnersHi.domain.user.repository.UserRepository
 import dagger.Binds
@@ -138,4 +142,18 @@ abstract class DataModule {
     abstract fun bindRegionRepository(
         impl: RegionRepositoryImpl
     ): RegionRepository
+
+    // DataSources - Home
+    @Binds
+    @Singleton
+    abstract fun bindHomeDataSource(
+        impl: MockHomeDataSource
+    ): HomeDataSource
+
+    // Repositories - Home
+    @Binds
+    @Singleton
+    abstract fun bindHomeRepository(
+        impl: HomeRepositoryImpl
+    ): HomeRepository
 }
