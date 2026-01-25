@@ -224,43 +224,43 @@ fun searchRegions(query: String): List<Region> {
 ## 구현 체크리스트
 
 ### Data Layer
-- [ ] RegionRemoteDataSource 구현 (Mock)
-- [ ] RegionRepositoryImpl 구현
+- [x] RegionRemoteDataSource 구현 (Mock)
+- [x] RegionRepositoryImpl 구현
 
 ### Domain Layer
-- [ ] Region 모델 정의
-- [ ] RegionRepository 인터페이스 정의
-- [ ] SearchRegionsUseCase 구현
-- [ ] SelectRegionUseCase 구현
+- [x] Region 모델 정의
+- [x] RegionRepository 인터페이스 정의
+- [x] SearchRegionsUseCase 구현
+- [x] SelectRegionUseCase 구현
 
 ### Presentation Layer
-- [ ] RegionSelectionContract 구현
-- [ ] RegionSelectionViewModel 구현
-- [ ] RegionSelectionScreen 구현
-- [ ] Debounce 300ms 적용
-- [ ] 초기 상태 (결과 숨김) 처리
-- [ ] 검색 결과 리스트 UI
-- [ ] 지역 선택 후 Main 이동
+- [x] RegionSelectionContract 구현
+- [x] RegionSelectionViewModel 구현
+- [x] RegionSelectionScreen 구현
+- [x] Debounce 300ms 적용
+- [x] 초기 상태 (결과 숨김) 처리
+- [x] 검색 결과 리스트 UI
+- [x] 지역 선택 후 Main 이동
 
 ### UX 개선
-- [ ] 검색어 하이라이팅 (매칭 부분 Primary 색상)
-- [ ] 검색 취소 버튼 (X) - 검색어 있을 때만 표시
-- [ ] 키보드 자동 닫힘 (결과 클릭 시)
-- [ ] 로딩 인디케이터 (검색 중)
+- [x] 검색어 하이라이팅 (매칭 부분 Primary 색상)
+- [x] 검색 취소 버튼 (X) - 검색어 있을 때만 표시
+- [x] 키보드 자동 닫힘 (결과 클릭 시)
+- [x] 로딩 인디케이터 (검색 중)
 
 ### 빈 상태 처리
-- [ ] 검색 결과 없음 메시지 ("검색 결과가 없습니다")
+- [x] 검색 결과 없음 메시지 ("검색 결과가 없습니다")
 
 ### 에러 처리
-- [ ] 네트워크 에러 메시지 + 재시도 버튼
-- [ ] 선택 API 실패 시 토스트 메시지
+- [x] 네트워크 에러 메시지 + 재시도 버튼
+- [x] 선택 API 실패 시 토스트 메시지
 
 ### 테스트
-- [ ] 초기 진입 시 결과 없음 확인
-- [ ] Debounce 동작 확인
-- [ ] 검색 API 호출 확인
-- [ ] 검색어 하이라이팅 확인
-- [ ] 검색 결과 없음 UI 확인
-- [ ] 재시도 버튼 동작 확인
-- [ ] 지역 선택 API 호출 확인
-- [ ] Main 화면 이동 확인
+- [x] 초기 진입 시 결과 없음 확인
+- [x] Debounce 동작 확인
+- [x] 검색 API 호출 확인
+- [x] 검색어 하이라이팅 확인
+- [x] 검색 결과 없음 UI 확인
+- [x] 재시도 버튼 동작 확인
+- [x] 지역 선택 API 호출 확인
+- [x] Main 화면 이동 확인
