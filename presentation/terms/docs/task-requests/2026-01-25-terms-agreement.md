@@ -119,25 +119,25 @@ class AgreeTermsUseCase(private val repository: TermsRepository) {
 ## 구현 체크리스트
 
 ### Data Layer
-- [ ] TermsRemoteDataSource 구현
-- [ ] TermsRepositoryImpl 구현
-- [ ] API Response DTO 정의
+- [x] TermsRemoteDataSource 구현 → MockTermsDataSource
+- [x] TermsRepositoryImpl 구현
+- [x] API Response DTO 정의 → Mock으로 대체
 
 ### Domain Layer
-- [ ] TermsItem 모델 정의
-- [ ] TermsRepository 인터페이스 정의
-- [ ] GetTermsListUseCase 구현
-- [ ] AgreeTermsUseCase 구현
+- [x] TermsItem 모델 정의
+- [x] TermsRepository 인터페이스 정의
+- [x] GetTermsListUseCase 구현
+- [x] AgreeTermsUseCase 구현
 
 ### Presentation Layer
-- [ ] TermsAgreementContract 수정 (서버 데이터 기반)
-- [ ] TermsAgreementViewModel 수정
-- [ ] TermsAgreementScreen 수정
-- [ ] 로딩/에러 상태 처리
-- [ ] 웹뷰 연동
+- [x] TermsAgreementContract 수정 (서버 데이터 기반)
+- [x] TermsAgreementViewModel 수정
+- [x] TermsAgreementScreen 수정
+- [x] 로딩/에러 상태 처리
+- [x] 웹뷰 연동
 
 ### 테스트
-- [ ] 필수 약관 미동의 시 버튼 비활성화 확인
-- [ ] 전체 동의 로직 확인
-- [ ] 약관 상세 웹뷰 이동 확인
-- [ ] API 에러 처리 확인
+- [x] 필수 약관 미동의 시 버튼 비활성화 확인
+- [x] 전체 동의 로직 확인
+- [x] 약관 상세 웹뷰 이동 확인
+- [x] API 에러 처리 확인
