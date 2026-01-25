@@ -89,15 +89,35 @@ workLog/
 
 ## 작업 요청서 규칙
 
-### 파일 구조
+### 파일 구조 (모듈별 관리)
 ```
+presentation/<모듈>/docs/
+├── task-requests/           # 일반 작업 요청서
+│   └── YYYY-MM-DD-작업명.md
+└── design-requests/         # 디자인 작업 요청서
+    └── YYYY-MM-DD-작업명.md
+
 docs/
 ├── DESIGN_REQUEST_TEMPLATE.md    # 디자인 작업 템플릿
 ├── TASK_REQUEST_TEMPLATE.md      # 일반 작업 템플릿
-├── design-requests/              # 디자인 작업 요청서
-│   └── YYYY-MM-DD-작업명.md
-└── task-requests/                # 일반 작업 요청서
-    └── YYYY-MM-DD-작업명.md
+└── shared/                       # 공통 문서
+```
+
+예시:
+- `presentation/splash/docs/task-requests/` - 스플래시 관련 요청서
+- `presentation/login/docs/task-requests/` - 로그인 관련 요청서
+- `presentation/terms/docs/task-requests/` - 약관 관련 요청서
+
+### 요청서 생성 시 (필수)
+**작업 요청서 생성 요청 시, 반드시 대상 모듈을 사용자에게 확인**
+
+```
+"이 작업은 어떤 모듈에 해당하나요?"
+- presentation/splash
+- presentation/login
+- presentation/terms
+- presentation/home
+- 기타 (직접 입력)
 ```
 
 ### 디자인 작업 요청서 (Figma 링크 제공 시)
