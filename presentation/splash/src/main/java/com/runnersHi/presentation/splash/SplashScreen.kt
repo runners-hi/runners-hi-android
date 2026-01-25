@@ -19,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -102,32 +103,46 @@ private fun RunnersHiLogo(
     Canvas(modifier = modifier) {
         val width = size.width
         val height = size.height
-        val strokeWidth = width * 0.04f
+        val strokeWidth = width * 0.035f
 
-        // 바깥쪽 트랙 (타원형)
-        val outerPadding = width * 0.1f
-        drawOval(
+        // 로고 영역 (상하 16% 패딩)
+        val logoTop = height * 0.16f
+        val logoBottom = height * 0.84f
+        val logoHeight = logoBottom - logoTop
+
+        // 바깥쪽 트랙 (스타디움/캡슐 형태)
+        val outerCornerRadius = logoHeight * 0.5f
+        drawRoundRect(
             color = Primary,
-            topLeft = Offset(outerPadding, height * 0.25f),
-            size = Size(width - outerPadding * 2, height * 0.5f),
+            topLeft = Offset(0f, logoTop),
+            size = Size(width, logoHeight),
+            cornerRadius = CornerRadius(outerCornerRadius, outerCornerRadius),
             style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
         )
 
         // 중간 트랙
-        val middlePadding = width * 0.18f
-        drawOval(
+        val middlePadding = width * 0.1f
+        val middleTopPadding = logoHeight * 0.15f
+        val middleHeight = logoHeight - middleTopPadding * 2
+        val middleCornerRadius = middleHeight * 0.5f
+        drawRoundRect(
             color = Primary,
-            topLeft = Offset(middlePadding, height * 0.32f),
-            size = Size(width - middlePadding * 2, height * 0.36f),
+            topLeft = Offset(middlePadding, logoTop + middleTopPadding),
+            size = Size(width - middlePadding * 2, middleHeight),
+            cornerRadius = CornerRadius(middleCornerRadius, middleCornerRadius),
             style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
         )
 
-        // 안쪽 채워진 타원
-        val innerPadding = width * 0.28f
-        drawOval(
+        // 안쪽 채워진 캡슐
+        val innerPadding = width * 0.22f
+        val innerTopPadding = logoHeight * 0.32f
+        val innerHeight = logoHeight - innerTopPadding * 2
+        val innerCornerRadius = innerHeight * 0.5f
+        drawRoundRect(
             color = Primary,
-            topLeft = Offset(innerPadding, height * 0.38f),
-            size = Size(width - innerPadding * 2, height * 0.24f)
+            topLeft = Offset(innerPadding, logoTop + innerTopPadding),
+            size = Size(width - innerPadding * 2, innerHeight),
+            cornerRadius = CornerRadius(innerCornerRadius, innerCornerRadius)
         )
     }
 }
