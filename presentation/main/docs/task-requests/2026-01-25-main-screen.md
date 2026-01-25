@@ -589,18 +589,18 @@ fun onHealthPermissionResult(granted: Boolean) {
 - [x] `data:home:api` 모듈 생성
 - [x] `data:home:impl` 모듈 생성
 - [x] `settings.gradle.kts` 업데이트
-- [ ] `domain:health:api` 모듈 생성 (Health Connect)
-- [ ] `domain:health:impl` 모듈 생성
-- [ ] `data:health:api` 모듈 생성
-- [ ] `data:health:impl` 모듈 생성
+- [x] `domain:health:api` 모듈 생성 (Health Connect)
+- [x] `domain:health:impl` 모듈 생성
+- [x] `data:health:api` 모듈 생성
+- [x] `data:health:impl` 모듈 생성
 
 ### Data Layer (data:home)
 - [x] HomeRemoteDataSource 구현 (Mock)
 - [x] HomeRepositoryImpl 구현
 
 ### Data Layer (data:health)
-- [ ] HealthDataSource 인터페이스 정의
-- [ ] HealthConnectDataSource 구현
+- [x] HealthDataSource 인터페이스 정의
+- [x] HealthConnectDataSource 구현
 - [ ] MockHealthDataSource 구현
 
 ### Domain Layer (domain:home)
@@ -610,9 +610,11 @@ fun onHealthPermissionResult(granted: Boolean) {
 - [x] GetHomeDataUseCase 구현
 
 ### Domain Layer (domain:health)
-- [ ] ExerciseData, DailyExerciseData 모델 정의
-- [ ] HealthRepository 인터페이스 정의
-- [ ] SyncHealthDataUseCase 구현
+- [x] ExerciseRecord, HealthPermissionStatus 모델 정의
+- [x] HealthRepository 인터페이스 정의
+- [x] CheckHealthPermissionUseCase 구현
+- [x] GetTodayRunningDataUseCase 구현
+- [x] GetWeekRunningDataUseCase 구현
 
 ### Presentation Layer (presentation:main)
 - [x] MainContract 구현 (State, Event, Effect)
@@ -627,36 +629,36 @@ fun onHealthPermissionResult(granted: Boolean) {
 - [x] MissionEventSection (배너, 미션 그리드)
 
 ### Tier Info Bottom Sheet
-- [ ] TierInfoBottomSheet 컴포넌트 구현
-- [ ] 딤(Dim) 배경 처리
-- [ ] 드래그 핸들 인디케이터
-- [ ] 현재 티어 정보 표시
-- [ ] 티어 목록 카드 (5가지 티어)
-- [ ] 티어 안내 문구 (bullet list)
-- [ ] State 확장 (showTierInfoSheet, tierGuideList)
-- [ ] Event 추가 (TierArrowClicked, TierSheetDismissed)
+- [x] TierInfoBottomSheet 컴포넌트 구현
+- [x] 딤(Dim) 배경 처리
+- [x] 드래그 핸들 인디케이터
+- [x] 현재 티어 정보 표시
+- [x] 티어 목록 카드 (5가지 티어)
+- [x] 티어 안내 문구 (bullet list)
+- [x] State 확장 (showTierInfoSheet, tierGuideList)
+- [x] Event 추가 (TierArrowClicked, TierSheetDismissed)
 
 ### Empty State (빈 데이터 상태)
-- [ ] TodaysRunEmptyContent 컴포넌트
-- [ ] ThisWeekEmptyContent 컴포넌트
-- [ ] State 확장 (isEmptyState)
-- [ ] 데이터 유무에 따른 UI 분기 처리
+- [x] TodaysRunEmptyContent 컴포넌트
+- [x] ThisWeekEmptyContent 컴포넌트
+- [x] State 확장 (isEmptyState)
+- [x] 데이터 유무에 따른 UI 분기 처리
 - [ ] 빈 상태 일러스트 에셋
 
 ### Health Connect 연동
-- [ ] build.gradle.kts에 health-connect 의존성 추가
-- [ ] AndroidManifest.xml에 권한 선언
-- [ ] 권한 요청 다이얼로그 구현
-- [ ] HealthConnectDataSource 구현
-- [ ] 메인 화면 진입 시 권한 요청 로직
+- [x] build.gradle.kts에 health-connect 의존성 추가
+- [x] AndroidManifest.xml에 권한 선언
+- [x] 권한 요청 다이얼로그 구현
+- [x] HealthConnectDataSource 구현
+- [x] 메인 화면 진입 시 권한 요청 로직
 
 ### 공통 컴포넌트 (presentation:common)
-- [ ] BottomNavigationBar (5개 탭) - 공통 컴포넌트로 분리
+- [x] BottomNavigationBar (5개 탭) - 공통 컴포넌트로 분리
 
 ### 상태 처리
 - [x] 로딩 상태 UI
 - [x] 에러 상태 UI
-- [ ] 빈 데이터 상태 UI
+- [x] 빈 데이터 상태 UI
 
 ### 테스트
 - [x] init API 호출 확인
@@ -666,6 +668,6 @@ fun onHealthPermissionResult(granted: Boolean) {
 - [x] This Week 요일별 하이라이트 확인
 - [x] 미션 이벤트 완료/미완료 상태 확인
 - [x] 바텀 네비게이션 동작 확인
-- [ ] Tier Info 바텀시트 동작 확인
-- [ ] Empty State 표시 확인
-- [ ] Health Connect 권한 요청 확인
+- [x] Tier Info 바텀시트 동작 확인
+- [x] Empty State 표시 확인
+- [x] Health Connect 권한 요청 확인
