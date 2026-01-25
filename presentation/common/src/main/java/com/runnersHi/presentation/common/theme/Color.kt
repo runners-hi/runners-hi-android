@@ -22,10 +22,14 @@ val BlueGray5 = Color(0xFFF1F2F4)
 val BlueGrayWhite = Color(0xFFFFFFFF)
 
 // Primary Palette
-val Primary = Color(0xFFF5FF66)         // 메인 컬러 (Yellow)
-val PrimaryCyan = Color(0xFF00EEFF)     // 시안 컬러
+val Primary = Color(0xFF00EEFF)         // 메인 컬러 (Cyan)
+val PrimaryYellow = Color(0xFFF5FF66)   // 노랑 컬러 (Gold tier 등)
 val PrimaryRed = Color(0xFFFF6363)      // 빨강 컬러
 val PrimarySecondary = Color(0xFF255860)
+
+// Deprecated alias
+@Deprecated("Use Primary instead", ReplaceWith("Primary"))
+val PrimaryCyan = Primary               // 기존 PrimaryCyan 사용처 호환
 
 // ============================================
 // Semantic Aliases (용도별 컬러)

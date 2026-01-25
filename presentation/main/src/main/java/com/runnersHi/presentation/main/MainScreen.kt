@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -52,8 +53,8 @@ import com.runnersHi.presentation.common.theme.BlueGray70
 import com.runnersHi.presentation.common.theme.BlueGray80
 import com.runnersHi.presentation.common.theme.BlueGray90
 import com.runnersHi.presentation.common.theme.Primary
-import com.runnersHi.presentation.common.theme.PrimaryCyan
 import com.runnersHi.presentation.common.theme.PrimaryRed
+import com.runnersHi.presentation.common.theme.PrimaryYellow
 import com.runnersHi.presentation.common.theme.RunnersHiTheme
 import kotlinx.coroutines.launch
 
@@ -357,15 +358,17 @@ private fun TierCard(
                 }
                 Box(
                     modifier = Modifier
-                        .size(40.dp)
-                        .clip(RoundedCornerShape(20.dp))
+                        .size(24.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(BlueGray70)
                         .clickable(onClick = onArrowClick),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = ">",
-                        color = TextPrimary,
-                        fontSize = 24.sp
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = "티어 정보",
+                        tint = TextPrimary,
+                        modifier = Modifier.size(20.dp)
                     )
                 }
             }
@@ -445,7 +448,7 @@ private fun TodaysRunCard(
             ) {
                 RunDataItem(
                     icon = "🏃",
-                    iconBackgroundColor = PrimaryCyan.copy(alpha = 0.2f),
+                    iconBackgroundColor = Primary.copy(alpha = 0.2f),
                     value = todaysRun.distance,
                     label = "Distance",
                     modifier = Modifier.weight(1f)
@@ -459,7 +462,7 @@ private fun TodaysRunCard(
                 )
                 RunDataItem(
                     icon = "⏱",
-                    iconBackgroundColor = Primary.copy(alpha = 0.2f),
+                    iconBackgroundColor = PrimaryYellow.copy(alpha = 0.2f),
                     value = todaysRun.time,
                     label = "Time",
                     modifier = Modifier.weight(1f)
@@ -559,27 +562,36 @@ private fun DayIndicator(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier
-            .width(30.dp)
-            .height(40.dp)
-            .clip(RoundedCornerShape(15.dp))
-            .background(
-                if (day.hasRun) DayActiveBackground
-                else Color(0x33ABB1BA)
-            ),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = day.label,
-            color = if (day.hasRun) PrimaryCyan else TextTertiary,
-            fontSize = 14.sp
-        )
+        // Pill with day letter only
+        Box(
+            modifier = Modifier
+                .width(30.dp)
+                .height(40.dp)
+                .clip(RoundedCornerShape(100.dp))
+                .background(
+                    if (day.hasRun) DayActiveBackground
+                    else Color(0x33ABB1BA)
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = day.label,
+                color = if (day.hasRun) Primary else TextTertiary,
+                fontSize = 14.sp
+            )
+        }
+        // Distance below pill (only if hasRun)
         if (day.hasRun && day.distance != null) {
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = day.distance,
                 color = TextSecondary,
-                fontSize = 12.sp
+                fontSize = 14.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.width(30.dp)
             )
         }
     }
@@ -1054,9 +1066,9 @@ private fun Tier.toProgressColor(): Color {
     return when (this) {
         Tier.BRONZE -> Color(0xFFFF6B35)
         Tier.SILVER -> Color(0xFFA8B4C4)
-        Tier.GOLD -> Primary
+        Tier.GOLD -> PrimaryYellow
         Tier.PLATINUM -> Color(0xFF4ADE80)
-        Tier.DIAMOND -> PrimaryCyan
+        Tier.DIAMOND -> Primary
     }
 }
 
