@@ -20,9 +20,7 @@ import com.runnersHi.screen.MainScreen
  * 앱 전체 네비게이션 호스트
  */
 @Composable
-fun RunnersHiNavHost(
-    onOpenPlayStore: () -> Unit
-) {
+fun RunnersHiNavHost() {
     var currentScreen by remember { mutableStateOf<Screen>(Screen.Splash) }
 
     AnimatedContent(
@@ -62,8 +60,7 @@ fun RunnersHiNavHost(
                     },
                     onNavigateToHome = {
                         currentScreen = Screen.Main
-                    },
-                    onOpenPlayStore = onOpenPlayStore
+                    }
                 )
             }
             is Screen.Login -> {

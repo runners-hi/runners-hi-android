@@ -1,5 +1,7 @@
 package com.runnersHi.presentation.splash
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -20,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,19 +43,25 @@ fun SplashRoute(
     viewModel: SplashViewModel,
     currentVersion: String,
     onNavigateToLogin: () -> Unit,
-    onNavigateToHome: () -> Unit,
-    onOpenPlayStore: () -> Unit
+    onNavigateToHome: () -> Unit
 ) {
     val state by viewModel.collectState()
+    val context = LocalContext.current
 
     // Effect 처리
     viewModel.collectEffect { effect ->
         when (effect) {
             is SplashContract.Effect.NavigateToLogin -> onNavigateToLogin()
             is SplashContract.Effect.NavigateToHome -> onNavigateToHome()
-            is SplashContract.Effect.OpenPlayStore -> onOpenPlayStore()
+            is SplashContract.Effect.OpenPlayStore -> {
+                val intent = Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("market://details?id=${context.packageName}")
+                )
+                context.startActivity(intent)
+            }
             is SplashContract.Effect.ShowToast -> {
-                // Toast 처리
+                // TODO: Toast 처리
             }
         }
     }
