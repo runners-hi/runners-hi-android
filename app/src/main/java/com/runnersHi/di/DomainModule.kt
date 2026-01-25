@@ -12,6 +12,12 @@ import com.runnersHi.domain.terms.AgreeTermsUseCaseImpl
 import com.runnersHi.domain.terms.GetTermsListUseCaseImpl
 import com.runnersHi.domain.terms.usecase.AgreeTermsUseCase
 import com.runnersHi.domain.terms.usecase.GetTermsListUseCase
+import com.runnersHi.domain.health.CheckHealthPermissionUseCaseImpl
+import com.runnersHi.domain.health.GetTodayRunningDataUseCaseImpl
+import com.runnersHi.domain.health.GetWeekRunningDataUseCaseImpl
+import com.runnersHi.domain.health.usecase.CheckHealthPermissionUseCase
+import com.runnersHi.domain.health.usecase.GetTodayRunningDataUseCase
+import com.runnersHi.domain.health.usecase.GetWeekRunningDataUseCase
 import com.runnersHi.domain.home.GetHomeDataUseCaseImpl
 import com.runnersHi.domain.home.usecase.GetHomeDataUseCase
 import com.runnersHi.domain.region.SearchRegionsUseCaseImpl
@@ -78,4 +84,19 @@ abstract class DomainModule {
     abstract fun bindGetHomeDataUseCase(
         impl: GetHomeDataUseCaseImpl
     ): GetHomeDataUseCase
+
+    @Binds
+    abstract fun bindCheckHealthPermissionUseCase(
+        impl: CheckHealthPermissionUseCaseImpl
+    ): CheckHealthPermissionUseCase
+
+    @Binds
+    abstract fun bindGetTodayRunningDataUseCase(
+        impl: GetTodayRunningDataUseCaseImpl
+    ): GetTodayRunningDataUseCase
+
+    @Binds
+    abstract fun bindGetWeekRunningDataUseCase(
+        impl: GetWeekRunningDataUseCaseImpl
+    ): GetWeekRunningDataUseCase
 }

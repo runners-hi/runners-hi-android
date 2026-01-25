@@ -100,6 +100,15 @@ fun MainRoute(
             is MainContract.Effect.ShowToast -> {
                 // TODO: Show toast
             }
+            is MainContract.Effect.RequestHealthPermission -> {
+                // TODO: Request health permission via ActivityResultLauncher
+            }
+            is MainContract.Effect.OpenHealthConnectSettings -> {
+                // TODO: Open Health Connect settings
+            }
+            is MainContract.Effect.OpenPlayStoreForHealthConnect -> {
+                // TODO: Open Play Store for Health Connect
+            }
         }
     }
 

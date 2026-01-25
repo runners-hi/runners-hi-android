@@ -21,7 +21,11 @@ object MainContract {
         val isEmptyState: Boolean = false,
         // Tier Bottom Sheet
         val showTierInfoSheet: Boolean = false,
-        val tierGuideList: List<TierGuideItem> = defaultTierGuideList
+        val tierGuideList: List<TierGuideItem> = defaultTierGuideList,
+        // Health Connect
+        val healthConnectAvailable: Boolean = false,
+        val healthPermissionGranted: Boolean = false,
+        val needsHealthPermission: Boolean = false
     ) : UiState
 
     sealed interface Event : UiEvent {
@@ -34,6 +38,9 @@ object MainContract {
         data object MissionEventClicked : Event
         data class MissionItemClicked(val id: String) : Event
         data class BottomNavClicked(val tab: BottomNavTab) : Event
+        // Health Connect
+        data object CheckHealthPermission : Event
+        data class HealthPermissionResult(val granted: Boolean) : Event
     }
 
     sealed interface Effect : UiEffect {
@@ -42,6 +49,10 @@ object MainContract {
         data object NavigateToMissionEvent : Effect
         data class NavigateToMissionDetail(val id: String) : Effect
         data class ShowToast(val message: String) : Effect
+        // Health Connect
+        data object RequestHealthPermission : Effect
+        data object OpenHealthConnectSettings : Effect
+        data object OpenPlayStoreForHealthConnect : Effect
     }
 }
 

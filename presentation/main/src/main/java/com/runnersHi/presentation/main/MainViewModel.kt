@@ -1,6 +1,9 @@
 package com.runnersHi.presentation.main
 
 import androidx.lifecycle.viewModelScope
+import com.runnersHi.domain.health.usecase.CheckHealthPermissionUseCase
+import com.runnersHi.domain.health.usecase.GetTodayRunningDataUseCase
+import com.runnersHi.domain.health.usecase.GetWeekRunningDataUseCase
 import com.runnersHi.domain.home.model.DayOfWeek
 import com.runnersHi.domain.home.model.HomeData
 import com.runnersHi.domain.home.usecase.GetHomeDataUseCase
@@ -11,12 +14,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val getHomeDataUseCase: GetHomeDataUseCase
+    private val getHomeDataUseCase: GetHomeDataUseCase,
+    private val checkHealthPermissionUseCase: CheckHealthPermissionUseCase,
+    private val getTodayRunningDataUseCase: GetTodayRunningDataUseCase,
+    private val getWeekRunningDataUseCase: GetWeekRunningDataUseCase
 ) : MviViewModel<MainContract.State, MainContract.Event, MainContract.Effect>(
     MainContract.State()
 ) {
 
     init {
+        handleEvent(MainContract.Event.CheckHealthPermission)
         handleEvent(MainContract.Event.LoadData)
     }
 
@@ -45,6 +52,46 @@ class MainViewModel @Inject constructor(
             is MainContract.Event.BottomNavClicked -> {
                 updateState { copy(currentTab = event.tab) }
             }
+            is MainContract.Event.CheckHealthPermission -> {
+                checkHealthPermission()
+            }
+            is MainContract.Event.HealthPermissionResult -> {
+                handleHealthPermissionResult(event.granted)
+            }
+        }
+    }
+
+    private fun checkHealthPermission() {
+        viewModelScope.launch {
+            val status = checkHealthPermissionUseCase()
+            updateState {
+                copy(
+                    healthConnectAvailable = status.isAvailable,
+                    healthPermissionGranted = status.hasReadPermission,
+                    needsHealthPermission = status.needsPermissionRequest
+                )
+            }
+
+            if (status.needsPermissionRequest) {
+                sendEffect(MainContract.Effect.RequestHealthPermission)
+            } else if (!status.isAvailable) {
+                // Health Connect not available, show play store option
+                sendEffect(MainContract.Effect.OpenPlayStoreForHealthConnect)
+            }
+        }
+    }
+
+    private fun handleHealthPermissionResult(granted: Boolean) {
+        updateState {
+            copy(
+                healthPermissionGranted = granted,
+                needsHealthPermission = !granted
+            )
+        }
+
+        if (granted) {
+            // Reload data with health connect data
+            handleEvent(MainContract.Event.RefreshData)
         }
     }
 

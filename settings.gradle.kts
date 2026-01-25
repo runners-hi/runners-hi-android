@@ -40,6 +40,8 @@ include(":domain:region:api")
 include(":domain:region:impl")
 include(":domain:home:api")
 include(":domain:home:impl")
+include(":domain:health:api")
+include(":domain:health:impl")
 
 // Data modules
 include(":data:splash:api")
@@ -56,6 +58,8 @@ include(":data:region:api")
 include(":data:region:impl")
 include(":data:home:api")
 include(":data:home:impl")
+include(":data:health:api")
+include(":data:health:impl")
 
 // Presentation modules
 include(":presentation:splash:api")

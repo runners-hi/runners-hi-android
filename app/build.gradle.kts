@@ -67,6 +67,8 @@ dependencies {
     implementation(project(":domain:region:impl"))
     implementation(project(":domain:home:api"))
     implementation(project(":domain:home:impl"))
+    implementation(project(":domain:health:api"))
+    implementation(project(":domain:health:impl"))
 
     // Data modules
     implementation(project(":data:splash:api"))
@@ -83,6 +85,8 @@ dependencies {
     implementation(project(":data:region:impl"))
     implementation(project(":data:home:api"))
     implementation(project(":data:home:impl"))
+    implementation(project(":data:health:api"))
+    implementation(project(":data:health:impl"))
 
     // Presentation modules
     implementation(project(":presentation:common"))
@@ -119,4 +123,7 @@ dependencies {
     // Credentials (for Apple Sign In)
     implementation(libs.credentials)
     implementation(libs.credentials.play.services.auth)
+
+    // Health Connect
+    implementation(libs.health.connect)
 }
