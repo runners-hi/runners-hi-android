@@ -46,6 +46,7 @@ include(":data:ranking:impl")
 
 // Presentation modules
 include(":presentation:splash")
+include(":presentation:login")
 include(":presentation:main")
 include(":presentation:home")
 include(":presentation:common")

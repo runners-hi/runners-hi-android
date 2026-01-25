@@ -1,7 +1,9 @@
 package com.runnersHi.di
 
 import com.runnersHi.domain.auth.CheckLoginStatusUseCaseImpl
+import com.runnersHi.domain.auth.LoginWithSocialUseCaseImpl
 import com.runnersHi.domain.auth.usecase.CheckLoginStatusUseCase
+import com.runnersHi.domain.auth.usecase.LoginWithSocialUseCase
 import com.runnersHi.domain.ranking.GetWeeklyRankingUseCaseImpl
 import com.runnersHi.domain.ranking.usecase.GetWeeklyRankingUseCase
 import com.runnersHi.domain.splash.CheckAppVersionUseCaseImpl
@@ -26,6 +28,11 @@ abstract class DomainModule {
     abstract fun bindCheckLoginStatusUseCase(
         impl: CheckLoginStatusUseCaseImpl
     ): CheckLoginStatusUseCase
+
+    @Binds
+    abstract fun bindLoginWithSocialUseCase(
+        impl: LoginWithSocialUseCaseImpl
+    ): LoginWithSocialUseCase
 
     @Binds
     abstract fun bindGetCurrentUserUseCase(

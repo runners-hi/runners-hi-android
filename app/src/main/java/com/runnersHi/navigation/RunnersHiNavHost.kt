@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.runnersHi.presentation.login.LoginRoute
 import com.runnersHi.presentation.main.MainScreen
 import com.runnersHi.presentation.splash.SplashRoute
 import com.runnersHi.presentation.splash.SplashViewModel
@@ -55,8 +56,7 @@ fun RunnersHiNavHost() {
                     viewModel = viewModel,
                     currentVersion = "1.0.0", // TODO: BuildConfig.VERSION_NAME 사용
                     onNavigateToLogin = {
-                        // TODO: 로그인 화면 구현 후 Screen.Login으로 변경
-                        currentScreen = Screen.Main
+                        currentScreen = Screen.Login
                     },
                     onNavigateToHome = {
                         currentScreen = Screen.Main
@@ -64,9 +64,21 @@ fun RunnersHiNavHost() {
                 )
             }
             is Screen.Login -> {
-                // TODO: 로그인 화면 구현
-                // LoginRoute(...)
-                currentScreen = Screen.Main
+                LoginRoute(
+                    onNavigateToHome = {
+                        currentScreen = Screen.Main
+                    },
+                    onNavigateToOnboarding = {
+                        // TODO: 온보딩 화면 구현 후 연결
+                        currentScreen = Screen.Main
+                    },
+                    onKakaoLoginRequest = {
+                        // TODO: 카카오 SDK 연동
+                    },
+                    onAppleLoginRequest = {
+                        // TODO: Apple Sign In 연동
+                    }
+                )
             }
             is Screen.Main -> {
                 MainScreen()

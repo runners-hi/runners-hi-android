@@ -1,6 +1,8 @@
 package com.runnersHi.data.auth
 
 import com.runnersHi.domain.auth.model.AuthToken
+import com.runnersHi.domain.auth.model.SocialLoginType
+import com.runnersHi.domain.auth.usecase.LoginResult
 import kotlinx.coroutines.delay
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -44,6 +46,14 @@ class MockAuthRemoteDataSource @Inject constructor() : AuthRemoteDataSource {
             refreshToken = "new_refresh_token_${System.currentTimeMillis()}",
             expiresIn = 3600
         )
+    }
+
+    override suspend fun loginWithSocial(type: SocialLoginType, token: String): LoginResult {
+        // 네트워크 지연 시뮬레이션
+        delay(1000)
+
+        // Mock: 항상 성공 (기존 유저)
+        return LoginResult.Success
     }
 }
 
