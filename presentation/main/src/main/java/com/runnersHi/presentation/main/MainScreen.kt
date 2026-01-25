@@ -79,7 +79,10 @@ private val MissionCompletedBorder = Color(0xFFFFCB2F)
 
 @Composable
 fun MainRoute(
-    viewModel: MainViewModel = hiltViewModel()
+    viewModel: MainViewModel = hiltViewModel(),
+    onRequestHealthPermission: () -> Unit = {},
+    onOpenHealthConnectSettings: () -> Unit = {},
+    onOpenPlayStoreForHealthConnect: () -> Unit = {}
 ) {
     val state by viewModel.collectState()
 
@@ -101,13 +104,13 @@ fun MainRoute(
                 // TODO: Show toast
             }
             is MainContract.Effect.RequestHealthPermission -> {
-                // TODO: Request health permission via ActivityResultLauncher
+                onRequestHealthPermission()
             }
             is MainContract.Effect.OpenHealthConnectSettings -> {
-                // TODO: Open Health Connect settings
+                onOpenHealthConnectSettings()
             }
             is MainContract.Effect.OpenPlayStoreForHealthConnect -> {
-                // TODO: Open Play Store for Health Connect
+                onOpenPlayStoreForHealthConnect()
             }
         }
     }
