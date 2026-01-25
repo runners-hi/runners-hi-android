@@ -27,6 +27,12 @@ class MainViewModel @Inject constructor(
             is MainContract.Event.TierCardClicked -> {
                 sendEffect(MainContract.Effect.NavigateToTierDetail)
             }
+            is MainContract.Event.TierArrowClicked -> {
+                updateState { copy(showTierInfoSheet = true) }
+            }
+            is MainContract.Event.TierSheetDismissed -> {
+                updateState { copy(showTierInfoSheet = false) }
+            }
             is MainContract.Event.TodaysRunClicked -> {
                 sendEffect(MainContract.Effect.NavigateToTodaysRunDetail)
             }
@@ -51,9 +57,12 @@ class MainViewModel @Inject constructor(
 
             getHomeDataUseCase(mockToken)
                 .onSuccess { homeData ->
+                    val isEmpty = homeData.todaysRun.distanceKm == 0.0 &&
+                        homeData.thisWeek.totalDistanceKm == 0.0
                     updateState {
                         copy(
                             isLoading = false,
+                            isEmptyState = isEmpty,
                             tierInfo = homeData.toTierInfoUiModel(),
                             todaysRun = homeData.toTodaysRunUiModel(),
                             thisWeek = homeData.toThisWeekUiModel(),

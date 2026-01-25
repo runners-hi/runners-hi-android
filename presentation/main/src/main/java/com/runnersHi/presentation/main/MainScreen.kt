@@ -29,15 +29,19 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -59,6 +63,7 @@ import com.runnersHi.presentation.common.theme.Primary
 import com.runnersHi.presentation.common.theme.PrimaryCyan
 import com.runnersHi.presentation.common.theme.PrimaryRed
 import com.runnersHi.presentation.common.theme.RunnersHiTheme
+import kotlinx.coroutines.launch
 
 // Colors from design spec
 private val CardBackground = BlueGray80
@@ -104,12 +109,30 @@ fun MainRoute(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
     state: MainContract.State,
     onEvent: (MainContract.Event) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val scope = rememberCoroutineScope()
+
+    // Tier Info Bottom Sheet
+    if (state.showTierInfoSheet) {
+        TierInfoBottomSheet(
+            tierInfo = state.tierInfo,
+            tierGuideList = state.tierGuideList,
+            sheetState = sheetState,
+            onDismiss = {
+                scope.launch { sheetState.hide() }.invokeOnCompletion {
+                    onEvent(MainContract.Event.TierSheetDismissed)
+                }
+            }
+        )
+    }
+
     Scaffold(
         containerColor = BlueGray90,
         bottomBar = {
@@ -195,6 +218,7 @@ private fun HomeContent(
                 TierCard(
                     tierInfo = tierInfo,
                     onClick = { onEvent(MainContract.Event.TierCardClicked) },
+                    onArrowClick = { onEvent(MainContract.Event.TierArrowClicked) },
                     modifier = Modifier.padding(horizontal = 20.dp)
                 )
             }
@@ -202,26 +226,39 @@ private fun HomeContent(
 
         item { Spacer(modifier = Modifier.height(16.dp)) }
 
-        // Today's Run Card
+        // Today's Run Card (Empty State or Normal)
         item {
-            state.todaysRun?.let { todaysRun ->
-                TodaysRunCard(
-                    todaysRun = todaysRun,
+            if (state.isEmptyState) {
+                TodaysRunEmptyCard(
                     onClick = { onEvent(MainContract.Event.TodaysRunClicked) },
                     modifier = Modifier.padding(horizontal = 20.dp)
                 )
+            } else {
+                state.todaysRun?.let { todaysRun ->
+                    TodaysRunCard(
+                        todaysRun = todaysRun,
+                        onClick = { onEvent(MainContract.Event.TodaysRunClicked) },
+                        modifier = Modifier.padding(horizontal = 20.dp)
+                    )
+                }
             }
         }
 
         item { Spacer(modifier = Modifier.height(16.dp)) }
 
-        // This Week Card
+        // This Week Card (Empty State or Normal)
         item {
-            state.thisWeek?.let { thisWeek ->
-                ThisWeekCard(
-                    thisWeek = thisWeek,
+            if (state.isEmptyState) {
+                ThisWeekEmptyCard(
                     modifier = Modifier.padding(horizontal = 20.dp)
                 )
+            } else {
+                state.thisWeek?.let { thisWeek ->
+                    ThisWeekCard(
+                        thisWeek = thisWeek,
+                        modifier = Modifier.padding(horizontal = 20.dp)
+                    )
+                }
             }
         }
 
@@ -270,6 +307,7 @@ private fun TitleBar(modifier: Modifier = Modifier) {
 private fun TierCard(
     tierInfo: TierInfoUiModel,
     onClick: () -> Unit,
+    onArrowClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -314,11 +352,19 @@ private fun TierCard(
                         fontSize = 14.sp
                     )
                 }
-                Text(
-                    text = ">",
-                    color = TextPrimary,
-                    fontSize = 24.sp
-                )
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                        .clickable(onClick = onArrowClick),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = ">",
+                        color = TextPrimary,
+                        fontSize = 24.sp
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -664,6 +710,320 @@ private fun MissionItem(
             textAlign = TextAlign.Center,
             maxLines = 2
         )
+    }
+}
+
+@Composable
+private fun TodaysRunEmptyCard(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(24.dp))
+            .background(CardBackground)
+            .border(1.dp, CardBorder, RoundedCornerShape(24.dp))
+            .clickable(onClick = onClick)
+            .padding(20.dp)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Today's Run",
+                    color = TextSecondary,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    text = ">",
+                    color = TextSecondary,
+                    fontSize = 20.sp
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Empty State Illustration (placeholder)
+            Box(
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(RoundedCornerShape(40.dp))
+                    .background(BlueGray70),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "🏃",
+                    fontSize = 32.sp
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "오늘 달린 기록이 없어요",
+                color = TextSecondary,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "러닝하러 가기",
+                color = Primary,
+                fontSize = 14.sp
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+    }
+}
+
+@Composable
+private fun ThisWeekEmptyCard(
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(24.dp))
+            .background(CardBackground)
+            .border(1.dp, CardBorder, RoundedCornerShape(24.dp))
+            .padding(20.dp)
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = "This Week",
+                color = TextSecondary,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = "0 km",
+                color = TextPrimary,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Empty week indicators
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                listOf("M", "T", "W", "T", "F", "S", "S").forEach { day ->
+                    DayIndicator(
+                        day = DayUiModel(
+                            label = day,
+                            distance = null,
+                            hasRun = false
+                        )
+                    )
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TierInfoBottomSheet(
+    tierInfo: TierInfoUiModel?,
+    tierGuideList: List<TierGuideItem>,
+    sheetState: androidx.compose.material3.SheetState,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        containerColor = BlueGray80,
+        dragHandle = {
+            Box(
+                modifier = Modifier
+                    .padding(vertical = 12.dp)
+                    .width(40.dp)
+                    .height(4.dp)
+                    .clip(RoundedCornerShape(2.dp))
+                    .background(BlueGray70)
+            )
+        },
+        modifier = modifier
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
+                .padding(bottom = 32.dp)
+        ) {
+            // Header
+            Text(
+                text = "러너 티어",
+                color = TextPrimary,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            // Current Tier Info
+            tierInfo?.let { info ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(BlueGray90)
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(info.tier.toProgressColor().copy(alpha = 0.3f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = info.tier.name.first().toString(),
+                            color = info.tier.toProgressColor(),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Column {
+                        Text(
+                            text = info.tierName,
+                            color = TextPrimary,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Text(
+                            text = info.level,
+                            color = TextSecondary,
+                            fontSize = 14.sp
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Tier Guide List
+            Text(
+                text = "티어 가이드",
+                color = TextSecondary,
+                fontSize = 14.sp,
+                modifier = Modifier.padding(bottom = 12.dp)
+            )
+
+            tierGuideList.forEach { guideItem ->
+                TierGuideRow(
+                    guideItem = guideItem,
+                    isCurrentTier = tierInfo?.tier == guideItem.tier
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Tier Info Texts
+            Text(
+                text = "안내",
+                color = TextSecondary,
+                fontSize = 14.sp,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            tierInfoTexts.forEach { text ->
+                Row(
+                    modifier = Modifier.padding(vertical = 4.dp)
+                ) {
+                    Text(
+                        text = "•",
+                        color = TextTertiary,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(end = 8.dp)
+                    )
+                    Text(
+                        text = text,
+                        color = TextTertiary,
+                        fontSize = 12.sp,
+                        lineHeight = 18.sp
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun TierGuideRow(
+    guideItem: TierGuideItem,
+    isCurrentTier: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(if (isCurrentTier) BlueGray90 else Color.Transparent)
+            .border(
+                width = if (isCurrentTier) 1.dp else 0.dp,
+                color = if (isCurrentTier) guideItem.tier.toProgressColor() else Color.Transparent,
+                shape = RoundedCornerShape(12.dp)
+            )
+            .padding(12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(36.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(guideItem.tier.toProgressColor().copy(alpha = 0.3f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = guideItem.tier.name.first().toString(),
+                color = guideItem.tier.toProgressColor(),
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp
+            )
+        }
+        Spacer(modifier = Modifier.width(12.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = guideItem.tierName,
+                color = TextPrimary,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+            Text(
+                text = guideItem.levelRange,
+                color = TextTertiary,
+                fontSize = 12.sp
+            )
+        }
+        if (isCurrentTier) {
+            Text(
+                text = "현재",
+                color = Primary,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
     }
 }
 
