@@ -34,7 +34,7 @@ import com.runnersHi.presentation.common.model.RankChangeUiModel
 import com.runnersHi.presentation.common.model.RankingItemUiModel
 import com.runnersHi.presentation.common.model.UserUiModel
 import com.runnersHi.presentation.common.theme.Background
-import com.runnersHi.presentation.common.theme.CardBackground
+import com.runnersHi.presentation.common.theme.BackgroundElevated
 import com.runnersHi.presentation.common.theme.OnBackground
 import com.runnersHi.presentation.common.theme.OnBackgroundSecondary
 import com.runnersHi.presentation.common.theme.Primary
@@ -137,7 +137,7 @@ private fun MyStatsCard(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .background(CardBackground)
+            .background(BackgroundElevated)
             .padding(20.dp)
     ) {
         Row(

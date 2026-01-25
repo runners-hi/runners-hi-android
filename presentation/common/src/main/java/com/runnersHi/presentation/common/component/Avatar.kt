@@ -20,9 +20,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.runnersHi.presentation.common.theme.GradientEnd
-import com.runnersHi.presentation.common.theme.GradientStart
 import com.runnersHi.presentation.common.theme.OnBackgroundSecondary
+import com.runnersHi.presentation.common.theme.Primary
+import com.runnersHi.presentation.common.theme.PrimarySecondary
 import com.runnersHi.presentation.common.theme.RunnersHiTheme
 import com.runnersHi.presentation.common.theme.SurfaceVariant
 
@@ -40,10 +40,10 @@ fun Avatar(
     modifier: Modifier = Modifier,
     size: AvatarSize = AvatarSize.Medium,
     showBorder: Boolean = false,
-    borderColor: Color = GradientStart
+    borderColor: Color = Primary
 ) {
     val gradientBrush = Brush.linearGradient(
-        colors = listOf(GradientStart, GradientEnd)
+        colors = listOf(Primary, PrimarySecondary)
     )
 
     Box(

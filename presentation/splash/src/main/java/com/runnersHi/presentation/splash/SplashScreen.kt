@@ -20,7 +20,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,12 +27,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.runnersHi.presentation.common.mvi.collectEffect
 import com.runnersHi.presentation.common.mvi.collectState
+import com.runnersHi.presentation.common.theme.BlueGray90
 import com.runnersHi.presentation.common.theme.Primary
 import com.runnersHi.presentation.common.theme.RunnersHiTheme
-
-// Figma 색상
-private val BackgroundColor = Color(0xFF17191C)  // BlueGray/90
-private val ProgressTrackColor = Color(0xFF2E3238)  // BlueGray/80
+import com.runnersHi.presentation.common.theme.SurfaceVariant
 
 /**
  * Splash 화면 컨테이너 (ViewModel 연결)
@@ -96,7 +93,7 @@ fun SplashScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(BackgroundColor)
+            .background(BlueGray90)
     ) {
         // 중앙 로고
         Image(
@@ -130,7 +127,7 @@ fun SplashScreen(
                     .fillMaxWidth()
                     .height(12.dp)
                     .clip(RoundedCornerShape(63.dp))
-                    .background(ProgressTrackColor)
+                    .background(SurfaceVariant)
             ) {
                 Box(
                     modifier = Modifier

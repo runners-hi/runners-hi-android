@@ -155,4 +155,37 @@ Figma URL이 제공되면 `/figma` 스킬 사용 (`.claude/skills/figma.md`)
 
 ### 핵심 원칙
 - **에셋이 있으면 반드시 다운받아서 사용** (Canvas로 직접 그리기 금지)
-- 색상은 Figma에 명시된 코드 그대로 사용
+- 색상은 반드시 시맨틱 컬러 사용 (아래 규칙 참조)
+
+---
+
+## 시맨틱 컬러 사용 규칙
+
+> Figma: https://www.figma.com/design/eaE2AUdQNsllPXAKuHeJrp/RunnersHi?node-id=2-98
+> 파일: `presentation/common/src/.../theme/Color.kt`
+
+### 필수 규칙
+- **하드코딩 금지**: `Color(0xFF...)` 직접 사용 금지
+- **시맨틱 컬러 사용**: 용도에 맞는 시맨틱 컬러 사용
+
+### 컬러 팔레트
+
+| 용도 | 컬러 | 설명 |
+|------|------|------|
+| 배경 | `Background` | 앱 기본 배경 (BlueGray95) |
+| 배경 (상승) | `BackgroundElevated` | 카드, 바텀시트 (BlueGray90) |
+| 표면 | `Surface` | 표면 (BlueGray90) |
+| 표면 변형 | `SurfaceVariant` | 프로그레스 바 트랙 등 (BlueGray80) |
+| 텍스트 (기본) | `OnBackground` | 흰색 |
+| 텍스트 (보조) | `OnBackgroundSecondary` | BlueGray40 |
+| 텍스트 (3차) | `OnBackgroundTertiary` | BlueGray60 |
+| 강조 | `Primary` | 시안 (#00EEFF) |
+| 강조 (보조) | `PrimarySecondary` | 다크 시안 (#255860) |
+| 구분선 | `Divider` | BlueGray80 |
+| 테두리 | `Border` | BlueGray70 |
+| 비활성 | `Disabled` | BlueGray70 |
+
+### Blue Gray 팔레트 (필요 시)
+`BlueGray95`, `BlueGray90`, `BlueGray80`, `BlueGray70`, `BlueGray60`,
+`BlueGray50`, `BlueGray40`, `BlueGray30`, `BlueGray20`, `BlueGray10`,
+`BlueGray5`, `BlueGrayWhite`
