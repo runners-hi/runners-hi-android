@@ -140,3 +140,29 @@ docs/
 
 ### PR 본문
 `.github/PULL_REQUEST_TEMPLATE.md` 템플릿 형식 준수
+
+---
+
+## Figma 디자인 작업 규칙
+
+### 에셋 사용 원칙
+- **Figma 에셋이 있으면 반드시 다운받아서 사용**
+- 로고, 아이콘, 이미지 등을 Canvas나 코드로 직접 그리지 않음
+- `get_design_context` 결과에서 에셋 URL 확인 → 다운로드 → drawable로 변환
+
+### 에셋 처리 순서
+1. `get_design_context` 호출
+2. 결과에서 `const imgXxx = "https://..."` 에셋 URL 확인
+3. 에셋 다운로드 (curl 등)
+4. 파일 형식 확인 (SVG → Vector Drawable XML 변환)
+5. `res/drawable/` 에 저장
+6. 코드에서 `painterResource(R.drawable.xxx)` 사용
+
+### 색상 사용
+- Figma 디자인 컨텍스트에 명시된 색상 코드 그대로 사용
+- 기존 테마 색상과 매핑 가능하면 테마 색상 사용
+
+### 금지 사항
+- Canvas로 로고/아이콘 직접 그리기 ❌
+- Figma 에셋 URL이 있는데 무시하고 직접 구현 ❌
+- 색상 코드 임의 변경 ❌
