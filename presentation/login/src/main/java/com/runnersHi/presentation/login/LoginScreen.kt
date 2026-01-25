@@ -115,38 +115,6 @@ fun LoginRoute(
 }
 
 /**
- * Login Route (간단한 버전 - 콜백 방식)
- * 기존 호환성을 위해 유지
- */
-@Composable
-fun LoginRoute(
-    viewModel: LoginViewModel = hiltViewModel(),
-    onNavigateToHome: () -> Unit,
-    onNavigateToTermsAgreement: () -> Unit,
-    onKakaoLoginRequest: () -> Unit,
-    onAppleLoginRequest: () -> Unit
-) {
-    val state by viewModel.collectState()
-
-    viewModel.collectEffect { effect ->
-        when (effect) {
-            is LoginContract.Effect.RequestKakaoLogin -> onKakaoLoginRequest()
-            is LoginContract.Effect.RequestAppleLogin -> onAppleLoginRequest()
-            is LoginContract.Effect.NavigateToHome -> onNavigateToHome()
-            is LoginContract.Effect.NavigateToTermsAgreement -> onNavigateToTermsAgreement()
-            is LoginContract.Effect.ShowToast -> {
-                // TODO: Show toast
-            }
-        }
-    }
-
-    LoginScreen(
-        state = state,
-        onEvent = viewModel::sendEvent
-    )
-}
-
-/**
  * Login Screen: 순수 UI with entry animation
  */
 @Composable
