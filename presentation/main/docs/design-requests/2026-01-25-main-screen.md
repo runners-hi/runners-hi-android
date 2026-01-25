@@ -202,6 +202,98 @@ containerWidth = screenWidth - 좌우 패딩(40dp)
 
 ---
 
+## 7. Tier Info Bottom Sheet (티어 안내 바텀시트)
+> **Figma URL**: https://www.figma.com/design/HTvSziiFcmlKFo3fjFM8gI?node-id=1-2045
+
+### 트리거
+- **Tier Card**의 **화살표** 클릭 시 바텀시트 표시
+
+### 딤(Dim) 배경
+- **배경색**: rgba(12, 13, 14, 0.6) → #0C0D0E99
+- **동작**: 딤 영역 클릭 시 바텀시트 닫힘
+
+### 바텀시트 컨테이너
+- **배경색**: #2E3238 (BlueGray80)
+- **상단 모서리**: 36dp (rounded-tl, rounded-tr)
+- **높이**: 화면 하단에서 위로 확장
+
+### 인디케이터 (드래그 핸들)
+- **색상**: #8F97A3 (BlueGray40)
+- **크기**: 66x4dp, rounded
+- **위치**: 상단 중앙, top=12dp
+
+### 현재 티어 정보 (상단)
+- **티어 아이콘**: 60x40dp - rotate 180도
+- **티어명**: "{Tier} Runner" (Pretendard SemiBold 24sp, White, 중앙 정렬)
+- **레벨**: "Level {N}" (Pretendard Regular 14sp, #F1F2F4, 중앙 정렬)
+- **Progress Bar**: 전체 화면과 동일한 스타일
+
+### 티어 목록 (카드)
+- **배경색**: #2E3238 (BlueGray80)
+- **테두리**: 1dp solid #454B54 (BlueGray70)
+- **모서리**: 40dp
+- **크기**: width=320dp, height=342dp
+
+### 티어 아이템 (5개)
+| 순서 | 티어 | 레벨 범위 |
+|------|------|-----------|
+| 1 | Bronze Runner | Level 1 - Level 5 |
+| 2 | Silver Runner | Level 6 - Level 20 |
+| 3 | Gold Runner | Level 21 - Level 40 |
+| 4 | Platinum Runner | Level 41 - Level 70 |
+| 5 | Diamond Runner | Level 71 - Level 100 |
+
+- **아이템 높이**: 62dp
+- **아이템 구성**:
+  - 티어 아이콘: 48x32dp (60x40의 80% 스케일)
+  - 티어명: Pretendard SemiBold 16sp, White
+  - 레벨 범위: Pretendard Regular 14sp, #8F97A3
+
+### 티어 안내 문구
+- **타이틀**: "티어 안내" (Pretendard SemiBold 20sp, White)
+- **내용**: bullet list (Pretendard Regular 14sp, #F1F2F4)
+  - 러너 티어는 매년 1월 1일에 초기화됩니다.
+  - 한 해 동안 쌓은 점수를 기준으로 12월 마지막 주에 최종 티어가 확정되며, 확정된 티어의 뱃지는 미션함으로 지급됩니다.
+  - 연중에는 모든 러너가 브론즈 Level 1에서 시작하며, 점수를 달성할 때마다 레벨업과 상위 티어 승급이 가능합니다.
+  - 티어는 하향되지 않고, 오직 승급만 할 수 있습니다.
+  - 신규 가입자는 자동으로 브론즈 Level 1에서 시작하며, GPS 조작 등 부정 기록은 무효 처리됩니다.
+  - 추후 등급별 선정 기준이나 혜택은 변경될 수 있습니다.
+
+---
+
+## 8. Empty State (신규 유저/빈 데이터)
+> **Figma URL**: https://www.figma.com/design/HTvSziiFcmlKFo3fjFM8gI?node-id=1-1662
+
+### 적용 조건
+- 러닝 데이터가 없는 신규 유저
+- Today's Run, This Week 모두 데이터 0인 경우
+
+### Today's Run Card (빈 상태)
+- **배경색**: #2E3238 (BlueGray80)
+- **테두리**: 1dp solid #454B54 (BlueGray70)
+- **모서리**: 24dp
+- **크기**: width=320dp, height=171dp
+- **일러스트**: 러닝 트랙 아이콘 (87.8x60dp, 시안 컬러, 중앙)
+- **안내 문구**: "러닝으로 하루를 채워보세요" (Pretendard Regular 14sp, White, 중앙)
+
+### This Week Card (빈 상태)
+- **배경색**: #2E3238 (BlueGray80)
+- **테두리**: 1dp solid #454B54 (BlueGray70)
+- **모서리**: 24dp
+- **크기**: width=320dp, height=160dp
+- **총 거리**: "0 km" (Pretendard SemiBold 24sp, White, 중앙)
+- **하단 버튼/필드**:
+  - 배경: #454B54, rounded pill, height=40dp, width=280dp
+  - 텍스트: "달리면 이곳에 기록이 쌓여요 🏃‍♂️" (Pretendard Regular 14sp, White, 중앙)
+
+### Mission Section (빈 상태)
+- 이벤트 배너: 없음 (eventBanner = null)
+- 미션 아이템: 신규 유저용 초기 미션 표시
+  - "데뷔전" - 첫 러닝 등록
+  - "집 앞 스타트" - 지역 인증
+
+---
+
 ## 에셋 목록
 
 | 에셋명 | 용도 | 크기 |
@@ -223,6 +315,9 @@ containerWidth = screenWidth - 좌우 패딩(40dp)
 | ic_record | 기록 탭 아이콘 | 24x24dp |
 | ic_mission | 미션 탭 아이콘 | 24x24dp |
 | ic_user | 마이페이지 탭 아이콘 | 24x24dp |
+| img_empty_track | 빈 상태 러닝 트랙 일러스트 | 87.8x60dp |
+| img_mission_debut | 데뷔전 미션 아이콘 | 68x68dp |
+| img_mission_location | 집 앞 스타트 미션 아이콘 | 58x58dp |
 
 ---
 
@@ -250,9 +345,25 @@ containerWidth = screenWidth - 좌우 패딩(40dp)
 - [ ] 스크롤 콘텐츠와 BottomNav 간격 40dp
 - [ ] 세로 스크롤 구현
 
+### Tier Info Bottom Sheet (바텀시트)
+- [ ] 딤(Dim) 배경 (rgba(12, 13, 14, 0.6))
+- [ ] 바텀시트 컨테이너 (상단 모서리 36dp)
+- [ ] 드래그 핸들 인디케이터
+- [ ] 현재 티어 정보 섹션
+- [ ] 티어 목록 카드 (5가지 티어)
+- [ ] 티어 안내 문구 (bullet list)
+- [ ] 딤 클릭 시 닫기 동작
+
+### Empty State (빈 데이터 상태)
+- [ ] Today's Run Card 빈 상태 (러닝 트랙 일러스트 + 안내 문구)
+- [ ] This Week Card 빈 상태 (0 km + 안내 필드)
+- [ ] 데이터 유무에 따른 UI 분기 처리
+
 ### presentation:common 모듈
 - [ ] Bottom Navigation Bar (5개 탭) - 하단 고정, 공통 컴포넌트로 분리
 
 ### 에셋
 - [ ] 5가지 티어 이미지 (Bronze, Silver, Gold, Platinum, Diamond)
 - [ ] 미션 placeholder 이미지
+- [ ] 빈 상태 러닝 트랙 일러스트
+- [ ] 초기 미션 아이콘 (데뷔전, 집 앞 스타트)

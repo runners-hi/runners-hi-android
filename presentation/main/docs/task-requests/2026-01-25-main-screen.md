@@ -6,6 +6,9 @@
 | 작업 유형 | 기능 구현 |
 | 우선순위 | 높음 |
 | 관련 디자인 | [2026-01-25-main-screen.md](../design-requests/2026-01-25-main-screen.md) |
+| Tier Bottom Sheet | https://www.figma.com/design/HTvSziiFcmlKFo3fjFM8gI?node-id=1-2045 |
+| Tier Guide | https://www.figma.com/design/HTvSziiFcmlKFo3fjFM8gI?node-id=1-3496 |
+| Empty State | https://www.figma.com/design/HTvSziiFcmlKFo3fjFM8gI?node-id=1-1662 |
 
 ---
 
@@ -358,57 +361,311 @@ val mockHomeData = HomeData(
 
 ## 화면 흐름
 
-1. **화면 진입** → init API 호출 → 로딩 상태 표시
-2. **API 성공** → 데이터 표시
-3. **API 실패** → 에러 메시지 표시, 재시도 버튼
+1. **화면 진입** → Health Connect 권한 요청 → init API 호출 → 로딩 상태 표시
+2. **API 성공 + 데이터 있음** → 데이터 표시
+3. **API 성공 + 데이터 없음** → Empty State 표시
+4. **API 실패** → 에러 메시지 표시, 재시도 버튼
+
+---
+
+## Tier Info Bottom Sheet
+
+### 트리거
+- Tier Card의 **화살표 아이콘** 클릭 시 바텀시트 표시
+
+### 바텀시트 상태 관리
+```kotlin
+// State
+data class MainState(
+    ...
+    val showTierInfoSheet: Boolean = false,
+    val tierGuideList: List<TierGuideItem> = emptyList()
+)
+
+data class TierGuideItem(
+    val tier: Tier,
+    val tierName: String,    // "Bronze Runner"
+    val levelRange: String   // "Level 1 - Level 5"
+)
+
+// Event
+sealed interface Event : UiEvent {
+    ...
+    object TierArrowClicked : Event      // 화살표 클릭 → 바텀시트 표시
+    object TierSheetDismissed : Event    // 바텀시트 닫기
+}
+```
+
+### 티어 가이드 데이터 (하드코딩)
+```kotlin
+val tierGuideList = listOf(
+    TierGuideItem(Tier.BRONZE, "Bronze Runner", "Level 1 - Level 5"),
+    TierGuideItem(Tier.SILVER, "Silver Runner", "Level 6 - Level 20"),
+    TierGuideItem(Tier.GOLD, "Gold Runner", "Level 21 - Level 40"),
+    TierGuideItem(Tier.PLATINUM, "Platinum Runner", "Level 41 - Level 70"),
+    TierGuideItem(Tier.DIAMOND, "Diamond Runner", "Level 71 - Level 100")
+)
+```
+
+### 티어 안내 문구 (하드코딩)
+```kotlin
+val tierInfoTexts = listOf(
+    "러너 티어는 매년 1월 1일에 초기화됩니다.",
+    "한 해 동안 쌓은 점수를 기준으로 12월 마지막 주에 최종 티어가 확정되며, 확정된 티어의 뱃지는 미션함으로 지급됩니다.",
+    "연중에는 모든 러너가 브론즈 Level 1에서 시작하며, 점수를 달성할 때마다 레벨업과 상위 티어 승급이 가능합니다.",
+    "티어는 하향되지 않고, 오직 승급만 할 수 있습니다.",
+    "신규 가입자는 자동으로 브론즈 Level 1에서 시작하며, GPS 조작 등 부정 기록은 무효 처리됩니다.",
+    "추후 등급별 선정 기준이나 혜택은 변경될 수 있습니다."
+)
+```
+
+---
+
+## Empty State (빈 데이터 상태)
+
+### 적용 조건
+```kotlin
+val hasRunningData: Boolean
+    get() = todaysRun != null && todaysRun.distanceKm > 0 ||
+            thisWeek != null && thisWeek.totalDistanceKm > 0
+```
+
+### State 확장
+```kotlin
+data class MainState(
+    ...
+    val isEmptyState: Boolean = false  // 러닝 데이터 없음
+)
+```
+
+### Empty State UI 모델
+```kotlin
+// Today's Run 빈 상태
+data class TodaysRunEmptyUiModel(
+    val illustrationRes: Int,           // R.drawable.img_empty_track
+    val message: String = "러닝으로 하루를 채워보세요"
+)
+
+// This Week 빈 상태
+data class ThisWeekEmptyUiModel(
+    val totalDistance: String = "0 km",
+    val message: String = "달리면 이곳에 기록이 쌓여요 🏃‍♂️"
+)
+```
+
+### UI 분기 처리
+```kotlin
+@Composable
+fun TodaysRunCard(
+    data: TodaysRunUiModel?,
+    isEmpty: Boolean
+) {
+    if (isEmpty || data == null) {
+        TodaysRunEmptyContent()
+    } else {
+        TodaysRunDataContent(data)
+    }
+}
+```
+
+---
+
+## Health Connect API 연동
+
+### 개요
+- Android Health Connect API를 사용하여 사용자의 운동 데이터(러닝 거리, 시간) 읽기
+- 메인 화면 진입 시 권한 요청
+
+### 필요 권한
+```xml
+<!-- AndroidManifest.xml -->
+<uses-permission android:name="android.permission.health.READ_EXERCISE" />
+<uses-permission android:name="android.permission.health.READ_DISTANCE" />
+```
+
+### 의존성 추가
+```kotlin
+// libs.versions.toml
+[versions]
+healthConnect = "1.1.0-alpha12"
+
+[libraries]
+health-connect = { group = "androidx.health.connect", name = "connect-client", version.ref = "healthConnect" }
+```
+
+### 권한 요청 시점
+- **메인 화면 최초 진입 시** 권한 요청 다이얼로그 표시
+- 권한 거부 시에도 앱 사용 가능 (서버 데이터만 표시)
+
+### Data Layer
+```kotlin
+// data:health:api
+interface HealthDataSource {
+    suspend fun hasPermissions(): Boolean
+    suspend fun requestPermissions(): Boolean
+    suspend fun getExerciseSessions(startTime: Instant, endTime: Instant): List<ExerciseSession>
+    suspend fun getTotalDistance(startTime: Instant, endTime: Instant): Double
+    suspend fun getTotalDuration(startTime: Instant, endTime: Instant): Duration
+}
+
+data class ExerciseSession(
+    val id: String,
+    val startTime: Instant,
+    val endTime: Instant,
+    val distanceMeters: Double,
+    val exerciseType: Int  // EXERCISE_TYPE_RUNNING
+)
+```
+
+### Domain Layer
+```kotlin
+// domain:health:api
+interface HealthRepository {
+    suspend fun checkHealthPermissions(): Boolean
+    suspend fun requestHealthPermissions(): Boolean
+    suspend fun getTodayExerciseData(): Result<ExerciseData>
+    suspend fun getWeekExerciseData(): Result<List<DailyExerciseData>>
+}
+
+data class ExerciseData(
+    val distanceKm: Double,
+    val durationMinutes: Int
+)
+
+data class DailyExerciseData(
+    val date: LocalDate,
+    val distanceKm: Double,
+    val durationMinutes: Int
+)
+```
+
+### UseCase
+```kotlin
+class SyncHealthDataUseCase(
+    private val healthRepository: HealthRepository,
+    private val homeRepository: HomeRepository
+) {
+    suspend operator fun invoke(): Result<HomeData> {
+        // 1. Health Connect에서 데이터 가져오기
+        val todayExercise = healthRepository.getTodayExerciseData()
+        val weekExercise = healthRepository.getWeekExerciseData()
+
+        // 2. 서버 데이터와 병합하여 반환
+        return homeRepository.getHomeDataWithHealthData(todayExercise, weekExercise)
+    }
+}
+```
+
+### ViewModel 흐름
+```kotlin
+init {
+    // 1. 권한 확인
+    checkHealthPermissions()
+}
+
+private fun checkHealthPermissions() {
+    viewModelScope.launch {
+        val hasPermission = healthRepository.checkHealthPermissions()
+        if (!hasPermission) {
+            sendEffect(Effect.RequestHealthPermissions)
+        } else {
+            loadData()
+        }
+    }
+}
+
+fun onHealthPermissionResult(granted: Boolean) {
+    loadData()  // 권한 결과와 관계없이 데이터 로드
+}
 
 ---
 
 ## 구현 체크리스트
 
 ### 모듈 구조 변경
-- [ ] `presentation:home` 모듈 삭제
-- [ ] `domain:home:api` 모듈 생성
-- [ ] `domain:home:impl` 모듈 생성
-- [ ] `data:home:api` 모듈 생성
-- [ ] `data:home:impl` 모듈 생성
-- [ ] `settings.gradle.kts` 업데이트
+- [x] `presentation:home` 모듈 삭제
+- [x] `domain:home:api` 모듈 생성
+- [x] `domain:home:impl` 모듈 생성
+- [x] `data:home:api` 모듈 생성
+- [x] `data:home:impl` 모듈 생성
+- [x] `settings.gradle.kts` 업데이트
+- [ ] `domain:health:api` 모듈 생성 (Health Connect)
+- [ ] `domain:health:impl` 모듈 생성
+- [ ] `data:health:api` 모듈 생성
+- [ ] `data:health:impl` 모듈 생성
 
 ### Data Layer (data:home)
-- [ ] HomeRemoteDataSource 구현 (Mock)
-- [ ] HomeRepositoryImpl 구현
+- [x] HomeRemoteDataSource 구현 (Mock)
+- [x] HomeRepositoryImpl 구현
+
+### Data Layer (data:health)
+- [ ] HealthDataSource 인터페이스 정의
+- [ ] HealthConnectDataSource 구현
+- [ ] MockHealthDataSource 구현
 
 ### Domain Layer (domain:home)
-- [ ] Tier enum 정의
-- [ ] HomeData 모델 정의 (TierInfo, TodaysRun, ThisWeekData, MissionEventData)
-- [ ] HomeRepository 인터페이스 정의
-- [ ] GetHomeDataUseCase 구현
+- [x] Tier enum 정의
+- [x] HomeData 모델 정의 (TierInfo, TodaysRun, ThisWeekData, MissionEventData)
+- [x] HomeRepository 인터페이스 정의
+- [x] GetHomeDataUseCase 구현
+
+### Domain Layer (domain:health)
+- [ ] ExerciseData, DailyExerciseData 모델 정의
+- [ ] HealthRepository 인터페이스 정의
+- [ ] SyncHealthDataUseCase 구현
 
 ### Presentation Layer (presentation:main)
-- [ ] MainContract 구현 (State, Event, Effect)
-- [ ] MainViewModel 구현
-- [ ] MainScreen 구현
+- [x] MainContract 구현 (State, Event, Effect)
+- [x] MainViewModel 구현
+- [x] MainScreen 구현
 
 ### UI 컴포넌트 (presentation:main)
-- [ ] TitleBar (로고, 알림)
-- [ ] TierCard (5가지 티어 아이콘, 정보, Progress Bar)
-- [ ] TodaysRunCard (Distance, Pace, Time)
-- [ ] ThisWeekCard (총 거리, 요일 인디케이터)
-- [ ] MissionEventSection (배너, 미션 그리드)
+- [x] TitleBar (로고, 알림)
+- [x] TierCard (5가지 티어 아이콘, 정보, Progress Bar)
+- [x] TodaysRunCard (Distance, Pace, Time)
+- [x] ThisWeekCard (총 거리, 요일 인디케이터)
+- [x] MissionEventSection (배너, 미션 그리드)
+
+### Tier Info Bottom Sheet
+- [ ] TierInfoBottomSheet 컴포넌트 구현
+- [ ] 딤(Dim) 배경 처리
+- [ ] 드래그 핸들 인디케이터
+- [ ] 현재 티어 정보 표시
+- [ ] 티어 목록 카드 (5가지 티어)
+- [ ] 티어 안내 문구 (bullet list)
+- [ ] State 확장 (showTierInfoSheet, tierGuideList)
+- [ ] Event 추가 (TierArrowClicked, TierSheetDismissed)
+
+### Empty State (빈 데이터 상태)
+- [ ] TodaysRunEmptyContent 컴포넌트
+- [ ] ThisWeekEmptyContent 컴포넌트
+- [ ] State 확장 (isEmptyState)
+- [ ] 데이터 유무에 따른 UI 분기 처리
+- [ ] 빈 상태 일러스트 에셋
+
+### Health Connect 연동
+- [ ] build.gradle.kts에 health-connect 의존성 추가
+- [ ] AndroidManifest.xml에 권한 선언
+- [ ] 권한 요청 다이얼로그 구현
+- [ ] HealthConnectDataSource 구현
+- [ ] 메인 화면 진입 시 권한 요청 로직
 
 ### 공통 컴포넌트 (presentation:common)
 - [ ] BottomNavigationBar (5개 탭) - 공통 컴포넌트로 분리
 
 ### 상태 처리
-- [ ] 로딩 상태 UI
-- [ ] 에러 상태 UI
+- [x] 로딩 상태 UI
+- [x] 에러 상태 UI
 - [ ] 빈 데이터 상태 UI
 
 ### 테스트
-- [ ] init API 호출 확인
+- [x] init API 호출 확인
 - [ ] userToken 헤더 포함 확인 (Mock 토큰)
-- [ ] 5가지 티어 아이콘/색상 표시 확인
-- [ ] Today's Run 데이터 표시 확인
-- [ ] This Week 요일별 하이라이트 확인
-- [ ] 미션 이벤트 완료/미완료 상태 확인
-- [ ] 바텀 네비게이션 동작 확인
+- [x] 5가지 티어 아이콘/색상 표시 확인
+- [x] Today's Run 데이터 표시 확인
+- [x] This Week 요일별 하이라이트 확인
+- [x] 미션 이벤트 완료/미완료 상태 확인
+- [x] 바텀 네비게이션 동작 확인
+- [ ] Tier Info 바텀시트 동작 확인
+- [ ] Empty State 표시 확인
+- [ ] Health Connect 권한 요청 확인
