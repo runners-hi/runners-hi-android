@@ -4,28 +4,17 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,8 +24,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -48,25 +35,23 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.runnersHi.presentation.common.mvi.collectEffect
 import com.runnersHi.presentation.common.mvi.collectState
-import com.runnersHi.presentation.common.theme.BlueGray70
-import com.runnersHi.presentation.common.theme.BlueGray80
 import com.runnersHi.presentation.common.theme.BlueGray90
-import com.runnersHi.presentation.common.theme.BlueGray95
-import com.runnersHi.presentation.common.theme.BlueGrayWhite
 import com.runnersHi.presentation.common.theme.Primary
 import com.runnersHi.presentation.common.theme.RunnersHiTheme
-import com.runnersHi.presentation.common.theme.SurfaceVariant
 import com.runnersHi.presentation.launcher.api.LauncherContent
 import com.runnersHi.presentation.launcher.api.LauncherContract
 import com.runnersHi.presentation.launcher.impl.R
+import com.runnersHi.presentation.login.LoginContentImpl
+import com.runnersHi.presentation.login.api.LoginContract
+import com.runnersHi.presentation.splash.SplashContentImpl
+import com.runnersHi.presentation.splash.api.SplashContract
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-// Figma Colors
-private val KakaoYellow = Color(0xFFFEE500)
-
 /**
  * Launcher Content 구현체
+ * - 로고 + 애니메이션 관리
+ * - SplashContentImpl, LoginContentImpl 조합
  */
 val LauncherContentImpl: LauncherContent = { state, onEvent, modifier ->
     LauncherScreen(state = state, onEvent = onEvent, modifier = modifier)
@@ -105,9 +90,17 @@ fun LauncherRoute(
                     scope.launch {
                         try {
                             val token = login(context)
-                            viewModel.sendEvent(LauncherContract.Event.KakaoTokenReceived(token))
+                            viewModel.sendEvent(
+                                LauncherContract.Event.LoginEvent(
+                                    LoginContract.Event.KakaoTokenReceived(token)
+                                )
+                            )
                         } catch (e: Exception) {
-                            viewModel.sendEvent(LauncherContract.Event.LoginFailed(e.message ?: "카카오 로그인 실패"))
+                            viewModel.sendEvent(
+                                LauncherContract.Event.LoginEvent(
+                                    LoginContract.Event.LoginFailed(e.message ?: "카카오 로그인 실패")
+                                )
+                            )
                         }
                     }
                 }
@@ -117,9 +110,17 @@ fun LauncherRoute(
                     scope.launch {
                         try {
                             val token = login(context)
-                            viewModel.sendEvent(LauncherContract.Event.AppleTokenReceived(token))
+                            viewModel.sendEvent(
+                                LauncherContract.Event.LoginEvent(
+                                    LoginContract.Event.AppleTokenReceived(token)
+                                )
+                            )
                         } catch (e: Exception) {
-                            viewModel.sendEvent(LauncherContract.Event.LoginFailed(e.message ?: "Apple 로그인 실패"))
+                            viewModel.sendEvent(
+                                LauncherContract.Event.LoginEvent(
+                                    LoginContract.Event.LoginFailed(e.message ?: "Apple 로그인 실패")
+                                )
+                            )
                         }
                     }
                 }
@@ -133,7 +134,7 @@ fun LauncherRoute(
     }
 
     // ForceUpdate 다이얼로그
-    state.forceUpdateInfo?.let {
+    state.splashState.forceUpdate?.let {
         ForceUpdateDialog(
             onUpdateClick = {
                 viewModel.sendEvent(LauncherContract.Event.ForceUpdateConfirmed)
@@ -148,7 +149,9 @@ fun LauncherRoute(
 }
 
 /**
- * Launcher 화면 (Stateless) - Splash + Login 통합
+ * Launcher 화면 (Stateless)
+ * - 로고 + 애니메이션 관리
+ * - SplashContentImpl, LoginContentImpl 조합
  */
 @Composable
 fun LauncherScreen(
@@ -158,12 +161,6 @@ fun LauncherScreen(
 ) {
     val configuration = LocalConfiguration.current
     val screenHeightDp = configuration.screenHeightDp
-
-    val animatedProgress by animateFloatAsState(
-        targetValue = state.splashProgress,
-        animationSpec = tween(durationMillis = 300),
-        label = "progress"
-    )
 
     // 로그인 UI 표시 여부
     val showLoginUI = state.phase == LauncherContract.Phase.LOGIN ||
@@ -224,7 +221,7 @@ fun LauncherScreen(
             .fillMaxSize()
             .background(BlueGray90)
     ) {
-        // 로고 + 앱 이름 영역
+        // 로고 + 앱 이름 영역 (Launcher에서 관리)
         Column(
             modifier = Modifier
                 .align(Alignment.Center)
@@ -249,168 +246,30 @@ fun LauncherScreen(
             }
         }
 
-        // 하단 Loading + Progress Bar (스플래시 중에만)
+        // 스플래시 컨텐츠 (splash/impl 사용)
         if (state.phase == LauncherContract.Phase.SPLASH) {
-            Column(
-                modifier = Modifier
+            SplashContentImpl(
+                state.splashState,
+                Modifier
                     .align(Alignment.BottomCenter)
                     .padding(horizontal = 24.dp)
                     .padding(bottom = 60.dp)
-                    .alpha(loadingAlpha.value),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "Loading",
-                    color = Primary,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Normal
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(12.dp)
-                        .clip(RoundedCornerShape(63.dp))
-                        .background(SurfaceVariant)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth(animatedProgress)
-                            .height(12.dp)
-                            .clip(RoundedCornerShape(63.dp))
-                            .background(Primary)
-                    )
-                }
-            }
+                    .alpha(loadingAlpha.value)
+            )
         }
 
-        // 로그인 버튼 영역 (로그인 UI에서만)
+        // 로그인 컨텐츠 (login/impl 사용)
         if (showLoginUI) {
-            val isLoggingIn = state.phase == LauncherContract.Phase.LOGGING_IN
-
-            Column(
-                modifier = Modifier
+            LoginContentImpl(
+                state.loginState,
+                { loginEvent -> onEvent(LauncherContract.Event.LoginEvent(loginEvent)) },
+                Modifier
                     .align(Alignment.BottomCenter)
                     .padding(horizontal = 24.dp)
                     .padding(bottom = 104.dp)
                     .alpha(buttonsAlpha.value)
-                    .offset { IntOffset(0, buttonsOffsetY.value.dp.roundToPx()) },
-                verticalArrangement = Arrangement.spacedBy(24.dp)
-            ) {
-                KakaoLoginButton(
-                    isLoading = isLoggingIn,
-                    onClick = { onEvent(LauncherContract.Event.KakaoLoginClicked) }
-                )
-
-                AppleLoginButton(
-                    isLoading = isLoggingIn,
-                    onClick = { onEvent(LauncherContract.Event.AppleLoginClicked) }
-                )
-
-                state.loginError?.let { error ->
-                    Text(
-                        text = error,
-                        color = Color.Red,
-                        fontSize = 14.sp,
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun KakaoLoginButton(
-    isLoading: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Button(
-        onClick = onClick,
-        modifier = modifier
-            .fillMaxWidth()
-            .height(56.dp),
-        shape = RoundedCornerShape(71.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = KakaoYellow,
-            disabledContainerColor = KakaoYellow.copy(alpha = 0.5f)
-        ),
-        enabled = !isLoading
-    ) {
-        if (isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier.size(24.dp),
-                color = BlueGray95,
-                strokeWidth = 2.dp
+                    .offset { IntOffset(0, buttonsOffsetY.value.dp.roundToPx()) }
             )
-        } else {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_logo_kakao),
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                Text(
-                    text = "카카오로 시작하기",
-                    color = BlueGray95,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun AppleLoginButton(
-    isLoading: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    OutlinedButton(
-        onClick = onClick,
-        modifier = modifier
-            .fillMaxWidth()
-            .height(56.dp),
-        shape = RoundedCornerShape(71.dp),
-        colors = ButtonDefaults.outlinedButtonColors(
-            containerColor = BlueGray80,
-            disabledContainerColor = BlueGray80.copy(alpha = 0.5f)
-        ),
-        border = BorderStroke(1.dp, BlueGray70),
-        enabled = !isLoading
-    ) {
-        if (isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier.size(24.dp),
-                color = BlueGrayWhite,
-                strokeWidth = 2.dp
-            )
-        } else {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_logo_apple),
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                Text(
-                    text = "Apple ID로 시작하기",
-                    color = BlueGrayWhite,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
         }
     }
 }
@@ -422,7 +281,7 @@ private fun LauncherScreenSplashPreview() {
         LauncherScreen(
             state = LauncherContract.State(
                 phase = LauncherContract.Phase.SPLASH,
-                splashProgress = 0.5f
+                splashState = SplashContract.State(progress = 0.5f)
             )
         )
     }

@@ -28,6 +28,8 @@ android {
 
 dependencies {
     implementation(project(":presentation:common"))
+    implementation(project(":presentation:splash:api"))
+    implementation(project(":presentation:login:api"))
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)

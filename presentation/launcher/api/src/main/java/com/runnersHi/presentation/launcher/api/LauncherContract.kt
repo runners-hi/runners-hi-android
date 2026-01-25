@@ -3,10 +3,13 @@ package com.runnersHi.presentation.launcher.api
 import com.runnersHi.presentation.common.mvi.UiEffect
 import com.runnersHi.presentation.common.mvi.UiEvent
 import com.runnersHi.presentation.common.mvi.UiState
+import com.runnersHi.presentation.login.api.LoginContract
+import com.runnersHi.presentation.splash.api.SplashContract
 
 /**
  * Launcher 화면의 MVI Contract
  * - Splash와 Login을 조합하여 하나의 플로우로 관리
+ * - splash-api, login-api의 타입을 재사용
  */
 object LauncherContract {
 
@@ -20,40 +23,26 @@ object LauncherContract {
     }
 
     /**
-     * 강제 업데이트 정보
-     */
-    data class ForceUpdateInfo(
-        val currentVersion: String,
-        val minVersion: String
-    )
-
-    /**
      * Launcher 화면 상태
+     * - splash-api, login-api의 State를 조합
      */
     data class State(
         val phase: Phase = Phase.SPLASH,
-        // Splash 상태
-        val splashProgress: Float = 0f,
-        val forceUpdateInfo: ForceUpdateInfo? = null,
-        // Login 상태
-        val isLoggingIn: Boolean = false,
-        val loginError: String? = null
+        val splashState: SplashContract.State = SplashContract.State(),
+        val loginState: LoginContract.State = LoginContract.State()
     ) : UiState
 
     /**
      * Launcher 화면 이벤트
+     * - splash-api, login-api의 Event를 래핑
      */
     sealed interface Event : UiEvent {
         // Splash 이벤트
         data class CheckAppStatus(val currentVersion: String) : Event
         data object ForceUpdateConfirmed : Event
 
-        // Login 이벤트
-        data object KakaoLoginClicked : Event
-        data object AppleLoginClicked : Event
-        data class KakaoTokenReceived(val token: String) : Event
-        data class AppleTokenReceived(val token: String) : Event
-        data class LoginFailed(val message: String) : Event
+        // Login 이벤트 (LoginContract.Event를 그대로 전달)
+        data class LoginEvent(val event: LoginContract.Event) : Event
     }
 
     /**
