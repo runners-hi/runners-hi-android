@@ -52,8 +52,9 @@ class MockAuthRemoteDataSource @Inject constructor() : AuthRemoteDataSource {
         // 네트워크 지연 시뮬레이션
         delay(1000)
 
-        // Mock: 항상 성공 (기존 유저)
-        return LoginResult.Success
+        // Mock: 신규 유저 → 이용약관 화면으로 이동
+        // TODO: 실제 API 연동 시 서버 응답에 따라 Success/NewUser 분기
+        return LoginResult.NewUser
     }
 }
 
