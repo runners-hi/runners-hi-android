@@ -13,6 +13,9 @@ import com.runnersHi.data.ranking.RankingRepositoryImpl
 import com.runnersHi.data.splash.AppConfigRemoteDataSource
 import com.runnersHi.data.splash.AppConfigRepositoryImpl
 import com.runnersHi.data.splash.MockAppConfigRemoteDataSource
+import com.runnersHi.data.terms.MockTermsDataSource
+import com.runnersHi.data.terms.TermsRemoteDataSource
+import com.runnersHi.data.terms.TermsRepositoryImpl
 import com.runnersHi.data.user.MockUserLocalDataSource
 import com.runnersHi.data.user.MockUserRemoteDataSource
 import com.runnersHi.data.user.UserLocalDataSource
@@ -21,6 +24,7 @@ import com.runnersHi.data.user.UserRepositoryImpl
 import com.runnersHi.domain.auth.repository.AuthRepository
 import com.runnersHi.domain.ranking.repository.RankingRepository
 import com.runnersHi.domain.splash.repository.AppConfigRepository
+import com.runnersHi.domain.terms.repository.TermsRepository
 import com.runnersHi.domain.user.repository.UserRepository
 import dagger.Binds
 import dagger.Module
@@ -102,4 +106,18 @@ abstract class DataModule {
     abstract fun bindRankingRepository(
         impl: RankingRepositoryImpl
     ): RankingRepository
+
+    // DataSources - Terms
+    @Binds
+    @Singleton
+    abstract fun bindTermsRemoteDataSource(
+        impl: MockTermsDataSource
+    ): TermsRemoteDataSource
+
+    // Repositories - Terms
+    @Binds
+    @Singleton
+    abstract fun bindTermsRepository(
+        impl: TermsRepositoryImpl
+    ): TermsRepository
 }

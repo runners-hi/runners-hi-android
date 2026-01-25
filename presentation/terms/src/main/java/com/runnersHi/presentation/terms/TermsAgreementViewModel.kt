@@ -1,19 +1,22 @@
 package com.runnersHi.presentation.terms
 
 import androidx.lifecycle.viewModelScope
+import com.runnersHi.domain.terms.usecase.AgreeTermsUseCase
+import com.runnersHi.domain.terms.usecase.GetTermsListUseCase
 import com.runnersHi.presentation.common.mvi.MviViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class TermsAgreementViewModel @Inject constructor() : MviViewModel<TermsAgreementContract.State, TermsAgreementContract.Event, TermsAgreementContract.Effect>(
+class TermsAgreementViewModel @Inject constructor(
+    private val getTermsListUseCase: GetTermsListUseCase,
+    private val agreeTermsUseCase: AgreeTermsUseCase
+) : MviViewModel<TermsAgreementContract.State, TermsAgreementContract.Event, TermsAgreementContract.Effect>(
     initialState = TermsAgreementContract.State()
 ) {
 
     init {
-        // 화면 진입 시 약관 목록 로드
         sendEvent(TermsAgreementContract.Event.LoadTerms)
     }
 
@@ -27,6 +30,9 @@ class TermsAgreementViewModel @Inject constructor() : MviViewModel<TermsAgreemen
             is TermsAgreementContract.Event.ErrorDismissed -> {
                 updateState { copy(errorMessage = null) }
             }
+            is TermsAgreementContract.Event.BackClicked -> {
+                sendEffect(TermsAgreementContract.Effect.NavigateBack)
+            }
         }
     }
 
@@ -34,43 +40,33 @@ class TermsAgreementViewModel @Inject constructor() : MviViewModel<TermsAgreemen
         viewModelScope.launch {
             updateState { copy(isLoading = true) }
 
-            // TODO: 실제 구현 시 UseCase를 통해 서버에서 약관 목록 가져오기
-            delay(500) // 로딩 시뮬레이션
-
-            val mockTerms = listOf(
-                TermsItem(
-                    id = "service",
-                    title = "서비스 이용약관",
-                    isRequired = true,
-                    detailUrl = "https://example.com/terms/service"
-                ),
-                TermsItem(
-                    id = "privacy",
-                    title = "개인정보 처리방침",
-                    isRequired = true,
-                    detailUrl = "https://example.com/terms/privacy"
-                ),
-                TermsItem(
-                    id = "location",
-                    title = "위치정보 이용약관",
-                    isRequired = true,
-                    detailUrl = "https://example.com/terms/location"
-                ),
-                TermsItem(
-                    id = "marketing",
-                    title = "마케팅 정보 수신 동의",
-                    isRequired = false,
-                    detailUrl = "https://example.com/terms/marketing"
-                )
-            )
-
-            updateState {
-                copy(
-                    isLoading = false,
-                    termsItems = mockTerms,
-                    canProceed = false
-                )
-            }
+            getTermsListUseCase()
+                .onSuccess { termsList ->
+                    val uiModels = termsList.map { item ->
+                        TermsItemUiModel(
+                            id = item.id,
+                            title = item.title,
+                            detailUrl = item.detailUrl,
+                            required = item.required,
+                            isAgreed = false
+                        )
+                    }
+                    updateState {
+                        copy(
+                            isLoading = false,
+                            termsItems = uiModels,
+                            canProceed = false
+                        )
+                    }
+                }
+                .onFailure { error ->
+                    updateState {
+                        copy(
+                            isLoading = false,
+                            errorMessage = error.message ?: "약관 목록을 불러오는데 실패했습니다."
+                        )
+                    }
+                }
         }
     }
 
@@ -107,9 +103,8 @@ class TermsAgreementViewModel @Inject constructor() : MviViewModel<TermsAgreemen
         }
     }
 
-    private fun checkCanProceed(items: List<TermsItem>): Boolean {
-        // 필수 약관이 모두 동의되었는지 확인
-        return items.filter { it.isRequired }.all { it.isAgreed }
+    private fun checkCanProceed(items: List<TermsItemUiModel>): Boolean {
+        return items.filter { it.required }.all { it.isAgreed }
     }
 
     private fun proceed() {
@@ -121,17 +116,27 @@ class TermsAgreementViewModel @Inject constructor() : MviViewModel<TermsAgreemen
         viewModelScope.launch {
             updateState { copy(isLoading = true) }
 
-            // TODO: 실제 구현 시 서버에 약관 동의 정보 전송
-            delay(500) // API 호출 시뮬레이션
+            val agreedTermIds = state.value.termsItems
+                .filter { it.isAgreed }
+                .map { it.id }
 
-            updateState { copy(isLoading = false) }
-            sendEffect(TermsAgreementContract.Effect.NavigateToMain)
+            agreeTermsUseCase(agreedTermIds)
+                .onSuccess {
+                    updateState { copy(isLoading = false) }
+                    sendEffect(TermsAgreementContract.Effect.NavigateToMain)
+                }
+                .onFailure { error ->
+                    updateState {
+                        copy(
+                            isLoading = false,
+                            errorMessage = error.message ?: "약관 동의 처리에 실패했습니다."
+                        )
+                    }
+                }
         }
     }
 
-    private fun viewTermsDetail(termsItem: TermsItem) {
-        termsItem.detailUrl?.let { url ->
-            sendEffect(TermsAgreementContract.Effect.OpenTermsWebView(url, termsItem.title))
-        }
+    private fun viewTermsDetail(termsItem: TermsItemUiModel) {
+        sendEffect(TermsAgreementContract.Effect.OpenTermsWebView(termsItem.detailUrl, termsItem.title))
     }
 }

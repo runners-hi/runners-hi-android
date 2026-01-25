@@ -29,6 +29,7 @@ android {
 dependencies {
     implementation(project(":core:common"))
     implementation(project(":presentation:common"))
+    implementation(project(":domain:terms:api"))
 
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.runtime.compose)
