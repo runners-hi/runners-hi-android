@@ -192,12 +192,16 @@ fun LauncherScreen(
                     animationSpec = tween(durationMillis = 300)
                 )
             }
+            // 버튼 페이드인 + 슬라이드업 동시 실행
             launch {
                 delay(300)
                 buttonsAlpha.animateTo(
                     targetValue = 1f,
                     animationSpec = tween(durationMillis = 300)
                 )
+            }
+            launch {
+                delay(300)
                 buttonsOffsetY.animateTo(
                     targetValue = 0f,
                     animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing)
