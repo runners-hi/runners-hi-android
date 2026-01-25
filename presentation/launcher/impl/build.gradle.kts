@@ -29,11 +29,10 @@ android {
 }
 
 dependencies {
+    // api만 의존, impl은 app에서 주입
     implementation(project(":presentation:launcher:api"))
     implementation(project(":presentation:splash:api"))
-    implementation(project(":presentation:splash:impl"))
     implementation(project(":presentation:login:api"))
-    implementation(project(":presentation:login:impl"))
     implementation(project(":presentation:common"))
     implementation(project(":domain:splash:api"))
     implementation(project(":domain:auth:api"))

@@ -13,7 +13,9 @@ import androidx.compose.runtime.setValue
 import com.runnersHi.auth.AppleLoginHandler
 import com.runnersHi.auth.KakaoLoginHandler
 import com.runnersHi.presentation.launcher.LauncherRoute
+import com.runnersHi.presentation.login.LoginContentImpl
 import com.runnersHi.presentation.main.MainScreen
+import com.runnersHi.presentation.splash.SplashContentImpl
 import com.runnersHi.presentation.terms.TermsAgreementRoute
 
 /**
@@ -35,6 +37,8 @@ fun RunnersHiNavHost() {
         when (screen) {
             is Screen.Launcher -> {
                 LauncherRoute(
+                    splashContent = SplashContentImpl,
+                    loginContent = LoginContentImpl,
                     currentVersion = "1.0.0", // TODO: BuildConfig.VERSION_NAME 사용
                     onNavigateToHome = {
                         currentScreen = Screen.Main

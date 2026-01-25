@@ -28,7 +28,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,32 +36,25 @@ import com.runnersHi.presentation.common.mvi.collectEffect
 import com.runnersHi.presentation.common.mvi.collectState
 import com.runnersHi.presentation.common.theme.BlueGray90
 import com.runnersHi.presentation.common.theme.Primary
-import com.runnersHi.presentation.common.theme.RunnersHiTheme
-import com.runnersHi.presentation.launcher.api.LauncherContent
 import com.runnersHi.presentation.launcher.api.LauncherContract
 import com.runnersHi.presentation.launcher.impl.R
-import com.runnersHi.presentation.login.LoginContentImpl
+import com.runnersHi.presentation.login.api.LoginContent
 import com.runnersHi.presentation.login.api.LoginContract
-import com.runnersHi.presentation.splash.SplashContentImpl
-import com.runnersHi.presentation.splash.api.SplashContract
+import com.runnersHi.presentation.splash.api.SplashContent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 /**
- * Launcher Content 구현체
- * - 로고 + 애니메이션 관리
- * - SplashContentImpl, LoginContentImpl 조합
- */
-val LauncherContentImpl: LauncherContent = { state, onEvent, modifier ->
-    LauncherScreen(state = state, onEvent = onEvent, modifier = modifier)
-}
-
-/**
  * Launcher 화면 Route (ViewModel 연결)
+ *
+ * @param splashContent 스플래시 컨텐츠 (app에서 impl 주입)
+ * @param loginContent 로그인 컨텐츠 (app에서 impl 주입)
  */
 @Composable
 fun LauncherRoute(
     viewModel: LauncherViewModel = hiltViewModel(),
+    splashContent: SplashContent,
+    loginContent: LoginContent,
     currentVersion: String,
     onNavigateToHome: () -> Unit,
     onNavigateToTermsAgreement: () -> Unit,
@@ -144,6 +136,8 @@ fun LauncherRoute(
 
     LauncherScreen(
         state = state,
+        splashContent = splashContent,
+        loginContent = loginContent,
         onEvent = viewModel::sendEvent
     )
 }
@@ -151,11 +145,16 @@ fun LauncherRoute(
 /**
  * Launcher 화면 (Stateless)
  * - 로고 + 애니메이션 관리
- * - SplashContentImpl, LoginContentImpl 조합
+ * - splashContent, loginContent 조합
+ *
+ * @param splashContent 스플래시 컨텐츠 (외부에서 주입)
+ * @param loginContent 로그인 컨텐츠 (외부에서 주입)
  */
 @Composable
 fun LauncherScreen(
     state: LauncherContract.State,
+    splashContent: SplashContent,
+    loginContent: LoginContent,
     onEvent: (LauncherContract.Event) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -246,9 +245,9 @@ fun LauncherScreen(
             }
         }
 
-        // 스플래시 컨텐츠 (splash/impl 사용)
+        // 스플래시 컨텐츠 (외부에서 주입받음)
         if (state.phase == LauncherContract.Phase.SPLASH) {
-            SplashContentImpl(
+            splashContent(
                 state.splashState,
                 Modifier
                     .align(Alignment.BottomCenter)
@@ -258,9 +257,9 @@ fun LauncherScreen(
             )
         }
 
-        // 로그인 컨텐츠 (login/impl 사용)
+        // 로그인 컨텐츠 (외부에서 주입받음)
         if (showLoginUI) {
-            LoginContentImpl(
+            loginContent(
                 state.loginState,
                 { loginEvent -> onEvent(LauncherContract.Event.LoginEvent(loginEvent)) },
                 Modifier
@@ -271,30 +270,5 @@ fun LauncherScreen(
                     .offset { IntOffset(0, buttonsOffsetY.value.dp.roundToPx()) }
             )
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun LauncherScreenSplashPreview() {
-    RunnersHiTheme {
-        LauncherScreen(
-            state = LauncherContract.State(
-                phase = LauncherContract.Phase.SPLASH,
-                splashState = SplashContract.State(progress = 0.5f)
-            )
-        )
-    }
-}
-
-@Preview(showBackground = true, backgroundColor = 0xFF17191C)
-@Composable
-private fun LauncherScreenLoginPreview() {
-    RunnersHiTheme {
-        LauncherScreen(
-            state = LauncherContract.State(
-                phase = LauncherContract.Phase.LOGIN
-            )
-        )
     }
 }
