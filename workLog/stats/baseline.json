@@ -1,0 +1,9 @@
+{
+  "timestamp": "2026-01-25T11:10:00Z",
+  "description": "workLog 스킬 개선 작업 완료 후",
+  "inputTokens": 27399,
+  "outputTokens": 4446,
+  "cacheCreationTokens": 3146678,
+  "cacheReadTokens": 119754276,
+  "totalCost": 79.79
+}
