@@ -42,9 +42,21 @@ class LauncherViewModel @Inject constructor(
     private fun handleLoginEvent(event: LoginContract.Event) {
         when (event) {
             is LoginContract.Event.KakaoLoginClicked -> {
+                updateState {
+                    copy(
+                        phase = LauncherContract.Phase.LOGGING_IN,
+                        loginState = loginState.copy(loadingType = LoginContract.LoadingType.KAKAO)
+                    )
+                }
                 sendEffect(LauncherContract.Effect.RequestKakaoLogin)
             }
             is LoginContract.Event.AppleLoginClicked -> {
+                updateState {
+                    copy(
+                        phase = LauncherContract.Phase.LOGGING_IN,
+                        loginState = loginState.copy(loadingType = LoginContract.LoadingType.APPLE)
+                    )
+                }
                 sendEffect(LauncherContract.Effect.RequestAppleLogin)
             }
             is LoginContract.Event.KakaoTokenReceived -> {
@@ -58,7 +70,7 @@ class LauncherViewModel @Inject constructor(
                     copy(
                         phase = LauncherContract.Phase.LOGIN,
                         loginState = loginState.copy(
-                            isLoading = false,
+                            loadingType = LoginContract.LoadingType.NONE,
                             errorMessage = event.message
                         )
                     )
@@ -159,11 +171,9 @@ class LauncherViewModel @Inject constructor(
 
     private fun loginWithSocial(type: SocialLoginType, token: String) {
         viewModelScope.launch {
+            // 로딩 상태는 이미 버튼 클릭 시 설정됨
             updateState {
-                copy(
-                    phase = LauncherContract.Phase.LOGGING_IN,
-                    loginState = loginState.copy(isLoading = true, errorMessage = null)
-                )
+                copy(loginState = loginState.copy(errorMessage = null))
             }
 
             loginWithSocialUseCase(type, token)
@@ -180,7 +190,7 @@ class LauncherViewModel @Inject constructor(
                                 copy(
                                     phase = LauncherContract.Phase.LOGIN,
                                     loginState = loginState.copy(
-                                        isLoading = false,
+                                        loadingType = LoginContract.LoadingType.NONE,
                                         errorMessage = result.message
                                     )
                                 )
@@ -193,7 +203,7 @@ class LauncherViewModel @Inject constructor(
                         copy(
                             phase = LauncherContract.Phase.LOGIN,
                             loginState = loginState.copy(
-                                isLoading = false,
+                                loadingType = LoginContract.LoadingType.NONE,
                                 errorMessage = error.message ?: "로그인에 실패했습니다."
                             )
                         )

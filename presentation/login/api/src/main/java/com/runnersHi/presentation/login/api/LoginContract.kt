@@ -10,12 +10,25 @@ import com.runnersHi.presentation.common.mvi.UiState
 object LoginContract {
 
     /**
+     * 로그인 로딩 타입
+     */
+    enum class LoadingType {
+        NONE,
+        KAKAO,
+        APPLE
+    }
+
+    /**
      * Login 화면 상태
      */
     data class State(
-        val isLoading: Boolean = false,
+        val loadingType: LoadingType = LoadingType.NONE,
         val errorMessage: String? = null
-    ) : UiState
+    ) : UiState {
+        val isLoading: Boolean get() = loadingType != LoadingType.NONE
+        val isKakaoLoading: Boolean get() = loadingType == LoadingType.KAKAO
+        val isAppleLoading: Boolean get() = loadingType == LoadingType.APPLE
+    }
 
     /**
      * Login 화면 이벤트

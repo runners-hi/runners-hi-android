@@ -62,13 +62,15 @@ private fun LoginButtons(
     ) {
         // 카카오 로그인 버튼
         KakaoLoginButton(
-            isLoading = state.isLoading,
+            isLoading = state.isKakaoLoading,
+            enabled = !state.isLoading,
             onClick = { onEvent(LoginContract.Event.KakaoLoginClicked) }
         )
 
         // Apple 로그인 버튼
         AppleLoginButton(
-            isLoading = state.isLoading,
+            isLoading = state.isAppleLoading,
+            enabled = !state.isLoading,
             onClick = { onEvent(LoginContract.Event.AppleLoginClicked) }
         )
 
@@ -87,6 +89,7 @@ private fun LoginButtons(
 @Composable
 private fun KakaoLoginButton(
     isLoading: Boolean,
+    enabled: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -100,7 +103,7 @@ private fun KakaoLoginButton(
             containerColor = KakaoYellow,
             disabledContainerColor = KakaoYellow.copy(alpha = 0.5f)
         ),
-        enabled = !isLoading
+        enabled = enabled
     ) {
         if (isLoading) {
             CircularProgressIndicator(
@@ -133,6 +136,7 @@ private fun KakaoLoginButton(
 @Composable
 private fun AppleLoginButton(
     isLoading: Boolean,
+    enabled: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -147,7 +151,7 @@ private fun AppleLoginButton(
             disabledContainerColor = BlueGray80.copy(alpha = 0.5f)
         ),
         border = BorderStroke(1.dp, BlueGray70),
-        enabled = !isLoading
+        enabled = enabled
     ) {
         if (isLoading) {
             CircularProgressIndicator(
@@ -193,7 +197,7 @@ private fun LoginButtonsPreview() {
 private fun LoginButtonsLoadingPreview() {
     RunnersHiTheme {
         LoginButtons(
-            state = LoginContract.State(isLoading = true),
+            state = LoginContract.State(loadingType = LoginContract.LoadingType.KAKAO),
             onEvent = {}
         )
     }
