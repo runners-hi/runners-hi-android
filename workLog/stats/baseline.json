@@ -1,9 +1,9 @@
 {
-  "timestamp": "2026-01-25T11:10:00Z",
-  "description": "workLog 스킬 개선 작업 완료 후",
-  "inputTokens": 27399,
-  "outputTokens": 4446,
-  "cacheCreationTokens": 3146678,
-  "cacheReadTokens": 119754276,
-  "totalCost": 79.79
+  "timestamp": "2026-01-25T11:15:00Z",
+  "description": "workLog 비용 소급 적용 완료 후",
+  "inputTokens": 27533,
+  "outputTokens": 4496,
+  "cacheCreationTokens": 3162246,
+  "cacheReadTokens": 121246152,
+  "totalCost": 80.64
 }
