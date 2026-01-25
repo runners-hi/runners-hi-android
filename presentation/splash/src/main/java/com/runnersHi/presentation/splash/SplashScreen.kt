@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,6 +26,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.runnersHi.presentation.common.mvi.collectEffect
+import com.runnersHi.presentation.common.mvi.collectState
 import com.runnersHi.presentation.common.theme.Primary
 import com.runnersHi.presentation.common.theme.RunnersHiTheme
 
@@ -32,13 +35,60 @@ import com.runnersHi.presentation.common.theme.RunnersHiTheme
 private val BackgroundColor = Color(0xFF17191C)  // BlueGray/90
 private val ProgressTrackColor = Color(0xFF2E3238)  // BlueGray/80
 
+/**
+ * Splash 화면 컨테이너 (ViewModel 연결)
+ */
+@Composable
+fun SplashRoute(
+    viewModel: SplashViewModel,
+    currentVersion: String,
+    onNavigateToLogin: () -> Unit,
+    onNavigateToHome: () -> Unit,
+    onOpenPlayStore: () -> Unit
+) {
+    val state by viewModel.collectState()
+
+    // Effect 처리
+    viewModel.collectEffect { effect ->
+        when (effect) {
+            is SplashContract.Effect.NavigateToLogin -> onNavigateToLogin()
+            is SplashContract.Effect.NavigateToHome -> onNavigateToHome()
+            is SplashContract.Effect.OpenPlayStore -> onOpenPlayStore()
+            is SplashContract.Effect.ShowToast -> {
+                // Toast 처리
+            }
+        }
+    }
+
+    // 화면 시작 시 앱 상태 체크
+    LaunchedEffect(Unit) {
+        viewModel.sendEvent(SplashContract.Event.CheckAppStatus(currentVersion))
+    }
+
+    // ForceUpdate 다이얼로그
+    state.forceUpdate?.let {
+        ForceUpdateDialog(
+            onUpdateClick = {
+                viewModel.sendEvent(SplashContract.Event.ForceUpdateConfirmed)
+            }
+        )
+    }
+
+    SplashScreen(
+        state = state
+    )
+}
+
+/**
+ * Splash 화면 (Stateless)
+ */
 @Composable
 fun SplashScreen(
-    progress: Float = 0f,
+    state: SplashContract.State,
     modifier: Modifier = Modifier
 ) {
     val animatedProgress by animateFloatAsState(
-        targetValue = progress,
+        targetValue = state.progress,
         animationSpec = tween(durationMillis = 300),
         label = "progress"
     )
@@ -98,7 +148,7 @@ fun SplashScreen(
 @Composable
 private fun SplashScreenPreview() {
     RunnersHiTheme {
-        SplashScreen(progress = 0.27f)
+        SplashScreen(state = SplashContract.State(progress = 0.27f))
     }
 }
 
@@ -106,7 +156,7 @@ private fun SplashScreenPreview() {
 @Composable
 private fun SplashScreenLoadingPreview() {
     RunnersHiTheme {
-        SplashScreen(progress = 0f)
+        SplashScreen(state = SplashContract.State(progress = 0f))
     }
 }
 
@@ -114,6 +164,6 @@ private fun SplashScreenLoadingPreview() {
 @Composable
 private fun SplashScreenCompletePreview() {
     RunnersHiTheme {
-        SplashScreen(progress = 1f)
+        SplashScreen(state = SplashContract.State(progress = 1f))
     }
 }
