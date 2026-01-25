@@ -104,7 +104,9 @@ data class MissionItemUiModel(
     val name: String,
     val description: String,
     val imageUrl: String,
-    val isCompleted: Boolean
+    val isCompleted: Boolean,
+    val iconWidthDp: Int = 60,
+    val iconHeightDp: Int = 60
 )
 
 // Tier Guide models

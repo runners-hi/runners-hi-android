@@ -21,7 +21,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,12 +37,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import com.runnersHi.domain.home.model.Tier
 import com.runnersHi.presentation.common.mvi.collectEffect
 import com.runnersHi.presentation.common.mvi.collectState
@@ -58,14 +61,14 @@ import com.runnersHi.presentation.common.theme.PrimaryYellow
 import com.runnersHi.presentation.common.theme.RunnersHiTheme
 import kotlinx.coroutines.launch
 
-// Colors from design spec
-private val CardBackground = BlueGray80
-private val CardBorder = BlueGray70
-private val ProgressBackground = BlueGray70
-private val TextPrimary = Color.White
-private val TextSecondary = Color(0xFFC7CBD1)
-private val TextTertiary = Color(0xFF8F97A3)
-private val DayActiveBackground = Color(0xFF255860)
+// Colors from design spec (Figma)
+private val CardBackground = BlueGray80          // #2E3238
+private val CardBorder = BlueGray70              // #454B54
+private val ProgressBackground = BlueGray70     // #454B54
+private val TextPrimary = Color.White            // #FFFFFF
+private val TextSecondary = Color(0xFFC7CBD1)    // BlueGray/20
+private val TextTertiary = Color(0xFF8F97A3)     // BlueGray/40
+private val DayActiveBackground = Color(0xFF255860)  // PrimarySecondary
 private val MissionCompletedBackground = Color(0x33FFCB2F)
 private val MissionCompletedBorder = Color(0xFFFFCB2F)
 
@@ -317,6 +320,7 @@ private fun TierCard(
     Box(
         modifier = modifier
             .fillMaxWidth()
+            .height(140.dp)
             .clip(RoundedCornerShape(24.dp))
             .background(CardBackground)
             .border(1.dp, CardBorder, RoundedCornerShape(24.dp))
@@ -324,24 +328,18 @@ private fun TierCard(
             .padding(20.dp)
     ) {
         Column {
+            // Tier info row
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                // Tier Icon (placeholder)
-                Box(
-                    modifier = Modifier
-                        .size(60.dp, 40.dp)
-                        .background(tierInfo.tier.toProgressColor().copy(alpha = 0.3f), RoundedCornerShape(8.dp)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = tierInfo.tier.name.first().toString(),
-                        color = tierInfo.tier.toProgressColor(),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp
-                    )
-                }
+                // Tier Icon - use vector drawable
+                Icon(
+                    painter = painterResource(id = tierInfo.tier.toTierIconRes()),
+                    contentDescription = tierInfo.tierName,
+                    tint = Color.Unspecified,
+                    modifier = Modifier.size(60.dp, 40.dp)
+                )
                 Spacer(modifier = Modifier.width(16.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
@@ -356,29 +354,30 @@ private fun TierCard(
                         fontSize = 14.sp
                     )
                 }
+                // Arrow button with background
                 Box(
                     modifier = Modifier
                         .size(24.dp)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(BlueGray70)
                         .clickable(onClick = onArrowClick),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        painter = painterResource(id = R.drawable.ic_arrow_bg_right),
                         contentDescription = "티어 정보",
-                        tint = TextPrimary,
-                        modifier = Modifier.size(20.dp)
+                        tint = Color.Unspecified,
+                        modifier = Modifier.size(24.dp)
                     )
                 }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Progress Bar
+            // Progress text row - "Progress to next level" and "10%" on same line
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = "Progress to next level",
@@ -392,7 +391,10 @@ private fun TierCard(
                     fontWeight = FontWeight.SemiBold
                 )
             }
+
             Spacer(modifier = Modifier.height(4.dp))
+
+            // Progress Bar - no dot, continuous bar
             LinearProgressIndicator(
                 progress = { tierInfo.progressPercent / 100f },
                 modifier = Modifier
@@ -401,6 +403,7 @@ private fun TierCard(
                     .clip(RoundedCornerShape(100.dp)),
                 color = tierInfo.tier.toProgressColor(),
                 trackColor = ProgressBackground,
+                strokeCap = StrokeCap.Round
             )
         }
     }
@@ -422,6 +425,7 @@ private fun TodaysRunCard(
             .padding(20.dp)
     ) {
         Column {
+            // Header row
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -433,35 +437,38 @@ private fun TodaysRunCard(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold
                 )
-                Text(
-                    text = ">",
-                    color = TextSecondary,
-                    fontSize = 20.sp
+                // Arrow icon (20x20)
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_arrow_right_mono),
+                    contentDescription = "상세 보기",
+                    tint = Color.Unspecified,
+                    modifier = Modifier.size(20.dp)
                 )
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Data items row
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 RunDataItem(
-                    icon = "🏃",
+                    iconRes = R.drawable.ic_track,
                     iconBackgroundColor = Primary.copy(alpha = 0.2f),
                     value = todaysRun.distance,
                     label = "Distance",
                     modifier = Modifier.weight(1f)
                 )
                 RunDataItem(
-                    icon = "🔥",
+                    iconRes = R.drawable.ic_flame,
                     iconBackgroundColor = PrimaryRed.copy(alpha = 0.2f),
                     value = todaysRun.pace,
                     label = "Pace",
                     modifier = Modifier.weight(1f)
                 )
                 RunDataItem(
-                    icon = "⏱",
+                    iconRes = R.drawable.ic_timer,
                     iconBackgroundColor = PrimaryYellow.copy(alpha = 0.2f),
                     value = todaysRun.time,
                     label = "Time",
@@ -474,7 +481,7 @@ private fun TodaysRunCard(
 
 @Composable
 private fun RunDataItem(
-    icon: String,
+    iconRes: Int,
     iconBackgroundColor: Color,
     value: String,
     label: String,
@@ -483,20 +490,25 @@ private fun RunDataItem(
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
-            .background(CardBackground)
             .padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Icon pill (34x44) with icon centered
         Box(
             modifier = Modifier
                 .size(34.dp, 44.dp)
-                .clip(RoundedCornerShape(17.dp))
+                .clip(RoundedCornerShape(100.dp))
                 .background(iconBackgroundColor),
             contentAlignment = Alignment.Center
         ) {
-            Text(text = icon, fontSize = 20.sp)
+            Icon(
+                painter = painterResource(id = iconRes),
+                contentDescription = label,
+                tint = TextPrimary,
+                modifier = Modifier.size(20.dp)
+            )
         }
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(6.dp))
         Text(
             text = value,
             color = TextPrimary,
@@ -525,6 +537,7 @@ private fun ThisWeekCard(
             .padding(20.dp)
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            // Title - left aligned
             Text(
                 text = "This Week",
                 color = TextSecondary,
@@ -535,6 +548,7 @@ private fun ThisWeekCard(
 
             Spacer(modifier = Modifier.height(12.dp))
 
+            // Total distance - center aligned
             Text(
                 text = thisWeek.totalDistance,
                 color = TextPrimary,
@@ -544,6 +558,7 @@ private fun ThisWeekCard(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Day indicators
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
@@ -565,7 +580,7 @@ private fun DayIndicator(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Pill with day letter only
+        // Pill with day letter (30x40)
         Box(
             modifier = Modifier
                 .width(30.dp)
@@ -580,12 +595,13 @@ private fun DayIndicator(
             Text(
                 text = day.label,
                 color = if (day.hasRun) Primary else TextTertiary,
-                fontSize = 14.sp
+                fontSize = 14.sp,
+                lineHeight = 18.sp
             )
         }
         // Distance below pill (only if hasRun)
         if (day.hasRun && day.distance != null) {
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = day.distance,
                 color = TextSecondary,
@@ -605,7 +621,7 @@ private fun MissionEventSection(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        // Header
+        // Header - "미션 이벤트" with arrow
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -618,18 +634,21 @@ private fun MissionEventSection(
                 text = "미션 이벤트",
                 color = TextPrimary,
                 fontSize = 20.sp,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                lineHeight = 24.sp
             )
-            Text(
-                text = ">",
-                color = TextPrimary,
-                fontSize = 24.sp
+            // Arrow icon (24x24)
+            Icon(
+                painter = painterResource(id = R.drawable.ic_arrow_right_w),
+                contentDescription = "더보기",
+                tint = Color.Unspecified,
+                modifier = Modifier.size(24.dp)
             )
         }
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Event Banner
+        // Event Banner (312x40)
         missionEvent.banner?.let { banner ->
             Box(
                 modifier = Modifier
@@ -640,13 +659,17 @@ private fun MissionEventSection(
                     .padding(horizontal = 16.dp),
                 contentAlignment = Alignment.CenterStart
             ) {
-                Row {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Title at left position
                     Text(
                         text = banner.title,
                         color = TextTertiary,
                         fontSize = 14.sp
                     )
                     Spacer(modifier = Modifier.width(8.dp))
+                    // Period text
                     Text(
                         text = banner.period,
                         color = TextSecondary,
@@ -663,7 +686,7 @@ private fun MissionEventSection(
             columns = GridCells.Fixed(3),
             horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.height(300.dp)
+            modifier = Modifier.height(380.dp)
         ) {
             items(missionEvent.missions) { mission ->
                 MissionItem(
@@ -686,7 +709,7 @@ private fun MissionItem(
             .clickable(onClick = onClick),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Icon Container
+        // Icon Container (72x100)
         Box(
             modifier = Modifier
                 .size(72.dp, 100.dp)
@@ -702,28 +725,46 @@ private fun MissionItem(
                 ),
             contentAlignment = Alignment.Center
         ) {
-            // Placeholder icon
-            Text(
-                text = if (mission.isCompleted) "✓" else "🏅",
-                fontSize = 24.sp
-            )
+            // Load icon from URL with dynamic size
+            if (mission.imageUrl.isNotEmpty()) {
+                AsyncImage(
+                    model = mission.imageUrl,
+                    contentDescription = mission.name,
+                    modifier = Modifier.size(
+                        width = mission.iconWidthDp.dp,
+                        height = mission.iconHeightDp.dp
+                    ),
+                    contentScale = ContentScale.Fit
+                )
+            } else {
+                // Placeholder
+                Text(
+                    text = if (mission.isCompleted) "✓" else "🏅",
+                    fontSize = 24.sp
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        // Mission name
         Text(
             text = mission.name,
             color = Color(0xFFF1F2F4),
             fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            lineHeight = 21.sp
         )
+        // Mission description
         Text(
             text = mission.description,
             color = TextTertiary,
             fontSize = 13.sp,
             textAlign = TextAlign.Center,
-            maxLines = 2
+            maxLines = 2,
+            lineHeight = 19.5.sp,
+            letterSpacing = (-0.39).sp
         )
     }
 }
@@ -757,16 +798,17 @@ private fun TodaysRunEmptyCard(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold
                 )
-                Text(
-                    text = ">",
-                    color = TextSecondary,
-                    fontSize = 20.sp
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_arrow_right_mono),
+                    contentDescription = "상세 보기",
+                    tint = Color.Unspecified,
+                    modifier = Modifier.size(20.dp)
                 )
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Empty State Illustration (placeholder)
+            // Empty State Illustration
             Box(
                 modifier = Modifier
                     .size(80.dp)
@@ -774,9 +816,11 @@ private fun TodaysRunEmptyCard(
                     .background(BlueGray70),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = "🏃",
-                    fontSize = 32.sp
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_track),
+                    contentDescription = "러닝",
+                    tint = TextSecondary,
+                    modifier = Modifier.size(40.dp)
                 )
             }
 
@@ -903,20 +947,12 @@ private fun TierInfoBottomSheet(
                         .padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .size(48.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(info.tier.toProgressColor().copy(alpha = 0.3f)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = info.tier.name.first().toString(),
-                            color = info.tier.toProgressColor(),
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp
-                        )
-                    }
+                    Icon(
+                        painter = painterResource(id = info.tier.toTierIconRes()),
+                        contentDescription = info.tierName,
+                        tint = Color.Unspecified,
+                        modifier = Modifier.size(48.dp, 32.dp)
+                    )
                     Spacer(modifier = Modifier.width(12.dp))
                     Column {
                         Text(
@@ -1003,20 +1039,12 @@ private fun TierGuideRow(
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(
-            modifier = Modifier
-                .size(36.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .background(guideItem.tier.toProgressColor().copy(alpha = 0.3f)),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = guideItem.tier.name.first().toString(),
-                color = guideItem.tier.toProgressColor(),
-                fontWeight = FontWeight.Bold,
-                fontSize = 14.sp
-            )
-        }
+        Icon(
+            painter = painterResource(id = guideItem.tier.toTierIconRes()),
+            contentDescription = guideItem.tierName,
+            tint = Color.Unspecified,
+            modifier = Modifier.size(36.dp, 24.dp)
+        )
         Spacer(modifier = Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(
@@ -1072,6 +1100,16 @@ private fun Tier.toProgressColor(): Color {
     }
 }
 
+private fun Tier.toTierIconRes(): Int {
+    return when (this) {
+        Tier.BRONZE -> R.drawable.ic_tier_bronze
+        Tier.SILVER -> R.drawable.ic_tier_silver
+        Tier.GOLD -> R.drawable.ic_tier_gold
+        Tier.PLATINUM -> R.drawable.ic_tier_platinum
+        Tier.DIAMOND -> R.drawable.ic_tier_diamond
+    }
+}
+
 @Preview(showBackground = true, backgroundColor = 0xFF17191C)
 @Composable
 private fun MainScreenPreview() {
@@ -1106,9 +1144,9 @@ private fun MainScreenPreview() {
                 missionEvent = MissionEventUiModel(
                     banner = EventBannerUiModel("추석 이벤트", "2025.10.01 - 2025.10.31"),
                     missions = listOf(
-                        MissionItemUiModel("1", "문라이트", "10월 러닝 인증", "", true),
-                        MissionItemUiModel("2", "전력질주", "페이스 5'00\"", "", false),
-                        MissionItemUiModel("3", "밤톨 러닝", "1km", "", true)
+                        MissionItemUiModel("1", "문라이트", "10월 러닝 인증", "", true, 60, 60),
+                        MissionItemUiModel("2", "전력질주", "페이스 5'00\"", "", false, 60, 60),
+                        MissionItemUiModel("3", "밤톨 러닝", "1km", "", true, 60, 60)
                     )
                 )
             ),

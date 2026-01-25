@@ -1,0 +1,23 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="20dp"
+    android:height="20dp"
+    android:viewportWidth="20"
+    android:viewportHeight="20">
+    <!-- Timer/Stopwatch icon -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M10,4C6.13,4 3,7.13 3,11C3,14.87 6.13,18 10,18C13.87,18 17,14.87 17,11C17,7.13 13.87,4 10,4ZM10,16C7.24,16 5,13.76 5,11C5,8.24 7.24,6 10,6C12.76,6 15,8.24 15,11C15,13.76 12.76,16 10,16Z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M10,7L10,11L13,13"
+        android:strokeWidth="1.5"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M8,2L12,2"
+        android:strokeWidth="2"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round"/>
+</vector>

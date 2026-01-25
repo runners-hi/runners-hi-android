@@ -52,5 +52,7 @@ data class MissionItem(
     val name: String,
     val description: String,
     val imageUrl: String,
-    val isCompleted: Boolean
+    val isCompleted: Boolean,
+    val iconWidthDp: Int = 60,
+    val iconHeightDp: Int = 60
 )

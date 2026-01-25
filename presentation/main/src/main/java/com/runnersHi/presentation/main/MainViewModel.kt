@@ -302,7 +302,9 @@ class MainViewModel @Inject constructor(
                     name = mission.name,
                     description = mission.description,
                     imageUrl = mission.imageUrl,
-                    isCompleted = mission.isCompleted
+                    isCompleted = mission.isCompleted,
+                    iconWidthDp = mission.iconWidthDp,
+                    iconHeightDp = mission.iconHeightDp
                 )
             }
         )
