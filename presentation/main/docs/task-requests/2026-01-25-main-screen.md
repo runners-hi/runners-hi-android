@@ -9,6 +9,23 @@
 
 ---
 
+## 모듈 구조 변경
+
+### 삭제할 모듈
+- `presentation:home` - 기존 홈 화면 모듈 삭제 (새 메인 화면으로 대체)
+
+### 신규 모듈
+- `domain:home:api` - 홈 도메인 인터페이스
+- `domain:home:impl` - 홈 도메인 구현체
+- `data:home:api` - 홈 데이터 인터페이스
+- `data:home:impl` - 홈 데이터 구현체 (Mock)
+
+### 수정할 모듈
+- `presentation:main` - 메인 화면 구현
+- `presentation:common` - BottomNavigationBar 공통 컴포넌트 추가
+
+---
+
 ## 기능 요구사항
 
 ### 1. Init API 호출
@@ -18,6 +35,11 @@
   ```
   Authorization: Bearer {userToken}
   ```
+
+### userToken 저장 위치
+- **저장소**: 암호화된 로컬 스토리지 (EncryptedSharedPreferences)
+- **저장 시점**: 로그인 시 저장 (아직 미구현, 추후 로그인 기능에서 구현 예정)
+- **Mock 구현**: 현재는 하드코딩된 Mock 토큰 사용
 
 ### 2. 응답 데이터 구조
 init API 응답에 모든 데이터가 포함됨:
@@ -42,6 +64,15 @@ init API 응답에 모든 데이터가 포함됨:
 ### Domain Layer
 
 ```kotlin
+// 티어 종류 (5단계)
+enum class Tier {
+    BRONZE,    // 브론즈
+    SILVER,    // 실버
+    GOLD,      // 골드
+    PLATINUM,  // 플래티넘
+    DIAMOND    // 다이아몬드
+}
+
 // 홈 화면 전체 데이터
 data class HomeData(
     val tier: TierInfo,
@@ -52,6 +83,7 @@ data class HomeData(
 
 // 티어 정보
 data class TierInfo(
+    val tier: Tier,            // GOLD
     val tierName: String,      // "Gold Runner"
     val level: Int,            // 31
     val progressPercent: Int   // 10 (0-100)
@@ -111,6 +143,7 @@ data class MainState(
 ) : UiState
 
 data class TierInfoUiModel(
+    val tier: Tier,              // GOLD - 티어별 아이콘/색상 결정용
     val tierName: String,
     val level: String,           // "Level 31"
     val progressPercent: Int,
@@ -168,6 +201,7 @@ Headers:
 // Response
 {
   "tier": {
+    "tier": "GOLD",           // BRONZE, SILVER, GOLD, PLATINUM, DIAMOND
     "tierName": "Gold Runner",
     "level": 31,
     "progressPercent": 10
@@ -279,6 +313,7 @@ sealed interface Effect : UiEffect {
 ```kotlin
 val mockHomeData = HomeData(
     tier = TierInfo(
+        tier = Tier.GOLD,
         tierName = "Gold Runner",
         level = 31,
         progressPercent = 10
@@ -331,27 +366,38 @@ val mockHomeData = HomeData(
 
 ## 구현 체크리스트
 
-### Data Layer
+### 모듈 구조 변경
+- [ ] `presentation:home` 모듈 삭제
+- [ ] `domain:home:api` 모듈 생성
+- [ ] `domain:home:impl` 모듈 생성
+- [ ] `data:home:api` 모듈 생성
+- [ ] `data:home:impl` 모듈 생성
+- [ ] `settings.gradle.kts` 업데이트
+
+### Data Layer (data:home)
 - [ ] HomeRemoteDataSource 구현 (Mock)
 - [ ] HomeRepositoryImpl 구현
 
-### Domain Layer
-- [ ] HomeData 모델 정의 (Tier, TodaysRun, ThisWeek, MissionEvent)
+### Domain Layer (domain:home)
+- [ ] Tier enum 정의
+- [ ] HomeData 모델 정의 (TierInfo, TodaysRun, ThisWeekData, MissionEventData)
 - [ ] HomeRepository 인터페이스 정의
 - [ ] GetHomeDataUseCase 구현
 
-### Presentation Layer
+### Presentation Layer (presentation:main)
 - [ ] MainContract 구현 (State, Event, Effect)
 - [ ] MainViewModel 구현
 - [ ] MainScreen 구현
 
-### UI 컴포넌트
+### UI 컴포넌트 (presentation:main)
 - [ ] TitleBar (로고, 알림)
-- [ ] TierCard (티어 정보, Progress Bar)
+- [ ] TierCard (5가지 티어 아이콘, 정보, Progress Bar)
 - [ ] TodaysRunCard (Distance, Pace, Time)
 - [ ] ThisWeekCard (총 거리, 요일 인디케이터)
 - [ ] MissionEventSection (배너, 미션 그리드)
-- [ ] BottomNavigationBar (5개 탭)
+
+### 공통 컴포넌트 (presentation:common)
+- [ ] BottomNavigationBar (5개 탭) - 공통 컴포넌트로 분리
 
 ### 상태 처리
 - [ ] 로딩 상태 UI
@@ -360,7 +406,8 @@ val mockHomeData = HomeData(
 
 ### 테스트
 - [ ] init API 호출 확인
-- [ ] userToken 헤더 포함 확인
+- [ ] userToken 헤더 포함 확인 (Mock 토큰)
+- [ ] 5가지 티어 아이콘/색상 표시 확인
 - [ ] Today's Run 데이터 표시 확인
 - [ ] This Week 요일별 하이라이트 확인
 - [ ] 미션 이벤트 완료/미완료 상태 확인

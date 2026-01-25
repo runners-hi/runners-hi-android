@@ -7,6 +7,7 @@
 | 우선순위 | 높음 |
 | Figma URL | https://www.figma.com/design/HTvSziiFcmlKFo3fjFM8gI?node-id=1-1118 |
 | 가이드 URL | https://www.figma.com/design/HTvSziiFcmlKFo3fjFM8gI?node-id=1-3417 |
+| 티어 이미지 URL | https://www.figma.com/design/HTvSziiFcmlKFo3fjFM8gI?node-id=1-3541 |
 
 ---
 
@@ -57,14 +58,23 @@ Content < Title Bar < Dim < Modal/Alert/BottomSheet(모달류)
 - **위치**: top=122dp
 
 ### 내용
-- **티어 아이콘**: Gold 메달 이미지 (60x40dp) - **Fixed**
-- **티어명**: "Gold Runner" (Pretendard SemiBold 20sp, White)
-- **레벨**: "Level 31" (Pretendard Regular 14sp, #F1F2F4)
+- **티어 아이콘**: 60x40dp - **Fixed**
+- **티어명**: "{Tier} Runner" (Pretendard SemiBold 20sp, White)
+- **레벨**: "Level {N}" (Pretendard Regular 14sp, #F1F2F4)
 - **화살표**: 우측 상단 (24x24dp) - **Fixed**
 - **Progress Bar**
   - 배경: #454B54, height=12dp, rounded
-  - 진행: #F5FF66 (Primary Yellow)
+  - 진행색: 티어별로 다름 (아래 표 참조)
   - 텍스트: "Progress to next level" / "10%" (14sp) - **Fixed**
+
+### 티어 종류 (5단계)
+| 티어 | 티어명 | 아이콘 색상 | Progress Bar 색상 |
+|------|--------|-------------|-------------------|
+| Bronze | Bronze Runner | #FF6B35 (주황/빨강) | #FF6B35 |
+| Silver | Silver Runner | #A8B4C4 (은회색) | #A8B4C4 |
+| Gold | Gold Runner | #FFD700 (금색) | #F5FF66 |
+| Platinum | Platinum Runner | #4ADE80 (녹색) | #4ADE80 |
+| Diamond | Diamond Runner | #00EEFF (시안) | #00EEFF |
 
 ---
 
@@ -170,6 +180,8 @@ containerWidth = screenWidth - 좌우 패딩(40dp)
 ---
 
 ## 6. Bottom Navigation Bar
+> **구현 위치**: `presentation:common` 모듈에 공통 컴포넌트로 분리
+
 - **배경색**: #17191C (BlueGray90)
 - **높이**: 89dp (인디케이터 포함)
 - **상단 라인**: 1dp #454B54
@@ -196,11 +208,16 @@ containerWidth = screenWidth - 좌우 패딩(40dp)
 |--------|------|------|
 | ic_logo_runnershi_txt | 상단 로고 | 95x28dp |
 | ic_notification | 알림 아이콘 | 28x28dp |
+| img_tier_bronze | 브론즈 티어 아이콘 | 60x40dp |
+| img_tier_silver | 실버 티어 아이콘 | 60x40dp |
 | img_tier_gold | 골드 티어 아이콘 | 60x40dp |
+| img_tier_platinum | 플래티넘 티어 아이콘 | 60x40dp |
+| img_tier_diamond | 다이아몬드 티어 아이콘 | 60x40dp |
 | ic_track | 거리 아이콘 | 20x20dp |
 | ic_flame | 페이스 아이콘 | 20x20dp |
 | ic_timer | 시간 아이콘 | 20x20dp |
 | ic_arrow_right | 화살표 아이콘 | 24x24dp / 20x20dp |
+| img_mission_placeholder | 미션 이미지 기본값 | 72x72dp |
 | ic_home | 홈 탭 아이콘 | 24x24dp |
 | ic_rank | 랭킹 탭 아이콘 | 24x24dp |
 | ic_record | 기록 탭 아이콘 | 24x24dp |
@@ -223,12 +240,19 @@ containerWidth = screenWidth - 좌우 패딩(40dp)
 
 ## 구현 체크리스트
 
+### presentation:main 모듈
 - [ ] Title Bar (로고, 알림 아이콘) - 상단 고정
 - [ ] 타이틀 하단 고정 영역 (8dp)
-- [ ] Tier Card (티어 아이콘, 정보, Progress Bar)
+- [ ] Tier Card (5가지 티어 아이콘, 정보, Progress Bar)
 - [ ] Today's Run Card (Distance, Pace, Time) - Flexible width 적용
 - [ ] This Week Card (총 거리, 요일 인디케이터)
 - [ ] Mission Event Section (헤더, 배너 height 40dp 고정, 미션 그리드 Flexible)
-- [ ] Bottom Navigation Bar (5개 탭) - 하단 고정
 - [ ] 스크롤 콘텐츠와 BottomNav 간격 40dp
 - [ ] 세로 스크롤 구현
+
+### presentation:common 모듈
+- [ ] Bottom Navigation Bar (5개 탭) - 하단 고정, 공통 컴포넌트로 분리
+
+### 에셋
+- [ ] 5가지 티어 이미지 (Bronze, Silver, Gold, Platinum, Diamond)
+- [ ] 미션 placeholder 이미지
