@@ -28,11 +28,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -49,12 +51,72 @@ import com.runnersHi.presentation.common.theme.BlueGray95
 import com.runnersHi.presentation.common.theme.BlueGrayWhite
 import com.runnersHi.presentation.common.theme.Primary
 import com.runnersHi.presentation.common.theme.RunnersHiTheme
+import kotlinx.coroutines.launch
 
 // Figma Colors
 private val KakaoYellow = Color(0xFFFEE500)
 
 /**
  * Login Route: 상태 수집 및 이펙트 처리
+ *
+ * @param onKakaoLogin 카카오 로그인 실행 함수 (Context를 받아 토큰 반환)
+ * @param onAppleLogin Apple 로그인 실행 함수 (Context를 받아 토큰 반환)
+ */
+@Composable
+fun LoginRoute(
+    viewModel: LoginViewModel = hiltViewModel(),
+    onNavigateToHome: () -> Unit,
+    onNavigateToTermsAgreement: () -> Unit,
+    onKakaoLogin: (suspend (android.content.Context) -> String)? = null,
+    onAppleLogin: (suspend (android.content.Context) -> String)? = null
+) {
+    val state by viewModel.collectState()
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
+    viewModel.collectEffect { effect ->
+        when (effect) {
+            is LoginContract.Effect.RequestKakaoLogin -> {
+                onKakaoLogin?.let { login ->
+                    scope.launch {
+                        try {
+                            val token = login(context)
+                            viewModel.sendEvent(LoginContract.Event.KakaoTokenReceived(token))
+                        } catch (e: Exception) {
+                            viewModel.sendEvent(LoginContract.Event.LoginFailed(e.message ?: "카카오 로그인 실패"))
+                        }
+                    }
+                }
+            }
+            is LoginContract.Effect.RequestAppleLogin -> {
+                onAppleLogin?.let { login ->
+                    scope.launch {
+                        try {
+                            val token = login(context)
+                            viewModel.sendEvent(LoginContract.Event.AppleTokenReceived(token))
+                        } catch (e: Exception) {
+                            viewModel.sendEvent(LoginContract.Event.LoginFailed(e.message ?: "Apple 로그인 실패"))
+                        }
+                    }
+                }
+            }
+            is LoginContract.Effect.NavigateToHome -> onNavigateToHome()
+            is LoginContract.Effect.NavigateToTermsAgreement -> onNavigateToTermsAgreement()
+            is LoginContract.Effect.ShowToast -> {
+                // TODO: Show toast
+            }
+        }
+    }
+
+    LoginScreen(
+        state = state,
+        onEvent = viewModel::sendEvent
+    )
+}
+
+/**
+ * Login Route (간단한 버전 - 콜백 방식)
+ * 기존 호환성을 위해 유지
  */
 @Composable
 fun LoginRoute(

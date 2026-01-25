@@ -112,9 +112,10 @@ https://www.figma.com/design/HTvSziiFcmlKFo3fjFM8gI/%EC%A0%9C%EB%AA%A9-%EC%97%86
 - [x] 소셜 로그인 버튼 슬라이드업 + 페이드인 애니메이션
 
 ### 기능 연결
-- [ ] 카카오 로그인 SDK 연동
-- [ ] Apple Sign In 연동
+- [x] 카카오 로그인 SDK 연동
+- [x] Apple Sign In 연동 (Mock 구현)
 - [x] 로그인 결과에 따른 화면 분기 (메인 / 이용약관)
+- [x] 이용약관 화면 구현
 
 ## 참고사항
 - 로고 아이콘은 splash에서 사용한 `ic_logo_runnershi.xml` 재사용 가능

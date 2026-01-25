@@ -12,10 +12,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.runnersHi.auth.AppleLoginHandler
+import com.runnersHi.auth.KakaoLoginHandler
 import com.runnersHi.presentation.login.LoginRoute
 import com.runnersHi.presentation.main.MainScreen
 import com.runnersHi.presentation.splash.SplashRoute
 import com.runnersHi.presentation.splash.SplashViewModel
+import com.runnersHi.presentation.terms.TermsAgreementRoute
 
 /**
  * 앱 전체 네비게이션 호스트
@@ -71,19 +74,18 @@ fun RunnersHiNavHost() {
                     onNavigateToTermsAgreement = {
                         currentScreen = Screen.TermsAgreement
                     },
-                    onKakaoLoginRequest = {
-                        // TODO: 카카오 SDK 연동
+                    onKakaoLogin = { context ->
+                        KakaoLoginHandler.login(context)
                     },
-                    onAppleLoginRequest = {
-                        // TODO: Apple Sign In 연동
+                    onAppleLogin = { context ->
+                        AppleLoginHandler.login(context)
                     }
                 )
             }
             is Screen.TermsAgreement -> {
-                // TODO: 이용약관 화면 구현 후 연결
-                // TermsAgreementRoute(
-                //     onNavigateToMain = { currentScreen = Screen.Main }
-                // )
+                TermsAgreementRoute(
+                    onNavigateToMain = { currentScreen = Screen.Main }
+                )
             }
             is Screen.Main -> {
                 MainScreen()

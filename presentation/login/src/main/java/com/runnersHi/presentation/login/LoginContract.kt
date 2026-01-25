@@ -16,6 +16,7 @@ class LoginContract {
         data object AppleLoginClicked : Event
         data class KakaoTokenReceived(val token: String) : Event
         data class AppleTokenReceived(val token: String) : Event
+        data class LoginFailed(val message: String) : Event
         data object ErrorDismissed : Event
     }
 

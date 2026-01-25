@@ -30,6 +30,9 @@ class LoginViewModel @Inject constructor(
             is LoginContract.Event.AppleTokenReceived -> {
                 loginWithSocial(SocialLoginType.APPLE, event.token)
             }
+            is LoginContract.Event.LoginFailed -> {
+                updateState { copy(isLoading = false, errorMessage = event.message) }
+            }
             is LoginContract.Event.ErrorDismissed -> {
                 updateState { copy(errorMessage = null) }
             }

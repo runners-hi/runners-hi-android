@@ -16,6 +16,15 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
+
+        // Kakao SDK App Key (local.properties에서 읽어옴)
+        val kakaoAppKey = project.findProperty("KAKAO_NATIVE_APP_KEY") as? String ?: ""
+        buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"$kakaoAppKey\"")
+        manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] = kakaoAppKey
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {
@@ -67,6 +76,7 @@ dependencies {
     implementation(project(":presentation:common"))
     implementation(project(":presentation:splash"))
     implementation(project(":presentation:login"))
+    implementation(project(":presentation:terms"))
     implementation(project(":presentation:main"))
 
     implementation(libs.androidx.core.ktx)
@@ -85,4 +95,11 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
+
+    // Kakao SDK
+    implementation(libs.kakao.user)
+
+    // Credentials (for Apple Sign In)
+    implementation(libs.credentials)
+    implementation(libs.credentials.play.services.auth)
 }
