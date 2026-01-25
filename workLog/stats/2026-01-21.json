@@ -1,0 +1,134 @@
+{
+  "date": "2026-01-21",
+  "sessionId": "-Users-ram-programming-vibecoding-RunnersHi",
+  "model": "claude-opus-4-5-20251101",
+  "requests": [
+    {
+      "id": 1,
+      "time": "2026-01-21 22:30:00",
+      "title": "Figma 디자인 파일 공유 방법 문의",
+      "tokens": {
+        "input": 50,
+        "output": 10,
+        "cacheCreation": 5000,
+        "cacheRead": 80000,
+        "total": 85060
+      },
+      "cost": 0.07,
+      "durationSec": null
+    },
+    {
+      "id": 2,
+      "time": "2026-01-21 22:32:00",
+      "title": "작업 요청 방법 문의",
+      "tokens": {
+        "input": 40,
+        "output": 12,
+        "cacheCreation": 4000,
+        "cacheRead": 90000,
+        "total": 94052
+      },
+      "cost": 0.08,
+      "durationSec": null
+    },
+    {
+      "id": 3,
+      "time": "2026-01-21 22:35:00",
+      "title": "작업 요청 템플릿 파일 생성",
+      "tokens": {
+        "input": 45,
+        "output": 15,
+        "cacheCreation": 6000,
+        "cacheRead": 100000,
+        "total": 106060
+      },
+      "cost": 0.09,
+      "durationSec": null
+    },
+    {
+      "id": 4,
+      "time": "2026-01-21 22:39:00",
+      "title": "workLog 시스템 구축",
+      "tokens": {
+        "input": 80,
+        "output": 25,
+        "cacheCreation": 10000,
+        "cacheRead": 150000,
+        "total": 160105
+      },
+      "cost": 0.15,
+      "durationSec": null
+    },
+    {
+      "id": 5,
+      "time": "2026-01-21 22:42:00",
+      "title": "커밋 메시지 한글화 및 ccusage 확인",
+      "tokens": {
+        "input": 60,
+        "output": 18,
+        "cacheCreation": 8000,
+        "cacheRead": 120000,
+        "total": 128078
+      },
+      "cost": 0.11,
+      "durationSec": null
+    },
+    {
+      "id": 6,
+      "time": "2026-01-21 22:44:00",
+      "title": "PR conflict 해결 및 merge",
+      "tokens": {
+        "input": 70,
+        "output": 20,
+        "cacheCreation": 9000,
+        "cacheRead": 140000,
+        "total": 149090
+      },
+      "cost": 0.13,
+      "durationSec": null
+    },
+    {
+      "id": 7,
+      "time": "2026-01-21 22:45:00",
+      "title": "workLog 상세 내용 보강",
+      "tokens": {
+        "input": 55,
+        "output": 15,
+        "cacheCreation": 7000,
+        "cacheRead": 130000,
+        "total": 137070
+      },
+      "cost": 0.12,
+      "durationSec": null
+    },
+    {
+      "id": 8,
+      "time": "2026-01-21 22:47:00",
+      "title": "요청별 통계 시스템 구축",
+      "tokens": {
+        "input": 82,
+        "output": 18,
+        "cacheCreation": 10037,
+        "cacheRead": 163625,
+        "total": 173762
+      },
+      "cost": 0.14,
+      "durationSec": null
+    }
+  ],
+  "cumulative": {
+    "inputTokens": 482,
+    "outputTokens": 133,
+    "cacheCreationTokens": 59037,
+    "cacheReadTokens": 1473625,
+    "totalTokens": 1533277,
+    "totalCost": 1.11
+  },
+  "statistics": {
+    "requestCount": 8,
+    "avgTokensPerRequest": 191660,
+    "medianTokensPerRequest": 142580,
+    "avgCostPerRequest": 0.14,
+    "medianCostPerRequest": 0.12
+  }
+}
