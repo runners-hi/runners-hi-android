@@ -17,6 +17,7 @@ import com.runnersHi.presentation.login.LoginContentImpl
 import com.runnersHi.presentation.main.MainScreen
 import com.runnersHi.presentation.splash.SplashContentImpl
 import com.runnersHi.presentation.terms.TermsAgreementRoute
+import com.runnersHi.presentation.region.RegionSelectionRoute
 
 /**
  * 앱 전체 네비게이션 호스트
@@ -56,7 +57,13 @@ fun RunnersHiNavHost() {
             }
             is Screen.TermsAgreement -> {
                 TermsAgreementRoute(
-                    onNavigateToMain = { currentScreen = Screen.Main }
+                    onNavigateToMain = { currentScreen = Screen.RegionSelection }
+                )
+            }
+            is Screen.RegionSelection -> {
+                RegionSelectionRoute(
+                    onNavigateToMain = { currentScreen = Screen.Main },
+                    onNavigateBack = { currentScreen = Screen.TermsAgreement }
                 )
             }
             is Screen.Main -> {
@@ -72,5 +79,6 @@ fun RunnersHiNavHost() {
 sealed class Screen {
     data object Launcher : Screen()        // 스플래시 + 로그인 (통합)
     data object TermsAgreement : Screen()  // 신규 유저 이용약관 동의
+    data object RegionSelection : Screen() // 러닝 지역 선택
     data object Main : Screen()
 }
