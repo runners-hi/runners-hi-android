@@ -89,55 +89,22 @@ workLog/
 
 ## 작업 요청서 규칙
 
-### 파일 구조 (모듈별 관리)
+작업 요청서 생성 시 `/task-request` 스킬 사용 (`.claude/skills/task-request.md`)
+
+### 핵심 원칙
+- **모듈별 관리**: `presentation/<모듈>/docs/` 에 저장
+- **요청서 생성 시 대상 모듈 확인 필수**
+
+### 파일 구조
 ```
 presentation/<모듈>/docs/
 ├── task-requests/           # 일반 작업 요청서
-│   └── YYYY-MM-DD-작업명.md
 └── design-requests/         # 디자인 작업 요청서
-    └── YYYY-MM-DD-작업명.md
 
 docs/
-├── DESIGN_REQUEST_TEMPLATE.md    # 디자인 작업 템플릿
-├── TASK_REQUEST_TEMPLATE.md      # 일반 작업 템플릿
-└── shared/                       # 공통 문서
+├── *_TEMPLATE.md            # 템플릿
+└── shared/                  # 공통 문서
 ```
-
-예시:
-- `presentation/splash/docs/task-requests/` - 스플래시 관련 요청서
-- `presentation/login/docs/task-requests/` - 로그인 관련 요청서
-- `presentation/terms/docs/task-requests/` - 약관 관련 요청서
-
-### 요청서 생성 시 (필수)
-**작업 요청서 생성 요청 시, 반드시 대상 모듈을 사용자에게 확인**
-
-```
-"이 작업은 어떤 모듈에 해당하나요?"
-- presentation/splash
-- presentation/login
-- presentation/terms
-- presentation/home
-- 기타 (직접 입력)
-```
-
-### 디자인 작업 요청서 (Figma 링크 제공 시)
-1. **작업 정보**: 작업 유형, 우선순위
-2. **Figma 링크**: 사용자가 제공한 URL
-3. **작업 설명**: Figma에서 추출한 디자인 정보
-4. **기능 요구사항**: 필요한 동작/인터랙션
-5. **참고사항**: 기존 컴포넌트 활용 등
-
-**자동 처리:**
-- Figma MCP로 디자인 컨텍스트 추출
-- 스크린샷 생성 (필요 시)
-- Compose 코드 생성
-
-### 일반 작업 요청서
-1. **작업 정보**: 작업 유형, 우선순위
-2. **작업 설명**: 구현할 기능/수정 내용
-3. **요구사항**: 기능적 요구사항 목록
-4. **참고 파일**: 관련 코드 파일 경로
-5. **완료 조건**: 작업 완료 기준
 
 ---
 
