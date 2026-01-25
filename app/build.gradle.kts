@@ -66,7 +66,7 @@ dependencies {
     // Presentation modules
     implementation(project(":presentation:common"))
     implementation(project(":presentation:splash"))
-    implementation(project(":presentation:home"))
+    implementation(project(":presentation:main"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

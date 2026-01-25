@@ -1,4 +1,4 @@
-package com.runnersHi.screen
+package com.runnersHi.presentation.main
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -19,6 +19,7 @@ import com.runnersHi.presentation.home.HomeUiState
 
 /**
  * 메인 화면 (바텀 네비게이션 포함)
+ * 로그인 이후 앱의 메인 컨테이너 역할
  */
 @Composable
 fun MainScreen() {
@@ -43,7 +44,7 @@ fun MainScreen() {
                     .fillMaxSize()
                     .padding(innerPadding)
             )
-            // TODO: 다른 탭 화면 구현
+            // TODO: 다른 탭 화면 구현 (ranking, profile 등)
             else -> HomeScreen(
                 uiState = homeUiState,
                 modifier = Modifier

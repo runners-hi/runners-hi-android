@@ -12,9 +12,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.runnersHi.presentation.main.MainScreen
 import com.runnersHi.presentation.splash.SplashRoute
 import com.runnersHi.presentation.splash.SplashViewModel
-import com.runnersHi.screen.MainScreen
 
 /**
  * 앱 전체 네비게이션 호스트
