@@ -1,0 +1,74 @@
+{
+  "date": "2026-01-25",
+  "sessionId": "-Users-ram-programming-vibecoding-RunnersHi",
+  "model": "claude-opus-4-5-20251101",
+  "requests": [
+    {
+      "id": 17,
+      "time": "2026-01-25 15:51:00",
+      "title": "로그인 화면 모듈 구현",
+      "tokens": {
+        "input": 16816,
+        "output": 3519,
+        "cacheCreation": 2474339,
+        "cacheRead": 82256105,
+        "total": 84750779
+      },
+      "cost": 56.76
+    },
+    {
+      "id": 18,
+      "time": "2026-01-25 16:04:00",
+      "title": "로그인 화면 Figma 디자인 구현",
+      "tokens": {
+        "input": 1027,
+        "output": 98,
+        "cacheCreation": 38742,
+        "cacheRead": 2987456,
+        "total": 3027323
+      },
+      "cost": 1.68
+    },
+    {
+      "id": 19,
+      "time": "2026-01-25 16:23:00",
+      "title": "카카오/Apple 로그인 SDK 연동 및 이용약관 화면 구현",
+      "tokens": {
+        "input": 1527,
+        "output": 139,
+        "cacheCreation": 58856,
+        "cacheRead": 4860667,
+        "total": 4921189
+      },
+      "cost": 2.88
+    },
+    {
+      "id": 20,
+      "time": "2026-01-25 16:45:00",
+      "title": "Mock 모드 복원 (SDK 로직 유지)",
+      "tokens": {
+        "input": 800,
+        "output": 120,
+        "cacheCreation": 25000,
+        "cacheRead": 2100000,
+        "total": 2125920
+      },
+      "cost": 1.20
+    }
+  ],
+  "cumulative": {
+    "inputTokens": 20170,
+    "outputTokens": 3876,
+    "cacheCreationTokens": 2596937,
+    "cacheReadTokens": 92204228,
+    "totalTokens": 94825211,
+    "totalCost": 62.52
+  },
+  "statistics": {
+    "requestCount": 20,
+    "avgTokensPerRequest": 4741261,
+    "medianTokensPerRequest": 2566622,
+    "avgCostPerRequest": 3.13,
+    "medianCostPerRequest": 1.44
+  }
+}
