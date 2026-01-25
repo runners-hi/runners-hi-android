@@ -74,7 +74,11 @@ dependencies {
 
     // Presentation modules
     implementation(project(":presentation:common"))
+    implementation(project(":presentation:launcher-api"))
+    implementation(project(":presentation:launcher"))
+    implementation(project(":presentation:splash-api"))
     implementation(project(":presentation:splash"))
+    implementation(project(":presentation:login-api"))
     implementation(project(":presentation:login"))
     implementation(project(":presentation:terms"))
     implementation(project(":presentation:main"))

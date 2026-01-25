@@ -46,8 +46,12 @@ include(":data:ranking:api")
 include(":data:ranking:impl")
 
 // Presentation modules
+include(":presentation:splash-api")
 include(":presentation:splash")
+include(":presentation:login-api")
 include(":presentation:login")
+include(":presentation:launcher-api")
+include(":presentation:launcher")
 include(":presentation:terms")
 include(":presentation:main")
 include(":presentation:home")
