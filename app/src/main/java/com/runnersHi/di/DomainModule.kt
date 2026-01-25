@@ -12,6 +12,10 @@ import com.runnersHi.domain.terms.AgreeTermsUseCaseImpl
 import com.runnersHi.domain.terms.GetTermsListUseCaseImpl
 import com.runnersHi.domain.terms.usecase.AgreeTermsUseCase
 import com.runnersHi.domain.terms.usecase.GetTermsListUseCase
+import com.runnersHi.domain.region.SearchRegionsUseCaseImpl
+import com.runnersHi.domain.region.SelectRegionUseCaseImpl
+import com.runnersHi.domain.region.usecase.SearchRegionsUseCase
+import com.runnersHi.domain.region.usecase.SelectRegionUseCase
 import com.runnersHi.domain.user.GetCurrentUserUseCaseImpl
 import com.runnersHi.domain.user.usecase.GetCurrentUserUseCase
 import dagger.Binds
@@ -57,4 +61,14 @@ abstract class DomainModule {
     abstract fun bindAgreeTermsUseCase(
         impl: AgreeTermsUseCaseImpl
     ): AgreeTermsUseCase
+
+    @Binds
+    abstract fun bindSearchRegionsUseCase(
+        impl: SearchRegionsUseCaseImpl
+    ): SearchRegionsUseCase
+
+    @Binds
+    abstract fun bindSelectRegionUseCase(
+        impl: SelectRegionUseCaseImpl
+    ): SelectRegionUseCase
 }

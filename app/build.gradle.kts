@@ -63,6 +63,8 @@ dependencies {
     implementation(project(":domain:ranking:impl"))
     implementation(project(":domain:terms:api"))
     implementation(project(":domain:terms:impl"))
+    implementation(project(":domain:region:api"))
+    implementation(project(":domain:region:impl"))
 
     // Data modules
     implementation(project(":data:splash:api"))
@@ -75,6 +77,8 @@ dependencies {
     implementation(project(":data:ranking:impl"))
     implementation(project(":data:terms:api"))
     implementation(project(":data:terms:impl"))
+    implementation(project(":data:region:api"))
+    implementation(project(":data:region:impl"))
 
     // Presentation modules
     implementation(project(":presentation:common"))
@@ -85,6 +89,7 @@ dependencies {
     implementation(project(":presentation:login:api"))
     implementation(project(":presentation:login:impl"))
     implementation(project(":presentation:terms"))
+    implementation(project(":presentation:region"))
     implementation(project(":presentation:main"))
 
     implementation(libs.androidx.core.ktx)

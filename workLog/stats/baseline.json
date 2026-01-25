@@ -1,9 +1,9 @@
 {
-  "timestamp": "2026-01-25T11:15:00Z",
-  "description": "workLog 비용 소급 적용 완료 후",
-  "inputTokens": 27533,
-  "outputTokens": 4496,
-  "cacheCreationTokens": 3162246,
-  "cacheReadTokens": 121246152,
-  "totalCost": 80.64
+  "timestamp": "2026-01-25T21:00:00Z",
+  "description": "러닝 지역 선택 화면 구현 완료 후",
+  "inputTokens": 29730,
+  "outputTokens": 4685,
+  "cacheCreationTokens": 3250756,
+  "cacheReadTokens": 128379098,
+  "totalCost": 84.77
 }
