@@ -1,24 +1,36 @@
 package com.runnersHi.presentation.common.navigation
 
+import androidx.annotation.DrawableRes
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.Star
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.runnersHi.presentation.common.R
+import com.runnersHi.presentation.common.theme.BlueGray40
+import com.runnersHi.presentation.common.theme.BlueGray70
 import com.runnersHi.presentation.common.theme.BlueGray90
 import com.runnersHi.presentation.common.theme.Primary
 import com.runnersHi.presentation.common.theme.RunnersHiTheme
@@ -37,8 +49,7 @@ enum class BottomNavTab {
 data class BottomNavItem(
     val tab: BottomNavTab,
     val label: String,
-    val selectedIcon: ImageVector,
-    val unselectedIcon: ImageVector
+    @DrawableRes val iconRes: Int
 )
 
 /**
@@ -48,39 +59,37 @@ val defaultBottomNavItems = listOf(
     BottomNavItem(
         tab = BottomNavTab.HOME,
         label = "홈",
-        selectedIcon = Icons.Filled.Home,
-        unselectedIcon = Icons.Outlined.Home
+        iconRes = R.drawable.ic_home_mono
     ),
     BottomNavItem(
         tab = BottomNavTab.RANKING,
         label = "랭킹",
-        selectedIcon = Icons.Filled.Star,
-        unselectedIcon = Icons.Outlined.Star
+        iconRes = R.drawable.ic_rank_mono
     ),
     BottomNavItem(
         tab = BottomNavTab.RECORD,
         label = "기록",
-        selectedIcon = Icons.Filled.Star,
-        unselectedIcon = Icons.Outlined.Star
+        iconRes = R.drawable.ic_record_mono
     ),
     BottomNavItem(
         tab = BottomNavTab.MISSION,
         label = "미션",
-        selectedIcon = Icons.Filled.Star,
-        unselectedIcon = Icons.Outlined.Star
+        iconRes = R.drawable.ic_mission_mono
     ),
     BottomNavItem(
         tab = BottomNavTab.MY_PAGE,
         label = "마이페이지",
-        selectedIcon = Icons.Filled.Person,
-        unselectedIcon = Icons.Outlined.Person
+        iconRes = R.drawable.ic_user_mono
     )
 )
 
-private val InactiveColor = androidx.compose.ui.graphics.Color(0xFF75808B)
+// Figma Design Colors
+private val InactiveColor = Color(0xFF75808B) // BlueGray/50
 
 /**
  * 러너스하이 하단 네비게이션 바
+ *
+ * Figma: node-id=1-1119
  *
  * @param currentTab 현재 선택된 탭
  * @param onTabSelected 탭 선택 콜백
@@ -94,36 +103,99 @@ fun RunnersHiBottomNavigation(
     modifier: Modifier = Modifier,
     items: List<BottomNavItem> = defaultBottomNavItems
 ) {
-    NavigationBar(
-        modifier = modifier,
-        containerColor = BlueGray90,
-        contentColor = Primary
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(BlueGray90)
     ) {
-        items.forEach { item ->
-            val selected = currentTab == item.tab
+        // Top line (1dp)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(1.dp)
+                .background(BlueGray70)
+        )
 
-            NavigationBarItem(
-                selected = selected,
-                onClick = { onTabSelected(item.tab) },
-                icon = {
-                    Icon(
-                        imageVector = if (selected) item.selectedIcon else item.unselectedIcon,
-                        contentDescription = item.label,
-                        modifier = Modifier.size(24.dp)
-                    )
-                },
-                label = {
-                    Text(text = item.label)
-                },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Primary,
-                    selectedTextColor = Primary,
-                    unselectedIconColor = InactiveColor,
-                    unselectedTextColor = InactiveColor,
-                    indicatorColor = BlueGray90
+        // Tab row
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(60.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            items.forEach { item ->
+                val selected = currentTab == item.tab
+                val color = if (selected) Primary else InactiveColor
+
+                NavTabItem(
+                    item = item,
+                    selected = selected,
+                    color = color,
+                    onClick = { onTabSelected(item.tab) }
                 )
-            )
+            }
         }
+
+        // Bottom home indicator bar
+        HomeIndicatorBar()
+    }
+}
+
+@Composable
+private fun NavTabItem(
+    item: BottomNavItem,
+    selected: Boolean,
+    color: Color,
+    onClick: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .width(72.dp)
+            .height(60.dp)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onClick
+            )
+            .padding(horizontal = 4.dp, vertical = 8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            painter = painterResource(id = item.iconRes),
+            contentDescription = item.label,
+            modifier = Modifier.size(24.dp),
+            tint = color
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = item.label,
+            color = color,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Normal,
+            lineHeight = 16.sp
+        )
+    }
+}
+
+@Composable
+private fun HomeIndicatorBar() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(28.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .width(66.dp)
+                .height(4.dp)
+                .background(
+                    color = BlueGray40,
+                    shape = RoundedCornerShape(2.dp)
+                )
+        )
     }
 }
 
