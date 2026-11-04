@@ -1,9 +1,7 @@
 package com.runnersHi.di
 
-import com.runnersHi.data.auth.AuthLocalDataSource
 import com.runnersHi.data.auth.AuthRemoteDataSource
 import com.runnersHi.data.auth.AuthRepositoryImpl
-import com.runnersHi.data.auth.MockAuthLocalDataSource
 import com.runnersHi.data.auth.MockAuthRemoteDataSource
 import com.runnersHi.data.ranking.MockRankingLocalDataSource
 import com.runnersHi.data.ranking.MockRankingRemoteDataSource
@@ -52,12 +50,6 @@ abstract class DataModule {
     ): AppConfigRemoteDataSource
 
     // DataSources - Auth
-    @Binds
-    @Singleton
-    abstract fun bindAuthLocalDataSource(
-        impl: MockAuthLocalDataSource
-    ): AuthLocalDataSource
-
     @Binds
     @Singleton
     abstract fun bindAuthRemoteDataSource(

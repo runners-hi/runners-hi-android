@@ -14,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.runnersHi.BuildConfig
 import com.runnersHi.auth.AppleLoginHandler
 import com.runnersHi.auth.KakaoLoginHandler
 import com.runnersHi.health.HealthPermissionHandler
@@ -47,7 +48,7 @@ fun RunnersHiNavHost() {
                 LauncherRoute(
                     splashContent = SplashContentImpl,
                     loginContent = LoginContentImpl,
-                    currentVersion = "1.0.0", // TODO: BuildConfig.VERSION_NAME 사용
+                    currentVersion = BuildConfig.VERSION_NAME,
                     onNavigateToHome = {
                         currentScreen = Screen.Main
                     },
@@ -96,13 +97,6 @@ fun RunnersHiNavHost() {
                             context.startActivity(HealthPermissionHandler.getHealthConnectSettingsIntent())
                         } catch (e: Exception) {
                             // Health Connect settings not available
-                        }
-                    },
-                    onOpenPlayStoreForHealthConnect = {
-                        try {
-                            context.startActivity(HealthPermissionHandler.getPlayStoreIntent())
-                        } catch (e: Exception) {
-                            // Play Store not available
                         }
                     }
                 )

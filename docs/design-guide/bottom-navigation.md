@@ -83,8 +83,8 @@ val Primary = Color(0xFF00EEFF)     // 활성 아이콘/텍스트
 
 ## 구현 체크리스트
 
-- [ ] 커스텀 아이콘 5개 추가 (Figma Export)
-- [ ] 상단 라인 (1dp, BlueGray/70) 추가
-- [ ] 하단 홈 인디케이터 바 추가
-- [ ] Material NavigationBarItem → 커스텀 구현으로 변경
-- [ ] 탭 크기 72x60dp 적용
+- [x] 커스텀 아이콘 5개 추가 (Figma Export)
+- [x] 상단 라인 (1dp, BlueGray/70) 추가
+- [x] 하단 홈 인디케이터 바 추가
+- [x] Material NavigationBarItem → 커스텀 구현으로 변경
+- [x] 탭 크기 72x60dp 적용

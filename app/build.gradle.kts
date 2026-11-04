@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -15,10 +17,17 @@ android {
         minSdk = 26
         targetSdk = 35
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // Kakao SDK App Key (local.properties에서 읽어옴)
-        val kakaoAppKey = project.findProperty("KAKAO_NATIVE_APP_KEY") as? String ?: ""
+        // Kakao SDK App Key: local.properties → gradle property 순으로 읽음 (없으면 Mock 로그인)
+        val localProperties = Properties().apply {
+            val file = rootProject.file("local.properties")
+            if (file.exists()) file.inputStream().use { load(it) }
+        }
+        val kakaoAppKey = localProperties.getProperty("KAKAO_NATIVE_APP_KEY")
+            ?: project.findProperty("KAKAO_NATIVE_APP_KEY") as? String
+            ?: ""
         buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"$kakaoAppKey\"")
         manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] = kakaoAppKey
     }
@@ -110,6 +119,12 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
+
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.ext.junit)
     testImplementation(libs.junit)
 
     // Hilt

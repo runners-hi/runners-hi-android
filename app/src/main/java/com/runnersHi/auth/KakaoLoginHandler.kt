@@ -1,6 +1,7 @@
 package com.runnersHi.auth
 
 import android.content.Context
+import com.runnersHi.BuildConfig
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
@@ -15,8 +16,8 @@ import kotlin.coroutines.resumeWithException
  */
 object KakaoLoginHandler {
 
-    // TODO: 실제 SDK 연동 시 false로 변경
-    private const val USE_MOCK = true
+    // 앱 키가 없으면 SDK가 초기화되지 않으므로 Mock 로그인으로 동작
+    private val USE_MOCK = BuildConfig.KAKAO_NATIVE_APP_KEY.isBlank()
 
     /**
      * 카카오 로그인 실행
@@ -67,7 +68,12 @@ object KakaoLoginHandler {
     /**
      * 카카오 로그아웃
      */
-    suspend fun logout(): Unit = suspendCancellableCoroutine { continuation ->
+    suspend fun logout() {
+        if (USE_MOCK) return
+        logoutFromSdk()
+    }
+
+    private suspend fun logoutFromSdk(): Unit = suspendCancellableCoroutine { continuation ->
         UserApiClient.instance.logout { error ->
             if (error != null) {
                 continuation.resumeWithException(error)

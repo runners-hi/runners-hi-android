@@ -29,8 +29,9 @@ class RegionSelectionViewModel @Inject constructor(
         viewModelScope.launch {
             searchQueryFlow
                 .debounce(300)
-                .filter { it.isNotBlank() }
+                // 지운 뒤 같은 검색어를 다시 입력해도 검색되도록 빈 값 제거는 중복 제거 뒤에 한다.
                 .distinctUntilChanged()
+                .filter { it.isNotBlank() }
                 .collect { query ->
                     searchRegions(query)
                 }

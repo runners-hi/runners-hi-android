@@ -32,6 +32,7 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":presentation:common"))
     implementation(project(":domain:home:api"))
+    implementation(project(":domain:auth:api"))
     implementation(project(":domain:health:api"))
 
     implementation(libs.androidx.core.ktx)
@@ -44,11 +45,13 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.kotlinx.coroutines.android)
-    implementation(libs.coil.compose)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
 
     debugImplementation(libs.androidx.ui.tooling)
+
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
 }

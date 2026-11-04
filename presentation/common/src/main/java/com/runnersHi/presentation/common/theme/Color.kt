@@ -27,6 +27,14 @@ val PrimaryYellow = Color(0xFFF5FF66)   // 노랑 컬러 (Gold tier 등)
 val PrimaryRed = Color(0xFFFF6363)      // 빨강 컬러
 val PrimarySecondary = Color(0xFF255860)
 
+val PrimaryAmber = Color(0xFFFFCB2F)    // 시즌 미션 강조
+val KakaoYellow = Color(0xFFFEE500)     // 카카오 로그인 브랜드 컬러
+
+// Tier Progress
+val TierBronzeProgress = Color(0xFFFF6B35)
+val TierSilverProgress = Color(0xFFA8B4C4)
+val TierPlatinumProgress = Color(0xFF4ADE80)
+
 // Deprecated alias
 @Deprecated("Use Primary instead", ReplaceWith("Primary"))
 val PrimaryCyan = Primary               // 기존 PrimaryCyan 사용처 호환

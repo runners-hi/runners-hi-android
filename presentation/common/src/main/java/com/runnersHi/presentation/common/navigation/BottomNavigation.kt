@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.runnersHi.presentation.common.R
 import com.runnersHi.presentation.common.theme.BlueGray40
+import com.runnersHi.presentation.common.theme.BlueGray50
 import com.runnersHi.presentation.common.theme.BlueGray70
 import com.runnersHi.presentation.common.theme.BlueGray90
 import com.runnersHi.presentation.common.theme.Primary
@@ -83,8 +84,7 @@ val defaultBottomNavItems = listOf(
     )
 )
 
-// Figma Design Colors
-private val InactiveColor = Color(0xFF75808B) // BlueGray/50
+private val InactiveColor = BlueGray50
 
 /**
  * 러너스하이 하단 네비게이션 바

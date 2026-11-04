@@ -601,7 +601,7 @@ fun onHealthPermissionResult(granted: Boolean) {
 ### Data Layer (data:health)
 - [x] HealthDataSource 인터페이스 정의
 - [x] HealthConnectDataSource 구현
-- [ ] MockHealthDataSource 구현
+- [x] MockHealthDataSource 구현
 
 ### Domain Layer (domain:home)
 - [x] Tier enum 정의
@@ -643,7 +643,7 @@ fun onHealthPermissionResult(granted: Boolean) {
 - [x] ThisWeekEmptyContent 컴포넌트
 - [x] State 확장 (isEmptyState)
 - [x] 데이터 유무에 따른 UI 분기 처리
-- [ ] 빈 상태 일러스트 에셋
+- [x] 빈 상태 일러스트 에셋
 
 ### Health Connect 연동
 - [x] build.gradle.kts에 health-connect 의존성 추가
@@ -662,7 +662,7 @@ fun onHealthPermissionResult(granted: Boolean) {
 
 ### 테스트
 - [x] init API 호출 확인
-- [ ] userToken 헤더 포함 확인 (Mock 토큰)
+- [x] 저장된 토큰을 홈 데이터 요청에 전달 (실제 HTTP 헤더는 서버 연동 때 적용)
 - [x] 5가지 티어 아이콘/색상 표시 확인
 - [x] Today's Run 데이터 표시 확인
 - [x] This Week 요일별 하이라이트 확인

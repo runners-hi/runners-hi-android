@@ -336,34 +336,34 @@ containerWidth = screenWidth - 좌우 패딩(40dp)
 ## 구현 체크리스트
 
 ### presentation:main 모듈
-- [ ] Title Bar (로고, 알림 아이콘) - 상단 고정
-- [ ] 타이틀 하단 고정 영역 (8dp)
-- [ ] Tier Card (5가지 티어 아이콘, 정보, Progress Bar)
-- [ ] Today's Run Card (Distance, Pace, Time) - Flexible width 적용
-- [ ] This Week Card (총 거리, 요일 인디케이터)
-- [ ] Mission Event Section (헤더, 배너 height 40dp 고정, 미션 그리드 Flexible)
-- [ ] 스크롤 콘텐츠와 BottomNav 간격 40dp
-- [ ] 세로 스크롤 구현
+- [x] Title Bar (로고, 알림 아이콘) - 상단 고정
+- [x] 타이틀 하단 고정 영역 (8dp)
+- [x] Tier Card (5가지 티어 아이콘, 정보, Progress Bar)
+- [x] Today's Run Card (Distance, Pace, Time) - Flexible width 적용
+- [x] This Week Card (총 거리, 요일 인디케이터)
+- [x] Mission Event Section (헤더, 배너 height 40dp 고정, 미션 그리드 Flexible)
+- [x] 스크롤 콘텐츠와 BottomNav 간격 40dp
+- [x] 세로 스크롤 구현
 
 ### Tier Info Bottom Sheet (바텀시트)
-- [ ] 딤(Dim) 배경 (rgba(12, 13, 14, 0.6))
-- [ ] 바텀시트 컨테이너 (상단 모서리 36dp)
-- [ ] 드래그 핸들 인디케이터
-- [ ] 현재 티어 정보 섹션
-- [ ] 티어 목록 카드 (5가지 티어)
-- [ ] 티어 안내 문구 (bullet list)
-- [ ] 딤 클릭 시 닫기 동작
+- [x] 딤(Dim) 배경 (rgba(12, 13, 14, 0.6))
+- [x] 바텀시트 컨테이너 (상단 모서리 36dp)
+- [x] 드래그 핸들 인디케이터
+- [x] 현재 티어 정보 섹션
+- [x] 티어 목록 카드 (5가지 티어)
+- [x] 티어 안내 문구 (bullet list)
+- [x] 딤 클릭 시 닫기 동작
 
 ### Empty State (빈 데이터 상태)
-- [ ] Today's Run Card 빈 상태 (러닝 트랙 일러스트 + 안내 문구)
-- [ ] This Week Card 빈 상태 (0 km + 안내 필드)
-- [ ] 데이터 유무에 따른 UI 분기 처리
+- [x] Today's Run Card 빈 상태 (러닝 트랙 일러스트 + 안내 문구)
+- [x] This Week Card 빈 상태 (0 km + 안내 필드)
+- [x] 데이터 유무에 따른 UI 분기 처리
 
 ### presentation:common 모듈
-- [ ] Bottom Navigation Bar (5개 탭) - 하단 고정, 공통 컴포넌트로 분리
+- [x] Bottom Navigation Bar (5개 탭) - 하단 고정, 공통 컴포넌트로 분리
 
 ### 에셋
-- [ ] 5가지 티어 이미지 (Bronze, Silver, Gold, Platinum, Diamond)
-- [ ] 미션 placeholder 이미지
-- [ ] 빈 상태 러닝 트랙 일러스트
-- [ ] 초기 미션 아이콘 (데뷔전, 집 앞 스타트)
+- [x] 5가지 티어 이미지 (Bronze, Silver, Gold, Platinum, Diamond)
+- [x] 미션 placeholder 이미지
+- [x] 빈 상태 러닝 트랙 일러스트
+- [x] 초기 미션 아이콘 (데뷔전, 집 앞 스타트)

@@ -1,5 +1,7 @@
 package com.runnersHi.presentation.main
 
+import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -39,6 +41,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -46,19 +49,29 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.AsyncImage
 import com.runnersHi.domain.home.model.Tier
+import com.runnersHi.presentation.common.R as CommonR
+import com.runnersHi.presentation.common.component.missionIconRes
 import com.runnersHi.presentation.common.mvi.collectEffect
 import com.runnersHi.presentation.common.mvi.collectState
 import com.runnersHi.presentation.common.navigation.BottomNavTab
 import com.runnersHi.presentation.common.navigation.RunnersHiBottomNavigation
+import com.runnersHi.presentation.common.theme.BlueGray20
+import com.runnersHi.presentation.common.theme.BlueGray30
+import com.runnersHi.presentation.common.theme.BlueGray40
+import com.runnersHi.presentation.common.theme.BlueGray5
 import com.runnersHi.presentation.common.theme.BlueGray70
 import com.runnersHi.presentation.common.theme.BlueGray80
 import com.runnersHi.presentation.common.theme.BlueGray90
 import com.runnersHi.presentation.common.theme.Primary
+import com.runnersHi.presentation.common.theme.PrimaryAmber
 import com.runnersHi.presentation.common.theme.PrimaryRed
+import com.runnersHi.presentation.common.theme.PrimarySecondary
 import com.runnersHi.presentation.common.theme.PrimaryYellow
 import com.runnersHi.presentation.common.theme.RunnersHiTheme
+import com.runnersHi.presentation.common.theme.TierBronzeProgress
+import com.runnersHi.presentation.common.theme.TierPlatinumProgress
+import com.runnersHi.presentation.common.theme.TierSilverProgress
 import kotlinx.coroutines.launch
 
 // Colors from design spec (Figma)
@@ -66,20 +79,20 @@ private val CardBackground = BlueGray80          // #2E3238
 private val CardBorder = BlueGray70              // #454B54
 private val ProgressBackground = BlueGray70     // #454B54
 private val TextPrimary = Color.White            // #FFFFFF
-private val TextSecondary = Color(0xFFC7CBD1)    // BlueGray/20
-private val TextTertiary = Color(0xFF8F97A3)     // BlueGray/40
-private val DayActiveBackground = Color(0xFF255860)  // PrimarySecondary
-private val MissionCompletedBackground = Color(0x33FFCB2F)
-private val MissionCompletedBorder = Color(0xFFFFCB2F)
+private val TextSecondary = BlueGray20
+private val TextTertiary = BlueGray40
+private val DayActiveBackground = PrimarySecondary
+private val MissionCompletedBackground = PrimaryAmber.copy(alpha = 0.2f)
+private val MissionCompletedBorder = PrimaryAmber
 
 @Composable
 fun MainRoute(
     viewModel: MainViewModel = hiltViewModel(),
     onRequestHealthPermission: () -> Unit = {},
-    onOpenHealthConnectSettings: () -> Unit = {},
-    onOpenPlayStoreForHealthConnect: () -> Unit = {}
+    onOpenHealthConnectSettings: () -> Unit = {}
 ) {
     val state by viewModel.collectState()
+    val context = LocalContext.current
 
     viewModel.collectEffect { effect ->
         when (effect) {
@@ -96,16 +109,13 @@ fun MainRoute(
                 // TODO: Navigate to mission detail
             }
             is MainContract.Effect.ShowToast -> {
-                // TODO: Show toast
+                Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
             }
             is MainContract.Effect.RequestHealthPermission -> {
                 onRequestHealthPermission()
             }
             is MainContract.Effect.OpenHealthConnectSettings -> {
                 onOpenHealthConnectSettings()
-            }
-            is MainContract.Effect.OpenPlayStoreForHealthConnect -> {
-                onOpenPlayStoreForHealthConnect()
             }
         }
     }
@@ -235,7 +245,7 @@ private fun HomeContent(
 
         // Today's Run Card (Empty State or Normal)
         item {
-            if (state.isEmptyState) {
+            if (state.isTodayEmpty) {
                 TodaysRunEmptyCard(
                     onClick = { onEvent(MainContract.Event.TodaysRunClicked) },
                     modifier = Modifier.padding(horizontal = 20.dp)
@@ -255,7 +265,7 @@ private fun HomeContent(
 
         // This Week Card (Empty State or Normal)
         item {
-            if (state.isEmptyState) {
+            if (state.isWeekEmpty) {
                 ThisWeekEmptyCard(
                     modifier = Modifier.padding(horizontal = 20.dp)
                 )
@@ -350,7 +360,7 @@ private fun TierCard(
                     )
                     Text(
                         text = tierInfo.level,
-                        color = Color(0xFFF1F2F4),
+                        color = BlueGray5,
                         fontSize = 14.sp
                     )
                 }
@@ -454,21 +464,21 @@ private fun TodaysRunCard(
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 RunDataItem(
-                    iconRes = R.drawable.ic_track,
+                    iconRes = CommonR.drawable.ic_track,
                     iconBackgroundColor = Primary.copy(alpha = 0.2f),
                     value = todaysRun.distance,
                     label = "Distance",
                     modifier = Modifier.weight(1f)
                 )
                 RunDataItem(
-                    iconRes = R.drawable.ic_flame,
+                    iconRes = CommonR.drawable.ic_flame,
                     iconBackgroundColor = PrimaryRed.copy(alpha = 0.2f),
                     value = todaysRun.pace,
                     label = "Pace",
                     modifier = Modifier.weight(1f)
                 )
                 RunDataItem(
-                    iconRes = R.drawable.ic_timer,
+                    iconRes = CommonR.drawable.ic_timer,
                     iconBackgroundColor = PrimaryYellow.copy(alpha = 0.2f),
                     value = todaysRun.time,
                     label = "Time",
@@ -588,7 +598,7 @@ private fun DayIndicator(
                 .clip(RoundedCornerShape(100.dp))
                 .background(
                     if (day.hasRun) DayActiveBackground
-                    else Color(0x33ABB1BA)
+                    else BlueGray30.copy(alpha = 0.2f)
                 ),
             contentAlignment = Alignment.Center
         ) {
@@ -639,7 +649,7 @@ private fun MissionEventSection(
             )
             // Arrow icon (24x24)
             Icon(
-                painter = painterResource(id = R.drawable.ic_arrow_right_w),
+                painter = painterResource(id = CommonR.drawable.ic_arrow_right_w),
                 contentDescription = "더보기",
                 tint = Color.Unspecified,
                 modifier = Modifier.size(24.dp)
@@ -725,24 +735,12 @@ private fun MissionItem(
                 ),
             contentAlignment = Alignment.Center
         ) {
-            // Load icon from URL with dynamic size
-            if (mission.imageUrl.isNotEmpty()) {
-                AsyncImage(
-                    model = mission.imageUrl,
-                    contentDescription = mission.name,
-                    modifier = Modifier.size(
-                        width = mission.iconWidthDp.dp,
-                        height = mission.iconHeightDp.dp
-                    ),
-                    contentScale = ContentScale.Fit
-                )
-            } else {
-                // Placeholder
-                Text(
-                    text = if (mission.isCompleted) "✓" else "🏅",
-                    fontSize = 24.sp
-                )
-            }
+            Image(
+                painter = painterResource(id = missionIconRes(mission.iconName)),
+                contentDescription = mission.name,
+                modifier = Modifier.size(60.dp),
+                contentScale = ContentScale.Fit
+            )
         }
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -750,7 +748,7 @@ private fun MissionItem(
         // Mission name
         Text(
             text = mission.name,
-            color = Color(0xFFF1F2F4),
+            color = BlueGray5,
             fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold,
             textAlign = TextAlign.Center,
@@ -809,20 +807,12 @@ private fun TodaysRunEmptyCard(
             Spacer(modifier = Modifier.height(24.dp))
 
             // Empty State Illustration
-            Box(
-                modifier = Modifier
-                    .size(80.dp)
-                    .clip(RoundedCornerShape(40.dp))
-                    .background(BlueGray70),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_track),
-                    contentDescription = "러닝",
-                    tint = TextSecondary,
-                    modifier = Modifier.size(40.dp)
-                )
-            }
+            Image(
+                painter = painterResource(id = CommonR.drawable.ic_empty_track),
+                contentDescription = null,
+                modifier = Modifier.height(60.dp),
+                contentScale = ContentScale.FillHeight
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -1092,21 +1082,21 @@ private fun PlaceholderContent(
 
 private fun Tier.toProgressColor(): Color {
     return when (this) {
-        Tier.BRONZE -> Color(0xFFFF6B35)
-        Tier.SILVER -> Color(0xFFA8B4C4)
+        Tier.BRONZE -> TierBronzeProgress
+        Tier.SILVER -> TierSilverProgress
         Tier.GOLD -> PrimaryYellow
-        Tier.PLATINUM -> Color(0xFF4ADE80)
+        Tier.PLATINUM -> TierPlatinumProgress
         Tier.DIAMOND -> Primary
     }
 }
 
 private fun Tier.toTierIconRes(): Int {
     return when (this) {
-        Tier.BRONZE -> R.drawable.ic_tier_bronze
-        Tier.SILVER -> R.drawable.ic_tier_silver
-        Tier.GOLD -> R.drawable.ic_tier_gold
-        Tier.PLATINUM -> R.drawable.ic_tier_platinum
-        Tier.DIAMOND -> R.drawable.ic_tier_diamond
+        Tier.BRONZE -> CommonR.drawable.ic_tier_bronze
+        Tier.SILVER -> CommonR.drawable.ic_tier_silver
+        Tier.GOLD -> CommonR.drawable.ic_tier_gold
+        Tier.PLATINUM -> CommonR.drawable.ic_tier_platinum
+        Tier.DIAMOND -> CommonR.drawable.ic_tier_diamond
     }
 }
 
@@ -1144,9 +1134,9 @@ private fun MainScreenPreview() {
                 missionEvent = MissionEventUiModel(
                     banner = EventBannerUiModel("추석 이벤트", "2025.10.01 - 2025.10.31"),
                     missions = listOf(
-                        MissionItemUiModel("1", "문라이트", "10월 러닝 인증", "", true, 60, 60),
-                        MissionItemUiModel("2", "전력질주", "페이스 5'00\"", "", false, 60, 60),
-                        MissionItemUiModel("3", "밤톨 러닝", "1km", "", true, 60, 60)
+                        MissionItemUiModel("1", "문라이트", "10월 러닝 인증", "mission_moonlight", true),
+                        MissionItemUiModel("2", "전력질주", "페이스 5'00\"", "mission_sprint", false),
+                        MissionItemUiModel("3", "밤톨 러닝", "1km", "mission_acorn", true)
                     )
                 )
             ),

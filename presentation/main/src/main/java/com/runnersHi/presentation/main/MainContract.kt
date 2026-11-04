@@ -19,7 +19,8 @@ object MainContract {
         val errorMessage: String? = null,
         val currentTab: BottomNavTab = BottomNavTab.HOME,
         // Empty State
-        val isEmptyState: Boolean = false,
+        val isTodayEmpty: Boolean = false,
+        val isWeekEmpty: Boolean = false,
         // Tier Bottom Sheet
         val showTierInfoSheet: Boolean = false,
         val tierGuideList: List<TierGuideItem> = defaultTierGuideList,
@@ -53,7 +54,6 @@ object MainContract {
         // Health Connect
         data object RequestHealthPermission : Effect
         data object OpenHealthConnectSettings : Effect
-        data object OpenPlayStoreForHealthConnect : Effect
     }
 }
 
@@ -103,10 +103,8 @@ data class MissionItemUiModel(
     val id: String,
     val name: String,
     val description: String,
-    val imageUrl: String,
-    val isCompleted: Boolean,
-    val iconWidthDp: Int = 60,
-    val iconHeightDp: Int = 60
+    val iconName: String,
+    val isCompleted: Boolean
 )
 
 // Tier Guide models

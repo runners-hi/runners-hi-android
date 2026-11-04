@@ -29,4 +29,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.javax.inject)
     implementation(libs.health.connect)
+
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
 }

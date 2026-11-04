@@ -1,11 +1,11 @@
 package com.runnersHi.presentation.main
 
 import androidx.lifecycle.viewModelScope
+import com.runnersHi.domain.auth.usecase.GetStoredTokenUseCase
 import com.runnersHi.domain.health.model.ExerciseRecord
 import com.runnersHi.domain.health.usecase.CheckHealthPermissionUseCase
 import com.runnersHi.domain.health.usecase.GetTodayRunningDataUseCase
 import com.runnersHi.domain.health.usecase.GetWeekRunningDataUseCase
-import com.runnersHi.domain.home.model.DayOfWeek
 import com.runnersHi.domain.home.model.HomeData
 import com.runnersHi.domain.home.usecase.GetHomeDataUseCase
 import com.runnersHi.presentation.common.mvi.MviViewModel
@@ -18,6 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
+    private val getStoredTokenUseCase: GetStoredTokenUseCase,
     private val getHomeDataUseCase: GetHomeDataUseCase,
     private val checkHealthPermissionUseCase: CheckHealthPermissionUseCase,
     private val getTodayRunningDataUseCase: GetTodayRunningDataUseCase,
@@ -27,8 +28,8 @@ class MainViewModel @Inject constructor(
 ) {
 
     init {
+        // 권한 확인이 끝난 뒤 데이터를 불러와야 기록을 읽을 수 있다.
         handleEvent(MainContract.Event.CheckHealthPermission)
-        handleEvent(MainContract.Event.LoadData)
     }
 
     override fun handleEvent(event: MainContract.Event) {
@@ -79,9 +80,9 @@ class MainViewModel @Inject constructor(
             if (status.needsPermissionRequest) {
                 sendEffect(MainContract.Effect.RequestHealthPermission)
             } else if (!status.isAvailable) {
-                // Health Connect not available, show play store option
-                sendEffect(MainContract.Effect.OpenPlayStoreForHealthConnect)
+                sendEffect(MainContract.Effect.ShowToast("Health Connect가 없어 러닝 기록을 불러올 수 없어요"))
             }
+            loadData()
         }
     }
 
@@ -103,11 +104,14 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             updateState { copy(isLoading = true, errorMessage = null) }
 
-            // TODO: 실제로는 토큰 관리자에서 가져와야 함
-            val mockToken = "mock_user_token"
+            val token = getStoredTokenUseCase()
+            if (token == null) {
+                updateState { copy(isLoading = false, errorMessage = "로그인 정보가 없습니다.") }
+                return@launch
+            }
 
             // Load home data (tier, missions, etc.)
-            val homeDataResult = async { getHomeDataUseCase(mockToken) }
+            val homeDataResult = async { getHomeDataUseCase(token.accessToken) }
 
             // Load health data if permission is granted
             val hasHealthPermission = state.value.healthPermissionGranted
@@ -124,30 +128,14 @@ class MainViewModel @Inject constructor(
                     val todayRecords = todayHealthData?.await()?.getOrNull() ?: emptyList()
                     val weekRecords = weekHealthData?.await()?.getOrNull() ?: emptyList()
 
-                    // Calculate today's run from Health Connect or use mock data
-                    val todaysRunUiModel = if (todayRecords.isNotEmpty()) {
-                        todayRecords.toTodaysRunUiModel()
-                    } else {
-                        homeData.toTodaysRunUiModel()
-                    }
-
-                    // Calculate this week from Health Connect or use mock data
-                    val thisWeekUiModel = if (weekRecords.isNotEmpty()) {
-                        weekRecords.toThisWeekUiModel()
-                    } else {
-                        homeData.toThisWeekUiModel()
-                    }
-
-                    val isEmpty = (todayRecords.isEmpty() && homeData.todaysRun.distanceKm == 0.0) &&
-                        (weekRecords.isEmpty() && homeData.thisWeek.totalDistanceKm == 0.0)
-
                     updateState {
                         copy(
                             isLoading = false,
-                            isEmptyState = isEmpty,
+                            isTodayEmpty = todayRecords.isEmpty(),
+                            isWeekEmpty = weekRecords.isEmpty(),
                             tierInfo = homeData.toTierInfoUiModel(),
-                            todaysRun = todaysRunUiModel,
-                            thisWeek = thisWeekUiModel,
+                            todaysRun = todayRecords.takeIf { it.isNotEmpty() }?.toTodaysRunUiModel(),
+                            thisWeek = weekRecords.takeIf { it.isNotEmpty() }?.toThisWeekUiModel(),
                             missionEvent = homeData.toMissionEventUiModel()
                         )
                     }
@@ -253,41 +241,6 @@ class MainViewModel @Inject constructor(
         )
     }
 
-    private fun HomeData.toTodaysRunUiModel(): TodaysRunUiModel {
-        return TodaysRunUiModel(
-            distance = "${todaysRun.distanceKm} km",
-            pace = "${todaysRun.paceMinutes}'${todaysRun.paceSeconds.toString().padStart(2, '0')}''",
-            time = "${todaysRun.timeMinutes}:${todaysRun.timeSeconds.toString().padStart(2, '0')}"
-        )
-    }
-
-    private fun HomeData.toThisWeekUiModel(): ThisWeekUiModel {
-        return ThisWeekUiModel(
-            totalDistance = "${thisWeek.totalDistanceKm} km",
-            days = thisWeek.dailyRecords.map { record ->
-                DayUiModel(
-                    label = record.dayOfWeek.toLabel(),
-                    distance = record.distanceKm?.let {
-                        if (it >= 10) it.toInt().toString() else String.format("%.1f", it)
-                    },
-                    hasRun = record.hasRun
-                )
-            }
-        )
-    }
-
-    private fun DayOfWeek.toLabel(): String {
-        return when (this) {
-            DayOfWeek.MONDAY -> "M"
-            DayOfWeek.TUESDAY -> "T"
-            DayOfWeek.WEDNESDAY -> "W"
-            DayOfWeek.THURSDAY -> "T"
-            DayOfWeek.FRIDAY -> "F"
-            DayOfWeek.SATURDAY -> "S"
-            DayOfWeek.SUNDAY -> "S"
-        }
-    }
-
     private fun HomeData.toMissionEventUiModel(): MissionEventUiModel {
         return MissionEventUiModel(
             banner = missionEvent.eventBanner?.let { banner ->
@@ -301,10 +254,8 @@ class MainViewModel @Inject constructor(
                     id = mission.id,
                     name = mission.name,
                     description = mission.description,
-                    imageUrl = mission.imageUrl,
-                    isCompleted = mission.isCompleted,
-                    iconWidthDp = mission.iconWidthDp,
-                    iconHeightDp = mission.iconHeightDp
+                    iconName = mission.iconName,
+                    isCompleted = mission.isCompleted
                 )
             }
         )
