@@ -18,6 +18,14 @@ class UserRepositoryImpl @Inject constructor(
         return remoteDataSource.fetchUser(id)
     }
 
+    override suspend fun refreshCurrentUser() {
+        localDataSource.saveUser(remoteDataSource.fetchCurrentUser())
+    }
+
+    override suspend fun clearUser() {
+        localDataSource.clearUser()
+    }
+
     override suspend fun updateUser(user: User) {
         val updatedUser = remoteDataSource.updateUser(user)
         localDataSource.saveUser(updatedUser)

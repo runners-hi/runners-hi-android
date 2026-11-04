@@ -3,8 +3,7 @@ package com.runnersHi.domain.home.model
 data class HomeData(
     val tier: TierInfo,
     val todaysRun: TodaysRun,
-    val thisWeek: ThisWeekData,
-    val missionEvent: MissionEventData
+    val thisWeek: ThisWeekData
 )
 
 data class TierInfo(
@@ -36,21 +35,3 @@ data class DailyRecord(
 enum class DayOfWeek {
     MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY
 }
-
-data class MissionEventData(
-    val eventBanner: EventBanner?,
-    val missions: List<MissionItem>
-)
-
-data class EventBanner(
-    val title: String,
-    val period: String
-)
-
-data class MissionItem(
-    val id: String,
-    val name: String,
-    val description: String,
-    val iconName: String,
-    val isCompleted: Boolean
-)

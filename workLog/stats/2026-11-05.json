@@ -1,0 +1,45 @@
+{
+  "requests": [
+    {
+      "id": 1,
+      "time": "2026-11-05 00:03:06",
+      "title": "iOS 기능 안드로이드 이식",
+      "tokens": {
+        "input": 84,
+        "output": 127344,
+        "cacheCreation": 401922,
+        "cacheRead": 5776218,
+        "total": 6305568
+      },
+      "cost": null
+    },
+    {
+      "id": 2,
+      "time": "2026-11-05 00:13:17",
+      "title": "자정 직후 목업 기록 누락 수정",
+      "tokens": {
+        "input": 16,
+        "output": 6262,
+        "cacheCreation": 12146,
+        "cacheRead": 1227424,
+        "total": 1245848
+      },
+      "cost": null
+    }
+  ],
+  "sessionCheckpoint": [
+    200,
+    216419,
+    877664,
+    12275183
+  ],
+  "cumulative": {
+    "inputTokens": 100,
+    "outputTokens": 133606,
+    "cacheCreationTokens": 414068,
+    "cacheReadTokens": 7003642,
+    "totalTokens": 7551416,
+    "totalCost": null
+  },
+  "costNote": "ccusage가 응답하지 않아 비용 미산출. 토큰은 세션 기록에서 집계"
+}

@@ -6,8 +6,18 @@ import com.runnersHi.domain.auth.LoginWithSocialUseCaseImpl
 import com.runnersHi.domain.auth.usecase.CheckLoginStatusUseCase
 import com.runnersHi.domain.auth.usecase.GetStoredTokenUseCase
 import com.runnersHi.domain.auth.usecase.LoginWithSocialUseCase
-import com.runnersHi.domain.ranking.GetWeeklyRankingUseCaseImpl
-import com.runnersHi.domain.ranking.usecase.GetWeeklyRankingUseCase
+import com.runnersHi.domain.auth.LogoutUseCaseImpl
+import com.runnersHi.domain.auth.usecase.LogoutUseCase
+import com.runnersHi.domain.health.GetRunningRecordsUseCaseImpl
+import com.runnersHi.domain.health.usecase.GetRunningRecordsUseCase
+import com.runnersHi.domain.mission.GetMissionBoardUseCaseImpl
+import com.runnersHi.domain.mission.usecase.GetMissionBoardUseCase
+import com.runnersHi.domain.ranking.GetRankingBoardUseCaseImpl
+import com.runnersHi.domain.ranking.usecase.GetRankingBoardUseCase
+import com.runnersHi.domain.region.GetSelectedRegionUseCaseImpl
+import com.runnersHi.domain.region.usecase.GetSelectedRegionUseCase
+import com.runnersHi.domain.terms.HasAgreedTermsUseCaseImpl
+import com.runnersHi.domain.terms.usecase.HasAgreedTermsUseCase
 import com.runnersHi.domain.splash.CheckAppVersionUseCaseImpl
 import com.runnersHi.domain.splash.usecase.CheckAppVersionUseCase
 import com.runnersHi.domain.terms.AgreeTermsUseCaseImpl
@@ -63,9 +73,34 @@ abstract class DomainModule {
     ): GetCurrentUserUseCase
 
     @Binds
-    abstract fun bindGetWeeklyRankingUseCase(
-        impl: GetWeeklyRankingUseCaseImpl
-    ): GetWeeklyRankingUseCase
+    abstract fun bindGetRankingBoardUseCase(
+        impl: GetRankingBoardUseCaseImpl
+    ): GetRankingBoardUseCase
+
+    @Binds
+    abstract fun bindGetMissionBoardUseCase(
+        impl: GetMissionBoardUseCaseImpl
+    ): GetMissionBoardUseCase
+
+    @Binds
+    abstract fun bindGetSelectedRegionUseCase(
+        impl: GetSelectedRegionUseCaseImpl
+    ): GetSelectedRegionUseCase
+
+    @Binds
+    abstract fun bindHasAgreedTermsUseCase(
+        impl: HasAgreedTermsUseCaseImpl
+    ): HasAgreedTermsUseCase
+
+    @Binds
+    abstract fun bindLogoutUseCase(
+        impl: LogoutUseCaseImpl
+    ): LogoutUseCase
+
+    @Binds
+    abstract fun bindGetRunningRecordsUseCase(
+        impl: GetRunningRecordsUseCaseImpl
+    ): GetRunningRecordsUseCase
 
     @Binds
     abstract fun bindGetTermsListUseCase(

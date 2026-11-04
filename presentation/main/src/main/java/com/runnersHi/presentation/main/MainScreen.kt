@@ -1,6 +1,7 @@
 package com.runnersHi.presentation.main
 
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,9 +19,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
@@ -35,6 +33,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,7 +50,9 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.runnersHi.domain.home.model.Tier
 import com.runnersHi.presentation.common.R as CommonR
-import com.runnersHi.presentation.common.component.missionIconRes
+import com.runnersHi.presentation.common.component.MissionGrid
+import com.runnersHi.presentation.common.component.MissionItemModel
+import com.runnersHi.presentation.common.component.SeasonBannerPill
 import com.runnersHi.presentation.common.mvi.collectEffect
 import com.runnersHi.presentation.common.mvi.collectState
 import com.runnersHi.presentation.common.navigation.BottomNavTab
@@ -82,32 +83,19 @@ private val TextPrimary = Color.White            // #FFFFFF
 private val TextSecondary = BlueGray20
 private val TextTertiary = BlueGray40
 private val DayActiveBackground = PrimarySecondary
-private val MissionCompletedBackground = PrimaryAmber.copy(alpha = 0.2f)
-private val MissionCompletedBorder = PrimaryAmber
 
 @Composable
 fun MainRoute(
     viewModel: MainViewModel = hiltViewModel(),
     onRequestHealthPermission: () -> Unit = {},
-    onOpenHealthConnectSettings: () -> Unit = {}
+    onOpenHealthConnectSettings: () -> Unit = {},
+    tabContent: @Composable (BottomNavTab, Modifier) -> Unit = { _, _ -> }
 ) {
     val state by viewModel.collectState()
     val context = LocalContext.current
 
     viewModel.collectEffect { effect ->
         when (effect) {
-            is MainContract.Effect.NavigateToTierDetail -> {
-                // TODO: Navigate to tier detail
-            }
-            is MainContract.Effect.NavigateToTodaysRunDetail -> {
-                // TODO: Navigate to today's run detail
-            }
-            is MainContract.Effect.NavigateToMissionEvent -> {
-                // TODO: Navigate to mission event
-            }
-            is MainContract.Effect.NavigateToMissionDetail -> {
-                // TODO: Navigate to mission detail
-            }
             is MainContract.Effect.ShowToast -> {
                 Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
             }
@@ -120,9 +108,15 @@ fun MainRoute(
         }
     }
 
+    // 홈 외의 탭에서 뒤로 가면 홈으로 돌아간다.
+    BackHandler(enabled = state.currentTab != BottomNavTab.HOME) {
+        viewModel.sendEvent(MainContract.Event.BackToHome)
+    }
+
     MainScreen(
         state = state,
-        onEvent = viewModel::sendEvent
+        onEvent = viewModel::sendEvent,
+        tabContent = tabContent
     )
 }
 
@@ -131,7 +125,8 @@ fun MainRoute(
 fun MainScreen(
     state: MainContract.State,
     onEvent: (MainContract.Event) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    tabContent: @Composable (BottomNavTab, Modifier) -> Unit = { _, _ -> }
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
@@ -150,6 +145,8 @@ fun MainScreen(
         )
     }
 
+    val tabStateHolder = rememberSaveableStateHolder()
+
     Scaffold(
         containerColor = BlueGray90,
         bottomBar = {
@@ -160,46 +157,46 @@ fun MainScreen(
         },
         modifier = modifier
     ) { innerPadding ->
-        if (state.isLoading) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(color = Primary)
-            }
-        } else if (state.errorMessage != null) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = state.errorMessage,
-                        color = TextSecondary,
-                        fontSize = 16.sp
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = "다시 시도",
-                        color = Primary,
-                        fontSize = 16.sp,
-                        modifier = Modifier.clickable { onEvent(MainContract.Event.RefreshData) }
-                    )
+        // 탭을 오가도 스크롤 위치를 유지한다.
+        tabStateHolder.SaveableStateProvider(state.currentTab.name) {
+            if (state.currentTab != BottomNavTab.HOME) {
+                // 다른 탭은 홈 로딩과 무관하게 바로 보여준다.
+                tabContent(state.currentTab, Modifier.padding(innerPadding))
+            } else if (state.isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = Primary)
                 }
-            }
-        } else {
-            when (state.currentTab) {
-                BottomNavTab.HOME -> HomeContent(
+            } else if (state.errorMessage != null) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = state.errorMessage,
+                            color = TextSecondary,
+                            fontSize = 16.sp
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "다시 시도",
+                            color = Primary,
+                            fontSize = 16.sp,
+                            modifier = Modifier.clickable { onEvent(MainContract.Event.RefreshData) }
+                        )
+                    }
+                }
+            } else {
+                HomeContent(
                     state = state,
                     onEvent = onEvent,
-                    modifier = Modifier.padding(innerPadding)
-                )
-                else -> PlaceholderContent(
-                    tabName = state.currentTab.name,
                     modifier = Modifier.padding(innerPadding)
                 )
             }
@@ -287,7 +284,7 @@ private fun HomeContent(
                 MissionEventSection(
                     missionEvent = missionEvent,
                     onHeaderClick = { onEvent(MainContract.Event.MissionEventClicked) },
-                    onMissionClick = { id -> onEvent(MainContract.Event.MissionItemClicked(id)) },
+                    onMissionClick = { onEvent(MainContract.Event.MissionEventClicked) },
                     modifier = Modifier.padding(horizontal = 20.dp)
                 )
             }
@@ -627,7 +624,7 @@ private fun DayIndicator(
 private fun MissionEventSection(
     missionEvent: MissionEventUiModel,
     onHeaderClick: () -> Unit,
-    onMissionClick: (String) -> Unit,
+    onMissionClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -658,111 +655,14 @@ private fun MissionEventSection(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Event Banner (312x40)
         missionEvent.banner?.let { banner ->
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(40.dp)
-                    .clip(RoundedCornerShape(40.dp))
-                    .background(CardBackground)
-                    .padding(horizontal = 16.dp),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Title at left position
-                    Text(
-                        text = banner.title,
-                        color = TextTertiary,
-                        fontSize = 14.sp
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    // Period text
-                    Text(
-                        text = banner.period,
-                        color = TextSecondary,
-                        fontSize = 14.sp
-                    )
-                }
-            }
+            SeasonBannerPill(title = banner.title, period = banner.period)
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Mission Grid
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.height(380.dp)
-        ) {
-            items(missionEvent.missions) { mission ->
-                MissionItem(
-                    mission = mission,
-                    onClick = { onMissionClick(mission.id) }
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun MissionItem(
-    mission: MissionItemUiModel,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-            .clickable(onClick = onClick),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        // Icon Container (72x100)
-        Box(
-            modifier = Modifier
-                .size(72.dp, 100.dp)
-                .clip(RoundedCornerShape(36.dp))
-                .background(
-                    if (mission.isCompleted) MissionCompletedBackground
-                    else CardBackground
-                )
-                .border(
-                    1.dp,
-                    if (mission.isCompleted) MissionCompletedBorder else CardBorder,
-                    RoundedCornerShape(36.dp)
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                painter = painterResource(id = missionIconRes(mission.iconName)),
-                contentDescription = mission.name,
-                modifier = Modifier.size(60.dp),
-                contentScale = ContentScale.Fit
-            )
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Mission name
-        Text(
-            text = mission.name,
-            color = BlueGray5,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.SemiBold,
-            textAlign = TextAlign.Center,
-            lineHeight = 21.sp
-        )
-        // Mission description
-        Text(
-            text = mission.description,
-            color = TextTertiary,
-            fontSize = 13.sp,
-            textAlign = TextAlign.Center,
-            maxLines = 2,
-            lineHeight = 19.5.sp,
-            letterSpacing = (-0.39).sp
+        MissionGrid(
+            items = missionEvent.missions,
+            onItemClick = { onMissionClick() }
         )
     }
 }
@@ -1060,26 +960,6 @@ private fun TierGuideRow(
     }
 }
 
-@Composable
-private fun PlaceholderContent(
-    tabName: String,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .background(BlueGray90),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "$tabName 화면\n(준비 중)",
-            color = TextSecondary,
-            fontSize = 18.sp,
-            textAlign = TextAlign.Center
-        )
-    }
-}
-
 private fun Tier.toProgressColor(): Color {
     return when (this) {
         Tier.BRONZE -> TierBronzeProgress
@@ -1134,9 +1014,9 @@ private fun MainScreenPreview() {
                 missionEvent = MissionEventUiModel(
                     banner = EventBannerUiModel("추석 이벤트", "2025.10.01 - 2025.10.31"),
                     missions = listOf(
-                        MissionItemUiModel("1", "문라이트", "10월 러닝 인증", "mission_moonlight", true),
-                        MissionItemUiModel("2", "전력질주", "페이스 5'00\"", "mission_sprint", false),
-                        MissionItemUiModel("3", "밤톨 러닝", "1km", "mission_acorn", true)
+                        MissionItemModel("1", "문라이트", "10월 러닝 인증", "mission_moonlight", true, PrimaryAmber),
+                        MissionItemModel("2", "전력질주", "페이스 5'00\"", "mission_sprint", false, PrimaryAmber),
+                        MissionItemModel("3", "밤톨 러닝", "1km", "mission_acorn", true, PrimaryAmber)
                     )
                 )
             ),

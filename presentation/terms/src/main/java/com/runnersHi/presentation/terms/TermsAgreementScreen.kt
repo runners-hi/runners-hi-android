@@ -1,8 +1,7 @@
 package com.runnersHi.presentation.terms
 
-import android.content.Intent
-import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -14,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -37,6 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.runnersHi.presentation.common.component.TermsDetailContent
 import com.runnersHi.presentation.common.mvi.collectEffect
 import com.runnersHi.presentation.common.mvi.collectState
 import com.runnersHi.presentation.common.theme.BlueGray5
@@ -68,20 +69,27 @@ fun TermsAgreementRoute(
         when (effect) {
             is TermsAgreementContract.Effect.NavigateToMain -> onNavigateToMain()
             is TermsAgreementContract.Effect.NavigateBack -> onNavigateBack?.invoke()
-            is TermsAgreementContract.Effect.OpenTermsWebView -> {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(effect.url))
-                context.startActivity(intent)
-            }
             is TermsAgreementContract.Effect.ShowToast -> {
                 Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    TermsAgreementScreen(
-        state = state,
-        onEvent = viewModel::sendEvent
-    )
+    val detail = state.detailItem
+    if (detail != null) {
+        TermsDetailContent(
+            title = detail.title,
+            content = detail.content,
+            onBack = { viewModel.sendEvent(TermsAgreementContract.Event.DetailDismissed) },
+            onAgree = { viewModel.sendEvent(TermsAgreementContract.Event.DetailAgreed(detail.id)) }
+        )
+    } else {
+        BackHandler { viewModel.sendEvent(TermsAgreementContract.Event.BackClicked) }
+        TermsAgreementScreen(
+            state = state,
+            onEvent = viewModel::sendEvent
+        )
+    }
 }
 
 /**
@@ -97,6 +105,7 @@ fun TermsAgreementScreen(
         modifier = modifier
             .fillMaxSize()
             .background(BlueGray90)
+            .systemBarsPadding()
     ) {
         Column(
             modifier = Modifier.fillMaxSize()
@@ -123,7 +132,10 @@ fun TermsAgreementScreen(
             // 전체 동의
             AllAgreeRow(
                 isChecked = state.allAgreed,
-                onCheckedChange = { onEvent(TermsAgreementContract.Event.ToggleAllAgreed) },
+                // 목록을 받기 전에는 체크할 약관이 없다.
+                onCheckedChange = {
+                    if (state.termsItems.isNotEmpty()) onEvent(TermsAgreementContract.Event.ToggleAllAgreed)
+                },
                 onArrowClick = { /* 전체 약관 상세 */ },
                 modifier = Modifier.padding(horizontal = 24.dp)
             )

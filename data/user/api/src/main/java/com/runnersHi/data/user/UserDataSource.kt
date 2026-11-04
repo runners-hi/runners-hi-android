@@ -10,6 +10,7 @@ interface UserLocalDataSource {
 }
 
 interface UserRemoteDataSource {
+    suspend fun fetchCurrentUser(): User
     suspend fun fetchUser(id: String): User?
     suspend fun updateUser(user: User): User
 }

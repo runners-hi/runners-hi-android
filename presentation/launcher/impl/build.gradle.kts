@@ -36,6 +36,8 @@ dependencies {
     implementation(project(":presentation:common"))
     implementation(project(":domain:splash:api"))
     implementation(project(":domain:auth:api"))
+    implementation(project(":domain:terms:api"))
+    implementation(project(":domain:region:api"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -48,6 +50,9 @@ dependencies {
     implementation(libs.hilt.navigation.compose)
 
     debugImplementation(libs.androidx.ui.tooling)
+
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
 
     // Hilt
     implementation(libs.hilt.android)

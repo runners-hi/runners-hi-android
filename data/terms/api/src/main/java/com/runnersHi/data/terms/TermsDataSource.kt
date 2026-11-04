@@ -16,3 +16,11 @@ interface TermsRemoteDataSource {
      */
     suspend fun agreeTerms(agreedTermIds: List<String>)
 }
+
+/**
+ * 약관 동의 기록 로컬 저장소
+ */
+interface TermsLocalDataSource {
+    suspend fun hasAgreed(): Boolean
+    suspend fun setAgreed(agreed: Boolean)
+}

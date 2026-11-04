@@ -7,4 +7,6 @@ interface UserRepository {
     fun getCurrentUser(): Flow<User?>
     suspend fun getUserById(id: String): User?
     suspend fun updateUser(user: User)
+    suspend fun refreshCurrentUser()
+    suspend fun clearUser()
 }

@@ -8,7 +8,9 @@ kotlin {
 
 dependencies {
     implementation(project(":core:common"))
-    implementation(project(":domain:user:api"))
+    api(project(":domain:home:api"))
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.javax.inject)
+
+    testImplementation(libs.junit)
 }

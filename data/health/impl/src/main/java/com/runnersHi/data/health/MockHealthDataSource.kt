@@ -46,10 +46,9 @@ class MockHealthDataSource(
     ): List<ExerciseRecord> {
         val today = clock()
         return samples.map { sample ->
-            // 오늘 기록이 범위에서 빠지지 않도록 그날 00:10에 시작한 것으로 둔다.
+            // 자정 직후에도 오늘 기록이 범위에서 빠지지 않도록 그날 00:00에 시작한 것으로 둔다.
             val start = today.minusDays(sample.daysAgo)
                 .atStartOfDay(zone)
-                .plusMinutes(10)
                 .toInstant()
             ExerciseRecord(
                 id = "mock_${sample.daysAgo}",

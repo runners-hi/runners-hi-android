@@ -24,7 +24,7 @@ android {
 dependencies {
     implementation(project(":core:common"))
     implementation(project(":domain:ranking:api"))
-    implementation(project(":domain:user:api"))
+    implementation(project(":domain:home:api"))
     implementation(project(":data:ranking:api"))
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)

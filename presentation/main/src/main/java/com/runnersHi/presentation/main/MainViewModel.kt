@@ -8,18 +8,27 @@ import com.runnersHi.domain.health.usecase.GetTodayRunningDataUseCase
 import com.runnersHi.domain.health.usecase.GetWeekRunningDataUseCase
 import com.runnersHi.domain.home.model.HomeData
 import com.runnersHi.domain.home.usecase.GetHomeDataUseCase
+import com.runnersHi.domain.mission.model.MissionAccent
+import com.runnersHi.domain.mission.model.MissionSection
+import com.runnersHi.domain.mission.usecase.GetMissionBoardUseCase
+import com.runnersHi.presentation.common.component.MissionItemModel
 import com.runnersHi.presentation.common.mvi.MviViewModel
+import com.runnersHi.presentation.common.navigation.BottomNavTab
+import com.runnersHi.presentation.common.theme.Primary
+import com.runnersHi.presentation.common.theme.PrimaryAmber
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val getStoredTokenUseCase: GetStoredTokenUseCase,
     private val getHomeDataUseCase: GetHomeDataUseCase,
+    private val getMissionBoardUseCase: GetMissionBoardUseCase,
     private val checkHealthPermissionUseCase: CheckHealthPermissionUseCase,
     private val getTodayRunningDataUseCase: GetTodayRunningDataUseCase,
     private val getWeekRunningDataUseCase: GetWeekRunningDataUseCase
@@ -37,7 +46,7 @@ class MainViewModel @Inject constructor(
             is MainContract.Event.LoadData -> loadData()
             is MainContract.Event.RefreshData -> loadData()
             is MainContract.Event.TierCardClicked -> {
-                sendEffect(MainContract.Effect.NavigateToTierDetail)
+                updateState { copy(showTierInfoSheet = true) }
             }
             is MainContract.Event.TierArrowClicked -> {
                 updateState { copy(showTierInfoSheet = true) }
@@ -46,13 +55,13 @@ class MainViewModel @Inject constructor(
                 updateState { copy(showTierInfoSheet = false) }
             }
             is MainContract.Event.TodaysRunClicked -> {
-                sendEffect(MainContract.Effect.NavigateToTodaysRunDetail)
+                updateState { copy(currentTab = BottomNavTab.RECORD) }
             }
             is MainContract.Event.MissionEventClicked -> {
-                sendEffect(MainContract.Effect.NavigateToMissionEvent)
+                updateState { copy(currentTab = BottomNavTab.MISSION) }
             }
-            is MainContract.Event.MissionItemClicked -> {
-                sendEffect(MainContract.Effect.NavigateToMissionDetail(event.id))
+            is MainContract.Event.BackToHome -> {
+                updateState { copy(currentTab = BottomNavTab.HOME) }
             }
             is MainContract.Event.BottomNavClicked -> {
                 updateState { copy(currentTab = event.tab) }
@@ -110,8 +119,10 @@ class MainViewModel @Inject constructor(
                 return@launch
             }
 
-            // Load home data (tier, missions, etc.)
+            // Load home data (tier, etc.)
             val homeDataResult = async { getHomeDataUseCase(token.accessToken) }
+            // 미션을 못 불러와도 홈의 나머지는 보여준다.
+            val missionBoardResult = async { getMissionBoardUseCase() }
 
             // Load health data if permission is granted
             val hasHealthPermission = state.value.healthPermissionGranted
@@ -127,6 +138,8 @@ class MainViewModel @Inject constructor(
                     // Get health data results
                     val todayRecords = todayHealthData?.await()?.getOrNull() ?: emptyList()
                     val weekRecords = weekHealthData?.await()?.getOrNull() ?: emptyList()
+                    val missionSection = missionBoardResult.await().getOrNull()
+                        ?.homeSection(LocalDate.now())
 
                     updateState {
                         copy(
@@ -136,7 +149,7 @@ class MainViewModel @Inject constructor(
                             tierInfo = homeData.toTierInfoUiModel(),
                             todaysRun = todayRecords.takeIf { it.isNotEmpty() }?.toTodaysRunUiModel(),
                             thisWeek = weekRecords.takeIf { it.isNotEmpty() }?.toThisWeekUiModel(),
-                            missionEvent = homeData.toMissionEventUiModel()
+                            missionEvent = missionSection?.toMissionEventUiModel()
                         )
                     }
                 }
@@ -241,21 +254,26 @@ class MainViewModel @Inject constructor(
         )
     }
 
-    private fun HomeData.toMissionEventUiModel(): MissionEventUiModel {
+    private fun MissionSection.toMissionEventUiModel(): MissionEventUiModel {
+        val formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
         return MissionEventUiModel(
-            banner = missionEvent.eventBanner?.let { banner ->
+            banner = seasonBanner?.let { banner ->
                 EventBannerUiModel(
                     title = banner.title,
-                    period = banner.period
+                    period = "${banner.startDate.format(formatter)} - ${banner.endDate.format(formatter)}"
                 )
             },
-            missions = missionEvent.missions.map { mission ->
-                MissionItemUiModel(
+            missions = events.map { mission ->
+                MissionItemModel(
                     id = mission.id,
-                    name = mission.name,
-                    description = mission.description,
+                    title = mission.title,
+                    subtitle = mission.subtitle,
                     iconName = mission.iconName,
-                    isCompleted = mission.isCompleted
+                    isCompleted = mission.isCompleted,
+                    accentColor = when (mission.accent) {
+                        MissionAccent.PRIMARY -> Primary
+                        MissionAccent.AMBER -> PrimaryAmber
+                    }
                 )
             }
         )

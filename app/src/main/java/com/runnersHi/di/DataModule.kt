@@ -3,9 +3,10 @@ package com.runnersHi.di
 import com.runnersHi.data.auth.AuthRemoteDataSource
 import com.runnersHi.data.auth.AuthRepositoryImpl
 import com.runnersHi.data.auth.MockAuthRemoteDataSource
-import com.runnersHi.data.ranking.MockRankingLocalDataSource
-import com.runnersHi.data.ranking.MockRankingRemoteDataSource
-import com.runnersHi.data.ranking.RankingLocalDataSource
+import com.runnersHi.data.mission.MissionRemoteDataSource
+import com.runnersHi.data.mission.MissionRepositoryImpl
+import com.runnersHi.data.mission.MockMissionDataSource
+import com.runnersHi.data.ranking.MockRankingDataSource
 import com.runnersHi.data.ranking.RankingRemoteDataSource
 import com.runnersHi.data.ranking.RankingRepositoryImpl
 import com.runnersHi.data.splash.AppConfigRemoteDataSource
@@ -20,12 +21,11 @@ import com.runnersHi.data.home.MockHomeDataSource
 import com.runnersHi.data.region.MockRegionDataSource
 import com.runnersHi.data.region.RegionRemoteDataSource
 import com.runnersHi.data.region.RegionRepositoryImpl
-import com.runnersHi.data.user.MockUserLocalDataSource
 import com.runnersHi.data.user.MockUserRemoteDataSource
-import com.runnersHi.data.user.UserLocalDataSource
 import com.runnersHi.data.user.UserRemoteDataSource
 import com.runnersHi.data.user.UserRepositoryImpl
 import com.runnersHi.domain.auth.repository.AuthRepository
+import com.runnersHi.domain.mission.repository.MissionRepository
 import com.runnersHi.domain.ranking.repository.RankingRepository
 import com.runnersHi.domain.splash.repository.AppConfigRepository
 import com.runnersHi.domain.terms.repository.TermsRepository
@@ -59,12 +59,6 @@ abstract class DataModule {
     // DataSources - User
     @Binds
     @Singleton
-    abstract fun bindUserLocalDataSource(
-        impl: MockUserLocalDataSource
-    ): UserLocalDataSource
-
-    @Binds
-    @Singleton
     abstract fun bindUserRemoteDataSource(
         impl: MockUserRemoteDataSource
     ): UserRemoteDataSource
@@ -72,14 +66,8 @@ abstract class DataModule {
     // DataSources - Ranking
     @Binds
     @Singleton
-    abstract fun bindRankingLocalDataSource(
-        impl: MockRankingLocalDataSource
-    ): RankingLocalDataSource
-
-    @Binds
-    @Singleton
     abstract fun bindRankingRemoteDataSource(
-        impl: MockRankingRemoteDataSource
+        impl: MockRankingDataSource
     ): RankingRemoteDataSource
 
     // Repositories
@@ -134,6 +122,19 @@ abstract class DataModule {
     abstract fun bindRegionRepository(
         impl: RegionRepositoryImpl
     ): RegionRepository
+
+    // Mission
+    @Binds
+    @Singleton
+    abstract fun bindMissionRemoteDataSource(
+        impl: MockMissionDataSource
+    ): MissionRemoteDataSource
+
+    @Binds
+    @Singleton
+    abstract fun bindMissionRepository(
+        impl: MissionRepositoryImpl
+    ): MissionRepository
 
     // DataSources - Home
     @Binds
