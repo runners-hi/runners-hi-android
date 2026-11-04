@@ -6,14 +6,17 @@ import com.runnersHi.domain.auth.usecase.CheckLoginStatusUseCase
 import com.runnersHi.domain.auth.usecase.LoginCheckResult
 import com.runnersHi.domain.auth.usecase.LoginResult
 import com.runnersHi.domain.auth.usecase.LoginWithSocialUseCase
+import com.runnersHi.domain.region.usecase.GetSelectedRegionUseCase
 import com.runnersHi.domain.splash.usecase.CheckAppVersionUseCase
 import com.runnersHi.domain.splash.usecase.VersionCheckResult
+import com.runnersHi.domain.terms.usecase.HasAgreedTermsUseCase
 import com.runnersHi.presentation.common.mvi.MviViewModel
 import com.runnersHi.presentation.launcher.api.LauncherContract
 import com.runnersHi.presentation.login.api.LoginContract
 import com.runnersHi.presentation.splash.api.SplashContract
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,7 +24,9 @@ import javax.inject.Inject
 class LauncherViewModel @Inject constructor(
     private val checkAppVersionUseCase: CheckAppVersionUseCase,
     private val checkLoginStatusUseCase: CheckLoginStatusUseCase,
-    private val loginWithSocialUseCase: LoginWithSocialUseCase
+    private val loginWithSocialUseCase: LoginWithSocialUseCase,
+    private val hasAgreedTermsUseCase: HasAgreedTermsUseCase,
+    private val getSelectedRegionUseCase: GetSelectedRegionUseCase
 ) : MviViewModel<LauncherContract.State, LauncherContract.Event, LauncherContract.Effect>(
     initialState = LauncherContract.State()
 ) {
@@ -163,10 +168,20 @@ class LauncherViewModel @Inject constructor(
                         copy(splashState = splashState.copy(progress = 1f))
                     }
                     delay(300) // 애니메이션 완료 대기
-                    sendEffect(LauncherContract.Effect.NavigateToHome)
+                    routeAfterAuth()
                 }
             }
         }
+    }
+
+    /** 가입 절차를 끝까지 마친 사용자만 홈으로 보낸다. */
+    private suspend fun routeAfterAuth() {
+        val effect = when {
+            !hasAgreedTermsUseCase() -> LauncherContract.Effect.NavigateToTermsAgreement
+            getSelectedRegionUseCase().first() == null -> LauncherContract.Effect.NavigateToRegionSelection
+            else -> LauncherContract.Effect.NavigateToHome
+        }
+        sendEffect(effect)
     }
 
     private fun loginWithSocial(type: SocialLoginType, token: String) {
@@ -179,9 +194,7 @@ class LauncherViewModel @Inject constructor(
             loginWithSocialUseCase(type, token)
                 .onSuccess { result ->
                     when (result) {
-                        is LoginResult.Success -> {
-                            sendEffect(LauncherContract.Effect.NavigateToHome)
-                        }
+                        is LoginResult.Success -> routeAfterAuth()
                         is LoginResult.NewUser -> {
                             sendEffect(LauncherContract.Effect.NavigateToTermsAgreement)
                         }

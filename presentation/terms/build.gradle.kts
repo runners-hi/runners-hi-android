@@ -30,6 +30,7 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":presentation:common"))
     implementation(project(":domain:terms:api"))
+    implementation(project(":domain:auth:api"))
 
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.runtime.compose)
@@ -39,6 +40,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.activity.compose)
     debugImplementation(libs.androidx.ui.tooling)
 
     // Hilt

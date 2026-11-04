@@ -2,6 +2,7 @@ package com.runnersHi.presentation.main
 
 import androidx.compose.runtime.Immutable
 import com.runnersHi.domain.home.model.Tier
+import com.runnersHi.presentation.common.component.MissionItemModel
 import com.runnersHi.presentation.common.mvi.UiEffect
 import com.runnersHi.presentation.common.mvi.UiEvent
 import com.runnersHi.presentation.common.mvi.UiState
@@ -38,7 +39,7 @@ object MainContract {
         data object TierSheetDismissed : Event
         data object TodaysRunClicked : Event
         data object MissionEventClicked : Event
-        data class MissionItemClicked(val id: String) : Event
+        data object BackToHome : Event
         data class BottomNavClicked(val tab: BottomNavTab) : Event
         // Health Connect
         data object CheckHealthPermission : Event
@@ -46,10 +47,6 @@ object MainContract {
     }
 
     sealed interface Effect : UiEffect {
-        data object NavigateToTierDetail : Effect
-        data object NavigateToTodaysRunDetail : Effect
-        data object NavigateToMissionEvent : Effect
-        data class NavigateToMissionDetail(val id: String) : Effect
         data class ShowToast(val message: String) : Effect
         // Health Connect
         data object RequestHealthPermission : Effect
@@ -89,22 +86,13 @@ data class DayUiModel(
 @Immutable
 data class MissionEventUiModel(
     val banner: EventBannerUiModel?,
-    val missions: List<MissionItemUiModel>
+    val missions: List<MissionItemModel>
 )
 
 @Immutable
 data class EventBannerUiModel(
     val title: String,
     val period: String
-)
-
-@Immutable
-data class MissionItemUiModel(
-    val id: String,
-    val name: String,
-    val description: String,
-    val iconName: String,
-    val isCompleted: Boolean
 )
 
 // Tier Guide models

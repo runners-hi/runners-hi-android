@@ -27,6 +27,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.activity.compose)
     implementation(project(":core:common"))
     implementation(project(":presentation:common"))
     implementation(project(":domain:region:api"))

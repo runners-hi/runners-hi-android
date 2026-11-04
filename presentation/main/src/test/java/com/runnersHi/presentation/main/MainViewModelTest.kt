@@ -9,12 +9,17 @@ import com.runnersHi.domain.health.usecase.CheckHealthPermissionUseCase
 import com.runnersHi.domain.health.usecase.GetTodayRunningDataUseCase
 import com.runnersHi.domain.health.usecase.GetWeekRunningDataUseCase
 import com.runnersHi.domain.home.model.HomeData
-import com.runnersHi.domain.home.model.MissionEventData
 import com.runnersHi.domain.home.model.ThisWeekData
 import com.runnersHi.domain.home.model.Tier
 import com.runnersHi.domain.home.model.TierInfo
 import com.runnersHi.domain.home.model.TodaysRun
 import com.runnersHi.domain.home.usecase.GetHomeDataUseCase
+import com.runnersHi.domain.mission.model.MissionAccent
+import com.runnersHi.domain.mission.model.MissionBoard
+import com.runnersHi.domain.mission.model.MissionEvent
+import com.runnersHi.domain.mission.model.MissionSection
+import com.runnersHi.domain.mission.usecase.GetMissionBoardUseCase
+import com.runnersHi.presentation.common.navigation.BottomNavTab
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -37,8 +42,7 @@ class MainViewModelTest {
         tier = TierInfo(Tier.GOLD, "Gold", 1, 50),
         // 서버 값이 아니라 건강 기록으로만 계산하는지 확인하려고 큰 값을 넣는다.
         todaysRun = TodaysRun(99.0, 1, 1, 1, 1),
-        thisWeek = ThisWeekData(99.0, emptyList()),
-        missionEvent = MissionEventData(null, emptyList())
+        thisWeek = ThisWeekData(99.0, emptyList())
     )
 
     private val record = ExerciseRecord(
@@ -61,6 +65,7 @@ class MainViewModelTest {
         token: AuthToken? = AuthToken("access", "refresh", 3600),
         permission: HealthPermissionStatus = HealthPermissionStatus(true, true, false),
         records: List<ExerciseRecord> = listOf(record),
+        missionBoard: Result<MissionBoard> = Result.success(MissionBoard(emptyList())),
         onHomeToken: (String) -> Unit = {}
     ) = MainViewModel(
         getStoredTokenUseCase = object : GetStoredTokenUseCase {
@@ -71,6 +76,9 @@ class MainViewModelTest {
                 onHomeToken(userToken)
                 return Result.success(home)
             }
+        },
+        getMissionBoardUseCase = object : GetMissionBoardUseCase {
+            override suspend fun invoke() = missionBoard
         },
         checkHealthPermissionUseCase = object : CheckHealthPermissionUseCase {
             override suspend fun invoke() = permission
@@ -128,5 +136,53 @@ class MainViewModelTest {
         vm.sendEvent(MainContract.Event.HealthPermissionResult(granted = true))
 
         assertEquals("5.0 km", vm.state.value.todaysRun?.distance)
+    }
+
+    @Test
+    fun `달성한 미션이 있으면 홈에 보여준다`() {
+        val board = MissionBoard(
+            listOf(
+                MissionSection(
+                    "s", "시즌", null,
+                    listOf(MissionEvent("m1", "문라이트", "1km", "mission_moonlight", true, MissionAccent.AMBER))
+                )
+            )
+        )
+
+        val missions = viewModel(missionBoard = Result.success(board)).state.value.missionEvent?.missions
+
+        assertEquals(listOf("m1"), missions?.map { it.id })
+    }
+
+    @Test
+    fun `미션을 못 불러와도 홈의 나머지는 보여준다`() {
+        val state = viewModel(missionBoard = Result.failure(IllegalStateException())).state.value
+
+        assertNull(state.missionEvent)
+        assertNull(state.errorMessage)
+        assertNotNull(state.tierInfo)
+    }
+
+    @Test
+    fun `오늘 러닝을 누르면 기록 탭으로, 미션을 누르면 미션 탭으로 간다`() {
+        val vm = viewModel()
+
+        vm.sendEvent(MainContract.Event.TodaysRunClicked)
+        assertEquals(BottomNavTab.RECORD, vm.state.value.currentTab)
+
+        vm.sendEvent(MainContract.Event.MissionEventClicked)
+        assertEquals(BottomNavTab.MISSION, vm.state.value.currentTab)
+
+        vm.sendEvent(MainContract.Event.BackToHome)
+        assertEquals(BottomNavTab.HOME, vm.state.value.currentTab)
+    }
+
+    @Test
+    fun `티어 카드를 누르면 안내 시트가 열린다`() {
+        val vm = viewModel()
+
+        vm.sendEvent(MainContract.Event.TierCardClicked)
+
+        assertTrue(vm.state.value.showTierInfoSheet)
     }
 }

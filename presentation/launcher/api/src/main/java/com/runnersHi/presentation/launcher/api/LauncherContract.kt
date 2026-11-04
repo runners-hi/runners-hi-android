@@ -59,5 +59,6 @@ object LauncherContract {
         // Navigation 이펙트
         data object NavigateToHome : Effect
         data object NavigateToTermsAgreement : Effect
+        data object NavigateToRegionSelection : Effect
     }
 }

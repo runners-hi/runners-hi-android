@@ -1,6 +1,7 @@
 package com.runnersHi.presentation.terms
 
 import androidx.lifecycle.viewModelScope
+import com.runnersHi.domain.auth.usecase.LogoutUseCase
 import com.runnersHi.domain.terms.usecase.AgreeTermsUseCase
 import com.runnersHi.domain.terms.usecase.GetTermsListUseCase
 import com.runnersHi.presentation.common.mvi.MviViewModel
@@ -11,7 +12,8 @@ import javax.inject.Inject
 @HiltViewModel
 class TermsAgreementViewModel @Inject constructor(
     private val getTermsListUseCase: GetTermsListUseCase,
-    private val agreeTermsUseCase: AgreeTermsUseCase
+    private val agreeTermsUseCase: AgreeTermsUseCase,
+    private val logoutUseCase: LogoutUseCase
 ) : MviViewModel<TermsAgreementContract.State, TermsAgreementContract.Event, TermsAgreementContract.Effect>(
     initialState = TermsAgreementContract.State()
 ) {
@@ -26,13 +28,17 @@ class TermsAgreementViewModel @Inject constructor(
             is TermsAgreementContract.Event.ToggleAllAgreed -> toggleAllAgreed()
             is TermsAgreementContract.Event.ToggleTermItem -> toggleTermItem(event.id)
             is TermsAgreementContract.Event.ProceedClicked -> proceed()
-            is TermsAgreementContract.Event.ViewTermsDetail -> viewTermsDetail(event.termsItem)
+            is TermsAgreementContract.Event.ViewTermsDetail -> {
+                updateState { copy(detailItem = event.termsItem) }
+            }
+            is TermsAgreementContract.Event.DetailDismissed -> {
+                updateState { copy(detailItem = null) }
+            }
+            is TermsAgreementContract.Event.DetailAgreed -> agreeFromDetail(event.id)
             is TermsAgreementContract.Event.ErrorDismissed -> {
                 updateState { copy(errorMessage = null) }
             }
-            is TermsAgreementContract.Event.BackClicked -> {
-                sendEffect(TermsAgreementContract.Effect.NavigateBack)
-            }
+            is TermsAgreementContract.Event.BackClicked -> cancelSignUp()
         }
     }
 
@@ -46,7 +52,7 @@ class TermsAgreementViewModel @Inject constructor(
                         TermsItemUiModel(
                             id = item.id,
                             title = item.title,
-                            detailUrl = item.detailUrl,
+                            content = item.content,
                             required = item.required,
                             isAgreed = false
                         )
@@ -55,6 +61,7 @@ class TermsAgreementViewModel @Inject constructor(
                         copy(
                             isLoading = false,
                             termsItems = uiModels,
+                            allAgreed = false,
                             canProceed = false
                         )
                     }
@@ -136,7 +143,26 @@ class TermsAgreementViewModel @Inject constructor(
         }
     }
 
-    private fun viewTermsDetail(termsItem: TermsItemUiModel) {
-        sendEffect(TermsAgreementContract.Effect.OpenTermsWebView(termsItem.detailUrl, termsItem.title))
+    /** 상세 화면의 동의하기: 해당 약관만 체크하고 목록으로 돌아간다. */
+    private fun agreeFromDetail(id: String) {
+        val updatedItems = state.value.termsItems.map {
+            if (it.id == id) it.copy(isAgreed = true) else it
+        }
+        updateState {
+            copy(
+                termsItems = updatedItems,
+                allAgreed = updatedItems.all { it.isAgreed },
+                canProceed = checkCanProceed(updatedItems),
+                detailItem = null
+            )
+        }
+    }
+
+    /** 동의 전에 뒤로 가면 로그인 정보가 남지 않도록 로그아웃하고 로그인 화면으로 돌아간다. */
+    private fun cancelSignUp() {
+        viewModelScope.launch {
+            logoutUseCase()
+            sendEffect(TermsAgreementContract.Effect.NavigateBack)
+        }
     }
 }
