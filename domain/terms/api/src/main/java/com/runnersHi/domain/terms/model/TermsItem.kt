@@ -6,6 +6,6 @@ package com.runnersHi.domain.terms.model
 data class TermsItem(
     val id: String,
     val title: String,
-    val detailUrl: String,
+    val content: String,
     val required: Boolean
 )

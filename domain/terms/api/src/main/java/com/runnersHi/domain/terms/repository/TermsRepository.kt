@@ -16,4 +16,14 @@ interface TermsRepository {
      * @param agreedTermIds 동의한 약관 ID 목록
      */
     suspend fun agreeTerms(agreedTermIds: List<String>): Result<Unit>
+
+    /**
+     * 필수 약관에 동의했는지 여부
+     */
+    suspend fun hasAgreedTerms(): Boolean
+
+    /**
+     * 동의 기록 삭제
+     */
+    suspend fun clearAgreement()
 }

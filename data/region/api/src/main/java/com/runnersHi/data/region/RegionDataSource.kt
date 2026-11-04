@@ -1,6 +1,7 @@
 package com.runnersHi.data.region
 
 import com.runnersHi.domain.region.model.Region
+import kotlinx.coroutines.flow.Flow
 
 /**
  * 지역 데이터 소스 인터페이스
@@ -15,4 +16,13 @@ interface RegionRemoteDataSource {
      * 지역 선택
      */
     suspend fun selectRegion(regionId: String, regionName: String)
+}
+
+/**
+ * 선택한 지역 로컬 저장소
+ */
+interface RegionLocalDataSource {
+    fun observeSelectedRegion(): Flow<Region?>
+    suspend fun saveSelectedRegion(region: Region)
+    suspend fun clearSelectedRegion()
 }

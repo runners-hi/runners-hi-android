@@ -5,44 +5,104 @@ import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 /**
- * Mock 약관 DataSource
- * TODO: 실제 API 연동 시 RemoteTermsDataSource로 교체
+ * Mock 약관 DataSource (문구는 iOS 앱과 동일)
  */
 class MockTermsDataSource @Inject constructor() : TermsRemoteDataSource {
 
     override suspend fun getTermsList(): List<TermsItem> {
         // API 호출 시뮬레이션
         delay(500)
-
         return listOf(
             TermsItem(
                 id = "service",
                 title = "서비스 이용약관 동의",
-                detailUrl = "https://example.com/terms/service",
+                content = """
+                서비스 이용약관
+
+                제1조 (목적)
+                이 약관은 러너스하이(이하 "회사")가 제공하는 서비스의 이용과 관련하여 회사와 회원 간의 권리, 의무 및 책임사항을 규정함을 목적으로 합니다.
+
+                제2조 (정의)
+                1. "서비스"란 회사가 제공하는 러닝 기록 및 관리 서비스를 말합니다.
+                2. "회원"이란 이 약관에 동의하고 서비스를 이용하는 자를 말합니다.
+
+                제3조 (약관의 효력 및 변경)
+                1. 이 약관은 서비스를 이용하고자 하는 모든 회원에게 적용됩니다.
+                2. 회사는 필요한 경우 약관을 변경할 수 있으며, 변경된 약관은 공지사항을 통해 공지합니다.
+                """.trimIndent(),
                 required = true
             ),
             TermsItem(
                 id = "privacy",
                 title = "개인정보 수집 및 이용 동의",
-                detailUrl = "https://example.com/terms/privacy",
+                content = """
+                개인정보 수집 및 이용 동의
+
+                1. 수집하는 개인정보 항목
+                - 필수항목: 이메일, 닉네임
+                - 선택항목: 프로필 사진
+
+                2. 개인정보의 수집 및 이용목적
+                - 회원 가입 및 관리
+                - 서비스 제공 및 운영
+                - 러닝 기록 저장 및 분석
+
+                3. 개인정보의 보유 및 이용기간
+                - 회원 탈퇴 시까지
+
+                4. 동의를 거부할 권리 및 거부 시 불이익
+                - 귀하는 개인정보 수집에 동의를 거부할 권리가 있습니다.
+                - 다만, 필수항목에 대한 동의를 거부하시면 서비스 이용이 제한될 수 있습니다.
+                """.trimIndent(),
                 required = true
             ),
             TermsItem(
                 id = "marketing",
                 title = "마케팅 정보 수신 동의",
-                detailUrl = "https://example.com/terms/marketing",
+                content = """
+                마케팅 정보 수신 동의
+
+                러너스하이에서 제공하는 이벤트, 프로모션, 새로운 기능 등의 마케팅 정보를 수신하시겠습니까?
+
+                수신 동의 시 다음과 같은 정보를 받아보실 수 있습니다:
+                - 신규 기능 및 업데이트 안내
+                - 이벤트 및 프로모션 정보
+                - 러닝 챌린지 안내
+                - 맞춤형 러닝 팁
+
+                마케팅 정보 수신에 동의하지 않으셔도 서비스 이용에는 제한이 없습니다.
+                """.trimIndent(),
                 required = false
             ),
             TermsItem(
                 id = "sns",
                 title = "SNS 수신 동의",
-                detailUrl = "https://example.com/terms/sns",
+                content = """
+                SNS 수신 동의
+
+                카카오톡, 문자 메시지 등을 통한 알림을 수신하시겠습니까?
+
+                수신 동의 시 다음과 같은 알림을 받아보실 수 있습니다:
+                - 러닝 리마인더
+                - 목표 달성 축하 메시지
+                - 친구 활동 알림
+
+                SNS 수신에 동의하지 않으셔도 서비스 이용에는 제한이 없습니다.
+                """.trimIndent(),
                 required = false
             ),
             TermsItem(
                 id = "age",
                 title = "만 14세 이상입니다",
-                detailUrl = "https://example.com/terms/age",
+                content = """
+                연령 확인
+
+                러너스하이 서비스는 만 14세 이상의 사용자를 대상으로 합니다.
+
+                만 14세 미만의 아동은 법정대리인(부모 등)의 동의 없이 서비스를 이용할 수 없습니다.
+
+                만 14세 이상임을 확인합니다.
+                """.trimIndent(),
                 required = true
             )
         )
@@ -51,6 +111,5 @@ class MockTermsDataSource @Inject constructor() : TermsRemoteDataSource {
     override suspend fun agreeTerms(agreedTermIds: List<String>) {
         // API 호출 시뮬레이션
         delay(300)
-        // 실제로는 서버에 동의 정보 전송
     }
 }
