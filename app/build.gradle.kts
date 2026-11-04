@@ -19,6 +19,7 @@ android {
         versionCode = 1
         versionName = "1.0.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments["clearPackageData"] = "true"
 
         // Kakao SDK App Key: local.properties → gradle property 순으로 읽음 (없으면 Mock 로그인)
         val localProperties = Properties().apply {
@@ -32,13 +33,34 @@ android {
         manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] = kakaoAppKey
     }
 
+    testOptions {
+        // 테스트마다 새 프로세스와 빈 앱 데이터로 시작한다.
+        execution = "ANDROIDX_TEST_ORCHESTRATOR"
+    }
+
     buildFeatures {
         buildConfig = true
     }
 
+    // 서명 값은 저장소 밖(keystore.properties)에 둔다. 파일이 없으면 서명 없이 빌드된다.
+    val keystoreFile = rootProject.file("keystore.properties")
+    val releaseSigning = if (keystoreFile.exists()) {
+        val keystore = Properties().apply { keystoreFile.inputStream().use { load(it) } }
+        signingConfigs.create("release") {
+            storeFile = rootProject.file(keystore.getProperty("storeFile"))
+            storePassword = keystore.getProperty("storePassword")
+            keyAlias = keystore.getProperty("keyAlias")
+            keyPassword = keystore.getProperty("keyPassword")
+        }
+    } else {
+        null
+    }
+
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            signingConfig = releaseSigning
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -78,6 +100,8 @@ dependencies {
     implementation(project(":domain:home:impl"))
     implementation(project(":domain:health:api"))
     implementation(project(":domain:health:impl"))
+    implementation(project(":domain:mission:api"))
+    implementation(project(":domain:mission:impl"))
 
     // Data modules
     implementation(project(":data:splash:api"))
@@ -96,6 +120,8 @@ dependencies {
     implementation(project(":data:home:impl"))
     implementation(project(":data:health:api"))
     implementation(project(":data:health:impl"))
+    implementation(project(":data:mission:api"))
+    implementation(project(":data:mission:impl"))
 
     // Presentation modules
     implementation(project(":presentation:common"))
@@ -108,6 +134,10 @@ dependencies {
     implementation(project(":presentation:terms"))
     implementation(project(":presentation:region"))
     implementation(project(":presentation:main"))
+    implementation(project(":presentation:ranking"))
+    implementation(project(":presentation:record"))
+    implementation(project(":presentation:mission"))
+    implementation(project(":presentation:mypage"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core.splashscreen)
@@ -121,6 +151,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    androidTestUtil(libs.androidx.test.orchestrator)
+    androidTestUtil(libs.androidx.test.services)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     androidTestImplementation(libs.androidx.test.runner)
