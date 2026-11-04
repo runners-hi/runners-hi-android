@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.runnersHi.presentation.common.theme.KakaoYellow
 import com.runnersHi.presentation.common.theme.BlueGray70
 import com.runnersHi.presentation.common.theme.BlueGray80
 import com.runnersHi.presentation.common.theme.BlueGray95
@@ -36,7 +37,6 @@ import com.runnersHi.presentation.login.api.LoginContract
 import com.runnersHi.presentation.login.impl.R
 
 // Figma Colors
-private val KakaoYellow = Color(0xFFFEE500)
 
 /**
  * Login Content 구현체

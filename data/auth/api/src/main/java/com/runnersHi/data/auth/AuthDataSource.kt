@@ -2,7 +2,6 @@ package com.runnersHi.data.auth
 
 import com.runnersHi.domain.auth.model.AuthToken
 import com.runnersHi.domain.auth.model.SocialLoginType
-import com.runnersHi.domain.auth.usecase.LoginResult
 
 interface AuthLocalDataSource {
     suspend fun getToken(): AuthToken?
@@ -13,5 +12,5 @@ interface AuthLocalDataSource {
 
 interface AuthRemoteDataSource {
     suspend fun refreshToken(refreshToken: String): AuthToken
-    suspend fun loginWithSocial(type: SocialLoginType, token: String): LoginResult
+    suspend fun loginWithSocial(type: SocialLoginType, token: String): SocialLoginResponse
 }

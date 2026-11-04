@@ -40,8 +40,9 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun loginWithSocial(type: SocialLoginType, token: String): Result<LoginResult> {
         return try {
-            val result = remoteDataSource.loginWithSocial(type, token)
-            Result.success(result)
+            val response = remoteDataSource.loginWithSocial(type, token)
+            response.token?.let { localDataSource.saveToken(it) }
+            Result.success(response.result)
         } catch (e: Exception) {
             Result.failure(e)
         }

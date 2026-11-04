@@ -1,9 +1,9 @@
 {
-  "timestamp": "2026-01-25T21:00:00Z",
-  "description": "러닝 지역 선택 화면 구현 완료 후",
-  "inputTokens": 29730,
-  "outputTokens": 4685,
-  "cacheCreationTokens": 3250756,
-  "cacheReadTokens": 128379098,
-  "totalCost": 84.77
+  "timestamp": "2026-01-25T22:00:00Z",
+  "description": "메인 화면 디자인/기획 문서 업데이트 후",
+  "inputTokens": 39199,
+  "outputTokens": 4823,
+  "cacheCreationTokens": 3412929,
+  "cacheReadTokens": 133607105,
+  "totalCost": 88.45
 }

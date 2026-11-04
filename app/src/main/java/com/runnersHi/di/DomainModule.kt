@@ -1,8 +1,10 @@
 package com.runnersHi.di
 
 import com.runnersHi.domain.auth.CheckLoginStatusUseCaseImpl
+import com.runnersHi.domain.auth.GetStoredTokenUseCaseImpl
 import com.runnersHi.domain.auth.LoginWithSocialUseCaseImpl
 import com.runnersHi.domain.auth.usecase.CheckLoginStatusUseCase
+import com.runnersHi.domain.auth.usecase.GetStoredTokenUseCase
 import com.runnersHi.domain.auth.usecase.LoginWithSocialUseCase
 import com.runnersHi.domain.ranking.GetWeeklyRankingUseCaseImpl
 import com.runnersHi.domain.ranking.usecase.GetWeeklyRankingUseCase
@@ -12,6 +14,14 @@ import com.runnersHi.domain.terms.AgreeTermsUseCaseImpl
 import com.runnersHi.domain.terms.GetTermsListUseCaseImpl
 import com.runnersHi.domain.terms.usecase.AgreeTermsUseCase
 import com.runnersHi.domain.terms.usecase.GetTermsListUseCase
+import com.runnersHi.domain.health.CheckHealthPermissionUseCaseImpl
+import com.runnersHi.domain.health.GetTodayRunningDataUseCaseImpl
+import com.runnersHi.domain.health.GetWeekRunningDataUseCaseImpl
+import com.runnersHi.domain.health.usecase.CheckHealthPermissionUseCase
+import com.runnersHi.domain.health.usecase.GetTodayRunningDataUseCase
+import com.runnersHi.domain.health.usecase.GetWeekRunningDataUseCase
+import com.runnersHi.domain.home.GetHomeDataUseCaseImpl
+import com.runnersHi.domain.home.usecase.GetHomeDataUseCase
 import com.runnersHi.domain.region.SearchRegionsUseCaseImpl
 import com.runnersHi.domain.region.SelectRegionUseCaseImpl
 import com.runnersHi.domain.region.usecase.SearchRegionsUseCase
@@ -36,6 +46,11 @@ abstract class DomainModule {
     abstract fun bindCheckLoginStatusUseCase(
         impl: CheckLoginStatusUseCaseImpl
     ): CheckLoginStatusUseCase
+
+    @Binds
+    abstract fun bindGetStoredTokenUseCase(
+        impl: GetStoredTokenUseCaseImpl
+    ): GetStoredTokenUseCase
 
     @Binds
     abstract fun bindLoginWithSocialUseCase(
@@ -71,4 +86,24 @@ abstract class DomainModule {
     abstract fun bindSelectRegionUseCase(
         impl: SelectRegionUseCaseImpl
     ): SelectRegionUseCase
+
+    @Binds
+    abstract fun bindGetHomeDataUseCase(
+        impl: GetHomeDataUseCaseImpl
+    ): GetHomeDataUseCase
+
+    @Binds
+    abstract fun bindCheckHealthPermissionUseCase(
+        impl: CheckHealthPermissionUseCaseImpl
+    ): CheckHealthPermissionUseCase
+
+    @Binds
+    abstract fun bindGetTodayRunningDataUseCase(
+        impl: GetTodayRunningDataUseCaseImpl
+    ): GetTodayRunningDataUseCase
+
+    @Binds
+    abstract fun bindGetWeekRunningDataUseCase(
+        impl: GetWeekRunningDataUseCaseImpl
+    ): GetWeekRunningDataUseCase
 }

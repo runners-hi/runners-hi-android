@@ -1,5 +1,7 @@
 package com.runnersHi.navigation
 
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -10,11 +12,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.runnersHi.BuildConfig
 import com.runnersHi.auth.AppleLoginHandler
 import com.runnersHi.auth.KakaoLoginHandler
+import com.runnersHi.health.HealthPermissionHandler
 import com.runnersHi.presentation.launcher.LauncherRoute
 import com.runnersHi.presentation.login.LoginContentImpl
-import com.runnersHi.presentation.main.MainScreen
+import com.runnersHi.presentation.main.MainContract
+import com.runnersHi.presentation.main.MainRoute
+import com.runnersHi.presentation.main.MainViewModel
 import com.runnersHi.presentation.splash.SplashContentImpl
 import com.runnersHi.presentation.terms.TermsAgreementRoute
 import com.runnersHi.presentation.region.RegionSelectionRoute
@@ -40,7 +48,7 @@ fun RunnersHiNavHost() {
                 LauncherRoute(
                     splashContent = SplashContentImpl,
                     loginContent = LoginContentImpl,
-                    currentVersion = "1.0.0", // TODO: BuildConfig.VERSION_NAME 사용
+                    currentVersion = BuildConfig.VERSION_NAME,
                     onNavigateToHome = {
                         currentScreen = Screen.Main
                     },
@@ -67,7 +75,31 @@ fun RunnersHiNavHost() {
                 )
             }
             is Screen.Main -> {
-                MainScreen()
+                val context = LocalContext.current
+                val mainViewModel: MainViewModel = hiltViewModel()
+
+                val healthPermissionLauncher = rememberLauncherForActivityResult(
+                    contract = HealthPermissionHandler.createRequestPermissionResultContract()
+                ) { grantedPermissions ->
+                    val allGranted = HealthPermissionHandler.REQUIRED_PERMISSIONS.all {
+                        it in grantedPermissions
+                    }
+                    mainViewModel.sendEvent(MainContract.Event.HealthPermissionResult(allGranted))
+                }
+
+                MainRoute(
+                    viewModel = mainViewModel,
+                    onRequestHealthPermission = {
+                        healthPermissionLauncher.launch(HealthPermissionHandler.REQUIRED_PERMISSIONS)
+                    },
+                    onOpenHealthConnectSettings = {
+                        try {
+                            context.startActivity(HealthPermissionHandler.getHealthConnectSettingsIntent())
+                        } catch (e: Exception) {
+                            // Health Connect settings not available
+                        }
+                    }
+                )
             }
         }
     }

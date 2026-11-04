@@ -2,6 +2,7 @@ package com.runnersHi.presentation.terms
 
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -43,12 +44,13 @@ import com.runnersHi.presentation.common.theme.BlueGray70
 import com.runnersHi.presentation.common.theme.BlueGray90
 import com.runnersHi.presentation.common.theme.BlueGrayWhite
 import com.runnersHi.presentation.common.theme.Primary
+import com.runnersHi.presentation.common.theme.PrimarySecondary
 import com.runnersHi.presentation.common.theme.RunnersHiTheme
 import com.runnersHi.presentation.terms.R
 
 // Figma 색상
-private val ButtonDisabled = Color(0xFF255860)
-private val ButtonTextDisabled = Color(0xFF17191C)
+private val ButtonDisabled = PrimarySecondary
+private val ButtonTextDisabled = BlueGray90
 
 /**
  * Terms Agreement Route: 상태 수집 및 이펙트 처리
@@ -71,7 +73,7 @@ fun TermsAgreementRoute(
                 context.startActivity(intent)
             }
             is TermsAgreementContract.Effect.ShowToast -> {
-                // TODO: Show toast
+                Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
             }
         }
     }

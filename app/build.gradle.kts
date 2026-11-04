@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -15,10 +17,17 @@ android {
         minSdk = 26
         targetSdk = 35
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // Kakao SDK App Key (local.properties에서 읽어옴)
-        val kakaoAppKey = project.findProperty("KAKAO_NATIVE_APP_KEY") as? String ?: ""
+        // Kakao SDK App Key: local.properties → gradle property 순으로 읽음 (없으면 Mock 로그인)
+        val localProperties = Properties().apply {
+            val file = rootProject.file("local.properties")
+            if (file.exists()) file.inputStream().use { load(it) }
+        }
+        val kakaoAppKey = localProperties.getProperty("KAKAO_NATIVE_APP_KEY")
+            ?: project.findProperty("KAKAO_NATIVE_APP_KEY") as? String
+            ?: ""
         buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"$kakaoAppKey\"")
         manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] = kakaoAppKey
     }
@@ -65,6 +74,10 @@ dependencies {
     implementation(project(":domain:terms:impl"))
     implementation(project(":domain:region:api"))
     implementation(project(":domain:region:impl"))
+    implementation(project(":domain:home:api"))
+    implementation(project(":domain:home:impl"))
+    implementation(project(":domain:health:api"))
+    implementation(project(":domain:health:impl"))
 
     // Data modules
     implementation(project(":data:splash:api"))
@@ -79,6 +92,10 @@ dependencies {
     implementation(project(":data:terms:impl"))
     implementation(project(":data:region:api"))
     implementation(project(":data:region:impl"))
+    implementation(project(":data:home:api"))
+    implementation(project(":data:home:impl"))
+    implementation(project(":data:health:api"))
+    implementation(project(":data:health:impl"))
 
     // Presentation modules
     implementation(project(":presentation:common"))
@@ -102,6 +119,12 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
+
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.ext.junit)
     testImplementation(libs.junit)
 
     // Hilt
@@ -115,4 +138,7 @@ dependencies {
     // Credentials (for Apple Sign In)
     implementation(libs.credentials)
     implementation(libs.credentials.play.services.auth)
+
+    // Health Connect
+    implementation(libs.health.connect)
 }
