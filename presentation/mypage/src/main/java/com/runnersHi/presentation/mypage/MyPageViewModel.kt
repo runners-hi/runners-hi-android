@@ -19,7 +19,12 @@ class MyPageViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             getCurrentUserUseCase().collect { user ->
-                updateState { copy(nickname = user?.name ?: MyPageContract.DEFAULT_NICKNAME) }
+                updateState {
+                    copy(
+                        nickname = user?.name ?: MyPageContract.DEFAULT_NICKNAME,
+                        profileImageUrl = user?.profileImageUrl
+                    )
+                }
             }
         }
         viewModelScope.launch {

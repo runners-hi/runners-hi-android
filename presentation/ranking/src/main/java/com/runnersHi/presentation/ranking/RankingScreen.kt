@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -38,7 +37,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -48,6 +46,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.runnersHi.domain.home.model.Tier
 import com.runnersHi.domain.ranking.model.RankingEntry
 import com.runnersHi.presentation.common.R as CommonR
+import com.runnersHi.presentation.common.component.ProfileAvatar
 import com.runnersHi.presentation.common.mvi.collectState
 import com.runnersHi.presentation.common.theme.BlueGray30
 import com.runnersHi.presentation.common.theme.BlueGray40
@@ -181,7 +180,7 @@ private fun FirstPlaceCard(entry: RankingEntry, modifier: Modifier = Modifier) {
                 modifier = Modifier.height(24.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                AvatarCircle(size = 24)
+                ProfileAvatar(imageUrl = entry.profileImageUrl, size = 24.dp, iconSize = 12.dp)
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = entry.displayNickname,
@@ -265,7 +264,7 @@ private fun RankingRow(entry: RankingEntry) {
                 modifier = Modifier.height(20.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                AvatarCircle(size = 20)
+                ProfileAvatar(imageUrl = entry.profileImageUrl, size = 20.dp, iconSize = 10.dp)
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     text = entry.displayNickname,
@@ -283,24 +282,6 @@ private fun RankingRow(entry: RankingEntry) {
             color = if (entry.rank <= 3) Primary else Color.White,
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold
-        )
-    }
-}
-
-@Composable
-private fun AvatarCircle(size: Int) {
-    Box(
-        modifier = Modifier
-            .size(size.dp)
-            .clip(CircleShape)
-            .background(BlueGray70),
-        contentAlignment = Alignment.Center
-    ) {
-        Image(
-            painter = painterResource(id = CommonR.drawable.ic_user_mono),
-            contentDescription = null,
-            colorFilter = ColorFilter.tint(BlueGray40),
-            modifier = Modifier.size((size / 2).dp)
         )
     }
 }

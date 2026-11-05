@@ -10,6 +10,7 @@ object MyPageContract {
     @Immutable
     data class State(
         val nickname: String = DEFAULT_NICKNAME,
+        val profileImageUrl: String? = null,
         val regionName: String? = null
     ) : UiState
 

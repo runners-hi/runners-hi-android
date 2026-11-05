@@ -29,4 +29,20 @@ class RemoteRankingMappingTest {
         assertTrue(board.entries[1].isMe)
         assertEquals(Tier.SILVER, board.myEntry?.tier)
     }
+
+    @Test
+    fun `서버가 준 프로필 사진 주소를 그대로 넘긴다`() {
+        val board = toRankingBoard(
+            rankings = listOf(
+                RankingResponse(1, 7, "상위", "GOLD", 5300, "https://img.test/top.png"),
+                RankingResponse(2, 9, "사진없음", "SILVER", 1670)
+            ),
+            mine = MyRankingResponse(3, "나", "SILVER", 100, "https://img.test/me.png"),
+            profile = MyProfileResponse("나", district = DistrictResponse(86, 1, "강남구"))
+        )
+
+        assertEquals("https://img.test/top.png", board.entries[0].profileImageUrl)
+        assertEquals(null, board.entries[1].profileImageUrl)
+        assertEquals("https://img.test/me.png", board.myEntry?.profileImageUrl)
+    }
 }

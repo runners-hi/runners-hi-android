@@ -7,7 +7,8 @@ data class RankingEntry(
     val nickname: String,
     val tier: Tier,
     val distanceKm: Double,
-    val isMe: Boolean = false
+    val isMe: Boolean = false,
+    val profileImageUrl: String? = null
 ) {
     val displayNickname: String get() = if (isMe) "$nickname (나)" else nickname
 }
