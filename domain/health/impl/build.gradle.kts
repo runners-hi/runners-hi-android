@@ -11,4 +11,7 @@ dependencies {
     implementation(project(":domain:health:api"))
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.javax.inject)
+
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.junit)
 }

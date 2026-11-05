@@ -26,4 +26,5 @@ interface RegionRepository {
      * 선택한 지역 삭제
      */
     suspend fun clearSelectedRegion()
+    suspend fun syncFromServer() {}
 }

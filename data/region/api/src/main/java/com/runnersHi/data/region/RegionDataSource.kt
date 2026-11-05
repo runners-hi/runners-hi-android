@@ -16,6 +16,11 @@ interface RegionRemoteDataSource {
      * 지역 선택
      */
     suspend fun selectRegion(regionId: String, regionName: String)
+
+    /**
+     * 서버에 저장된 내 지역. 목업은 null
+     */
+    suspend fun fetchMyRegion(): Region? = null
 }
 
 /**

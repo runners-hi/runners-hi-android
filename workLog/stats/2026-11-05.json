@@ -25,20 +25,33 @@
         "total": 1245848
       },
       "cost": null
+    },
+    {
+      "id": 3,
+      "time": "2026-11-05 09:48:13",
+      "title": "Figma 대조 2차 수정과 출시 전 검증",
+      "tokens": {
+        "input": 496,
+        "output": 332822,
+        "cacheCreation": 1413608,
+        "cacheRead": 32941482,
+        "total": 34688408
+      },
+      "cost": null
     }
   ],
   "sessionCheckpoint": [
-    200,
-    216419,
-    877664,
-    12275183
+    696,
+    549241,
+    2291272,
+    45216665
   ],
   "cumulative": {
-    "inputTokens": 100,
-    "outputTokens": 133606,
-    "cacheCreationTokens": 414068,
-    "cacheReadTokens": 7003642,
-    "totalTokens": 7551416,
+    "inputTokens": 596,
+    "outputTokens": 466428,
+    "cacheCreationTokens": 1827676,
+    "cacheReadTokens": 39945124,
+    "totalTokens": 42239824,
     "totalCost": null
   },
   "costNote": "ccusage가 응답하지 않아 비용 미산출. 토큰은 세션 기록에서 집계"

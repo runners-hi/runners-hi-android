@@ -42,6 +42,15 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import com.runnersHi.domain.auth.WithdrawUseCaseImpl
+import com.runnersHi.domain.auth.usecase.WithdrawUseCase
+import com.runnersHi.domain.health.SyncRunningRecordsUseCaseImpl
+import com.runnersHi.domain.health.usecase.SyncRunningRecordsUseCase
+import com.runnersHi.domain.notice.GetNoticeDetailUseCaseImpl
+import com.runnersHi.domain.notice.GetNoticesUseCaseImpl
+import com.runnersHi.domain.notice.usecase.GetNoticeDetailUseCase
+import com.runnersHi.domain.notice.usecase.GetNoticesUseCase
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -91,6 +100,27 @@ abstract class DomainModule {
     abstract fun bindHasAgreedTermsUseCase(
         impl: HasAgreedTermsUseCaseImpl
     ): HasAgreedTermsUseCase
+
+    @Binds
+    abstract fun bindWithdrawUseCase(
+        impl: WithdrawUseCaseImpl
+    ): WithdrawUseCase
+
+    @Binds
+    abstract fun bindGetNoticesUseCase(
+        impl: GetNoticesUseCaseImpl
+    ): GetNoticesUseCase
+
+    @Binds
+    abstract fun bindGetNoticeDetailUseCase(
+        impl: GetNoticeDetailUseCaseImpl
+    ): GetNoticeDetailUseCase
+
+    @Binds
+    @Singleton
+    abstract fun bindSyncRunningRecordsUseCase(
+        impl: SyncRunningRecordsUseCaseImpl
+    ): SyncRunningRecordsUseCase
 
     @Binds
     abstract fun bindLogoutUseCase(

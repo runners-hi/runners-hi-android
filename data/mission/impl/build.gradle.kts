@@ -26,4 +26,8 @@ dependencies {
     implementation(project(":data:mission:api"))
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.javax.inject)
+    implementation(project(":core:network"))
+
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
 }

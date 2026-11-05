@@ -22,6 +22,10 @@ class TermsRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun syncFromServer() {
+        remoteDataSource.fetchHasAgreedRequired()?.let { localDataSource.setAgreed(it) }
+    }
+
     override suspend fun hasAgreedTerms(): Boolean = localDataSource.hasAgreed()
 
     override suspend fun clearAgreement() {

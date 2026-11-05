@@ -28,6 +28,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.javax.inject)
+    implementation(project(":core:network"))
     implementation(libs.health.connect)
 
     testImplementation(libs.junit)

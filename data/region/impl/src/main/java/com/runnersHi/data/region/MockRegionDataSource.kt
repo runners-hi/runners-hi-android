@@ -187,8 +187,9 @@ class MockRegionDataSource @Inject constructor() : RegionRemoteDataSource {
         // API 호출 시뮬레이션
         delay(300)
 
+        // 검색 전 목록은 시안처럼 시 단위만 보여준다.
         if (query.isBlank()) {
-            return emptyList()
+            return allRegions.filter { it.name.endsWith("시") && !it.name.endsWith("광역시") && !it.name.endsWith("특별시") }
         }
 
         return allRegions.filter { it.name.contains(query) }

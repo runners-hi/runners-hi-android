@@ -26,4 +26,5 @@ interface TermsRepository {
      * 동의 기록 삭제
      */
     suspend fun clearAgreement()
+    suspend fun syncFromServer() {}
 }

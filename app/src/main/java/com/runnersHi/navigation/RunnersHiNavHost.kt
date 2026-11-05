@@ -8,6 +8,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.platform.LocalContext
@@ -26,6 +27,8 @@ import com.runnersHi.presentation.main.MainViewModel
 import com.runnersHi.presentation.mission.MissionRoute
 import com.runnersHi.presentation.mypage.AccountManagementRoute
 import com.runnersHi.presentation.mypage.MyPageRoute
+import com.runnersHi.presentation.notice.NoticeDetailRoute
+import com.runnersHi.presentation.notice.NoticeListRoute
 import com.runnersHi.presentation.ranking.RankingRoute
 import com.runnersHi.presentation.record.RecordRoute
 import com.runnersHi.presentation.region.RegionSelectionRoute
@@ -43,6 +46,20 @@ fun RunnersHiNavHost(
 ) {
     val scope = rememberCoroutineScope()
     val stateHolder = rememberSaveableStateHolder()
+    val sessionViewModel: SessionViewModel = hiltViewModel()
+
+    DisposableEffect(navigator) {
+        navigator.onScreenDropped = { stateHolder.removeState(it.toString()) }
+        onDispose { navigator.onScreenDropped = null }
+    }
+
+    // 토큰이 완전히 만료되면 어느 화면에 있든 로그인으로 돌아간다.
+    LaunchedEffect(Unit) {
+        sessionViewModel.expired.collect {
+            runCatching { KakaoLoginHandler.logout() }
+            navigator.resetTo(Screen.Launcher)
+        }
+    }
 
     AnimatedContent(
         targetState = navigator.current,
@@ -70,7 +87,11 @@ fun RunnersHiNavHost(
                         onNavigateToTermsAgreement = { navigator.resetTo(Screen.TermsAgreement) },
                         onNavigateToRegionSelection = { navigator.resetTo(Screen.RegionSelection) },
                         onKakaoLogin = { context -> KakaoLoginHandler.login(context) },
-                        onAppleLogin = { context -> AppleLoginHandler.login(context) }
+                        onAppleLogin = if (AppleLoginHandler.isAvailable) {
+                            { context -> AppleLoginHandler.login(context) }
+                        } else {
+                            null
+                        }
                     )
                     Screen.TermsAgreement -> TermsAgreementRoute(
                         onNavigateToMain = { navigator.push(Screen.RegionSelection) },
@@ -100,7 +121,22 @@ fun RunnersHiNavHost(
                                 runCatching { KakaoLoginHandler.logout() }
                                 navigator.resetTo(Screen.Launcher)
                             }
+                        },
+                        onWithdrawn = {
+                            scope.launch {
+                                // 카카오 연결이 이미 끊겼거나 Apple 계정이어도 탈퇴는 끝난 상태다.
+                                runCatching { KakaoLoginHandler.unlink() }
+                                navigator.resetTo(Screen.Launcher)
+                            }
                         }
+                    )
+                    Screen.NoticeList -> NoticeListRoute(
+                        onBack = { navigator.pop() },
+                        onNoticeClick = { id -> navigator.push(Screen.NoticeDetail(id)) }
+                    )
+                    is Screen.NoticeDetail -> NoticeDetailRoute(
+                        noticeId = screen.id,
+                        onBack = { navigator.pop() }
                     )
                 }
             }
@@ -153,6 +189,7 @@ private fun MainBlock(navigator: AppNavigatorViewModel) {
                     onNavigateToRegion = { navigator.push(Screen.RegionChange) },
                     onNavigateToTerms = { navigator.push(Screen.TermsList) },
                     onNavigateToAccount = { navigator.push(Screen.AccountManagement) },
+                    onNavigateToNotices = { navigator.push(Screen.NoticeList) },
                     modifier = modifier
                 )
             }
@@ -171,4 +208,6 @@ sealed class Screen {
     data object RegionChange : Screen()      // 마이페이지 > 내 지역 설정
     data object TermsList : Screen()         // 마이페이지 > 이용약관
     data object AccountManagement : Screen() // 마이페이지 > 계정 관리
+    data object NoticeList : Screen()        // 마이페이지 > 공지사항
+    data class NoticeDetail(val id: String) : Screen()
 }
