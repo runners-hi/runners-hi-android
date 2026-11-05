@@ -64,7 +64,7 @@ internal object BundledTerms {
             - 회원 탈퇴 또는 동의 철회 시까지
 
             4. 처리 위탁과 국외 보관
-            - Cloudflare, Inc.(서버 운영, 사진 저장), Supabase, Inc.(데이터베이스, 서울 리전), Google LLC(푸시 발송)
+            - Oracle Corporation 및 계열사(서버 운영, 춘천 리전), Cloudflare, Inc.(사진 저장), Supabase, Inc.(데이터베이스, 서울 리전), Google LLC(푸시 발송)
             - 자세한 국가, 항목, 연락처는 개인정보 처리방침에서 확인할 수 있습니다.
             - https://runnershi-api.oguriworks.com/privacy
 
