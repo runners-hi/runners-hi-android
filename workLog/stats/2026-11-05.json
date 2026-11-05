@@ -116,20 +116,33 @@
         "total": 6218547
       },
       "cost": null
+    },
+    {
+      "id": 10,
+      "time": "2026-11-05 23:16:56",
+      "title": "서버가 깨어나는 동안 앱이 기다리도록 수정",
+      "tokens": {
+        "input": 90,
+        "output": 40532,
+        "cacheCreation": 97094,
+        "cacheRead": 6567028,
+        "total": 6704744
+      },
+      "cost": null
     }
   ],
   "sessionCheckpoint": [
-    1204,
-    887083,
-    3398153,
-    78570339
+    1294,
+    927615,
+    3495247,
+    85137367
   ],
   "cumulative": {
-    "inputTokens": 1104,
-    "outputTokens": 804270,
-    "cacheCreationTokens": 2934557,
-    "cacheReadTokens": 73298798,
-    "totalTokens": 77038729,
+    "inputTokens": 1194,
+    "outputTokens": 844802,
+    "cacheCreationTokens": 3031651,
+    "cacheReadTokens": 79865826,
+    "totalTokens": 83743473,
     "totalCost": null
   },
   "costNote": "ccusage가 응답하지 않아 비용 미산출. 토큰은 세션 기록에서 집계"
