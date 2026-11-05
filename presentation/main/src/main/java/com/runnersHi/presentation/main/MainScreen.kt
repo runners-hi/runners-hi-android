@@ -82,7 +82,7 @@ import kotlinx.coroutines.launch
 
 // Colors from design spec (Figma)
 /** Figma: 900 높이 화면에서 시트 780 (손잡이 28 제외한 내용 752) */
-private const val TIER_SHEET_HEIGHT_RATIO = 0.8667f
+private const val TIER_SHEET_HEIGHT_RATIO = 0.8584f
 
 private val CardBackground = BlueGray80          // #2E3238
 private val CardBorder = BlueGray70              // #454B54
@@ -803,7 +803,7 @@ private fun TierInfoBottomSheet(
         dragHandle = {
             Box(
                 modifier = Modifier
-                    .padding(vertical = 12.dp)
+                    .padding(top = 18.dp, bottom = 6.dp)
                     .width(66.dp)
                     .height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
