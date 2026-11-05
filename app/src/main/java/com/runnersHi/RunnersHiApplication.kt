@@ -3,6 +3,7 @@ package com.runnersHi
 import android.app.Application
 import android.util.Log
 import com.kakao.sdk.common.KakaoSdk
+import com.runnersHi.push.RunnersHiMessagingService
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
@@ -10,6 +11,8 @@ class RunnersHiApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+
+        RunnersHiMessagingService.createChannel(this)
 
         // Kakao SDK 초기화 (키가 없으면 Mock 모드로 동작)
         val kakaoAppKey = BuildConfig.KAKAO_NATIVE_APP_KEY
