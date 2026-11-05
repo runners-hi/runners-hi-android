@@ -27,7 +27,9 @@ import com.runnersHi.presentation.main.MainViewModel
 import com.runnersHi.presentation.mission.MissionRoute
 import com.runnersHi.presentation.mypage.AccountManagementRoute
 import com.runnersHi.presentation.mypage.MyPageRoute
+import com.runnersHi.presentation.mypage.FeedbackRoute
 import com.runnersHi.presentation.notice.NoticeDetailRoute
+import com.runnersHi.presentation.notification.NotificationRoute
 import com.runnersHi.presentation.notice.NoticeListRoute
 import com.runnersHi.presentation.ranking.RankingRoute
 import com.runnersHi.presentation.record.RecordRoute
@@ -42,7 +44,8 @@ import kotlinx.coroutines.launch
  */
 @Composable
 fun RunnersHiNavHost(
-    navigator: AppNavigatorViewModel = viewModel()
+    navigator: AppNavigatorViewModel = viewModel(),
+    onMainEntered: () -> Unit = {}
 ) {
     val scope = rememberCoroutineScope()
     val stateHolder = rememberSaveableStateHolder()
@@ -108,7 +111,7 @@ fun RunnersHiNavHost(
                             if (!navigator.pop()) navigator.resetTo(Screen.TermsAgreement)
                         }
                     )
-                    Screen.Main -> MainBlock(navigator)
+                    Screen.Main -> MainBlock(navigator, onMainEntered)
                     Screen.RegionChange -> RegionSelectionRoute(
                         onNavigateToMain = { navigator.pop() },
                         onNavigateBack = { navigator.pop() }
@@ -130,6 +133,8 @@ fun RunnersHiNavHost(
                             }
                         }
                     )
+                    Screen.Notifications -> NotificationRoute(onBack = { navigator.pop() })
+                    Screen.Feedback -> FeedbackRoute(onBack = { navigator.pop() })
                     Screen.NoticeList -> NoticeListRoute(
                         onBack = { navigator.pop() },
                         onNoticeClick = { id -> navigator.push(Screen.NoticeDetail(id)) }
@@ -145,7 +150,7 @@ fun RunnersHiNavHost(
 }
 
 @Composable
-private fun MainBlock(navigator: AppNavigatorViewModel) {
+private fun MainBlock(navigator: AppNavigatorViewModel, onMainEntered: () -> Unit) {
     val context = LocalContext.current
     val mainViewModel: MainViewModel = hiltViewModel()
 
@@ -166,8 +171,11 @@ private fun MainBlock(navigator: AppNavigatorViewModel) {
         Unit
     }
 
+    LaunchedEffect(Unit) { onMainEntered() }
+
     MainRoute(
         viewModel = mainViewModel,
+        onNavigateToNotifications = { navigator.push(Screen.Notifications) },
         onRequestHealthPermission = requestHealthPermission,
         onOpenHealthConnectSettings = {
             startActivitySafely(HealthPermissionHandler.getHealthConnectSettingsIntent())
@@ -190,6 +198,8 @@ private fun MainBlock(navigator: AppNavigatorViewModel) {
                     onNavigateToTerms = { navigator.push(Screen.TermsList) },
                     onNavigateToAccount = { navigator.push(Screen.AccountManagement) },
                     onNavigateToNotices = { navigator.push(Screen.NoticeList) },
+                    onNavigateToNotifications = { navigator.push(Screen.Notifications) },
+                    onNavigateToFeedback = { navigator.push(Screen.Feedback) },
                     modifier = modifier
                 )
             }
@@ -208,6 +218,8 @@ sealed class Screen {
     data object RegionChange : Screen()      // 마이페이지 > 내 지역 설정
     data object TermsList : Screen()         // 마이페이지 > 이용약관
     data object AccountManagement : Screen() // 마이페이지 > 계정 관리
+    data object Notifications : Screen()     // 홈 종 아이콘, 마이페이지 > 알림
+    data object Feedback : Screen()          // 마이페이지 > 개발자에게
     data object NoticeList : Screen()        // 마이페이지 > 공지사항
     data class NoticeDetail(val id: String) : Screen()
 }

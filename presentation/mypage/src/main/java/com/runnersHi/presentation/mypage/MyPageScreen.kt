@@ -1,11 +1,15 @@
 package com.runnersHi.presentation.mypage
 
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,18 +20,25 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -43,6 +54,7 @@ import com.runnersHi.presentation.common.theme.BlueGray5
 import com.runnersHi.presentation.common.theme.BlueGray70
 import com.runnersHi.presentation.common.theme.BlueGray80
 import com.runnersHi.presentation.common.theme.Primary
+import kotlinx.coroutines.launch
 
 @Composable
 fun MyPageRoute(
@@ -51,11 +63,26 @@ fun MyPageRoute(
     onNavigateToTerms: () -> Unit,
     onNavigateToAccount: () -> Unit,
     onNavigateToNotices: () -> Unit,
+    onNavigateToNotifications: () -> Unit,
+    onNavigateToFeedback: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: MyPageViewModel = hiltViewModel()
 ) {
     val state by viewModel.collectState()
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val photoPicker = rememberLauncherForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        scope.launch {
+            val bytes = ProfileImageEncoder.encode(context, uri)
+            viewModel.sendEvent(
+                if (bytes != null) MyPageContract.Event.PhotoEncoded(bytes)
+                else MyPageContract.Event.PhotoEncodeFailed
+            )
+        }
+    }
 
     viewModel.collectEffect { effect ->
         when (effect) {
@@ -63,6 +90,11 @@ fun MyPageRoute(
             MyPageContract.Effect.NavigateToTerms -> onNavigateToTerms()
             MyPageContract.Effect.NavigateToAccount -> onNavigateToAccount()
             MyPageContract.Effect.NavigateToNotices -> onNavigateToNotices()
+            MyPageContract.Effect.NavigateToNotifications -> onNavigateToNotifications()
+            MyPageContract.Effect.NavigateToFeedback -> onNavigateToFeedback()
+            MyPageContract.Effect.OpenPhotoPicker -> photoPicker.launch(
+                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+            )
             is MyPageContract.Effect.ShowToast ->
                 Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
         }
@@ -104,7 +136,7 @@ fun MyPageScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            ProfileAvatar(imageUrl = state.profileImageUrl, size = 80.dp, iconSize = 48.dp)
+            EditableAvatar(state = state, onEvent = onEvent)
             Text(text = state.nickname, color = Color.White, fontSize = 20.sp, lineHeight = 24.sp)
         }
 
@@ -120,7 +152,7 @@ fun MyPageScreen(
                 icon = CommonR.drawable.ic_notification_main,
                 iconTint = Primary,
                 title = "알림",
-                onClick = { onEvent(MyPageContract.Event.NotReadyClicked) }
+                onClick = { onEvent(MyPageContract.Event.NotificationsClicked) }
             )
         }
 
@@ -139,7 +171,7 @@ fun MyPageScreen(
             SettingRow(
                 icon = CommonR.drawable.ic_comment_mono,
                 title = "개발자에게",
-                onClick = { onEvent(MyPageContract.Event.NotReadyClicked) }
+                onClick = { onEvent(MyPageContract.Event.FeedbackClicked) }
             )
             SettingRow(
                 icon = CommonR.drawable.ic_info2_mono,
@@ -153,6 +185,41 @@ fun MyPageScreen(
             )
         }
         Spacer(modifier = Modifier.height(24.dp))
+    }
+}
+
+@Composable
+private fun EditableAvatar(
+    state: MyPageContract.State,
+    onEvent: (MyPageContract.Event) -> Unit
+) {
+    Box(contentAlignment = Alignment.Center) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .clip(CircleShape)
+                .semantics(mergeDescendants = true) { contentDescription = "프로필 사진 변경" }
+                .clickable { onEvent(MyPageContract.Event.AvatarClicked) }
+        ) {
+            ProfileAvatar(imageUrl = state.profileImageUrl, size = 80.dp, iconSize = 48.dp)
+            if (state.isUpdatingPhoto) {
+                CircularProgressIndicator(color = Primary, modifier = Modifier.size(32.dp))
+            }
+        }
+        DropdownMenu(
+            expanded = state.showPhotoMenu,
+            onDismissRequest = { onEvent(MyPageContract.Event.PhotoMenuDismissed) },
+            containerColor = BlueGray80
+        ) {
+            DropdownMenuItem(
+                text = { Text(text = "사진 변경", color = BlueGray5) },
+                onClick = { onEvent(MyPageContract.Event.ChangePhotoClicked) }
+            )
+            DropdownMenuItem(
+                text = { Text(text = "사진 삭제", color = BlueGray5) },
+                onClick = { onEvent(MyPageContract.Event.RemovePhotoClicked) }
+            )
+        }
     }
 }
 

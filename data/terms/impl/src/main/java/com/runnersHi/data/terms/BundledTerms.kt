@@ -49,6 +49,63 @@ internal object BundledTerms {
             required = true
         ),
         TermsItem(
+            id = "health",
+            title = "건강 데이터 연동 동의",
+            content = """
+            건강 데이터 연동 동의
+
+            1. 가져오는 정보
+            - Health Connect에 기록된 러닝 운동의 시작·종료 시각, 거리, 소모 칼로리
+
+            2. 이용 목적
+            - 러닝 기록 저장, 레벨과 티어 계산, 랭킹 산정, 미션 달성 확인
+
+            3. 보유 및 이용기간
+            - 회원 탈퇴 시까지
+
+            4. 동의를 거부할 권리 및 거부 시 불이익
+            - 귀하는 동의를 거부할 권리가 있습니다.
+            - 다만, 필수 항목이므로 동의를 거부하시면 서비스 이용이 제한될 수 있습니다.
+            - 건강 데이터 접근 권한은 Health Connect 설정에서 언제든 철회할 수 있습니다.
+            """.trimIndent(),
+            required = true
+        ),
+        TermsItem(
+            id = "location",
+            title = "위치 정보 이용약관 동의",
+            content = """
+            위치 정보 이용약관
+
+            1. 이용하는 정보
+            - 회원이 직접 고른 활동 지역(시·도, 구·군)
+
+            2. 이용 목적
+            - 지역별 랭킹 제공
+
+            3. 보유 및 이용기간
+            - 회원 탈퇴 또는 지역 정보 변경 시까지
+
+            4. 동의를 거부할 권리
+            - 귀하는 동의를 거부할 권리가 있으며, 거부해도 서비스를 이용할 수 있습니다.
+            - 앱은 기기의 GPS 위치를 수집하지 않습니다.
+            """.trimIndent(),
+            required = false
+        ),
+        TermsItem(
+            id = "age",
+            title = "만 14세 이상입니다",
+            content = """
+            연령 확인
+
+            러너스하이 서비스는 만 14세 이상의 사용자를 대상으로 합니다.
+
+            만 14세 미만의 아동은 법정대리인(부모 등)의 동의 없이 서비스를 이용할 수 없습니다.
+
+            만 14세 이상임을 확인합니다.
+            """.trimIndent(),
+            required = true
+        ),
+        TermsItem(
             id = "marketing",
             title = "마케팅 정보 수신 동의",
             content = """
@@ -82,20 +139,6 @@ internal object BundledTerms {
             SNS 수신에 동의하지 않으셔도 서비스 이용에는 제한이 없습니다.
             """.trimIndent(),
             required = false
-        ),
-        TermsItem(
-            id = "age",
-            title = "만 14세 이상입니다",
-            content = """
-            연령 확인
-
-            러너스하이 서비스는 만 14세 이상의 사용자를 대상으로 합니다.
-
-            만 14세 미만의 아동은 법정대리인(부모 등)의 동의 없이 서비스를 이용할 수 없습니다.
-
-            만 14세 이상임을 확인합니다.
-            """.trimIndent(),
-            required = true
         )
     )
 }

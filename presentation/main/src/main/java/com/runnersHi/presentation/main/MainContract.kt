@@ -39,6 +39,7 @@ object MainContract {
         data object TierSheetDismissed : Event
         data object TodaysRunClicked : Event
         data object MissionEventClicked : Event
+        data object NotificationClicked : Event
         data object BackToHome : Event
         data class BottomNavClicked(val tab: BottomNavTab) : Event
         // Health Connect
@@ -48,6 +49,7 @@ object MainContract {
 
     sealed interface Effect : UiEffect {
         data class ShowToast(val message: String) : Effect
+        data object NavigateToNotifications : Effect
         // Health Connect
         data object RequestHealthPermission : Effect
         data object OpenHealthConnectSettings : Effect

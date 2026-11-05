@@ -8,6 +8,12 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
+// 실제 Firebase 설정 파일이 있을 때만 켠다. 없으면 푸시 없이 빌드된다.
+val firebaseConfig = file("google-services.json")
+if (firebaseConfig.exists() && !firebaseConfig.readText().contains("placeholder")) {
+    apply(plugin = "com.google.gms.google-services")
+}
+
 android {
     namespace = "com.runnersHi"
     compileSdk = 35
@@ -95,6 +101,8 @@ android {
 }
 
 dependencies {
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.messaging)
     // Module dependencies
     implementation(project(":core:common"))
     implementation(project(":core:network"))
@@ -120,6 +128,8 @@ dependencies {
     implementation(project(":domain:mission:impl"))
     implementation(project(":domain:notice:api"))
     implementation(project(":domain:notice:impl"))
+    implementation(project(":domain:notification:api"))
+    implementation(project(":domain:notification:impl"))
 
     // Data modules
     implementation(project(":data:splash:api"))
@@ -142,6 +152,8 @@ dependencies {
     implementation(project(":data:mission:impl"))
     implementation(project(":data:notice:api"))
     implementation(project(":data:notice:impl"))
+    implementation(project(":data:notification:api"))
+    implementation(project(":data:notification:impl"))
 
     // Presentation modules
     implementation(project(":presentation:common"))
@@ -158,6 +170,7 @@ dependencies {
     implementation(project(":presentation:record"))
     implementation(project(":presentation:mission"))
     implementation(project(":presentation:notice"))
+    implementation(project(":presentation:notification"))
     implementation(project(":presentation:mypage"))
 
     implementation(libs.androidx.core.ktx)

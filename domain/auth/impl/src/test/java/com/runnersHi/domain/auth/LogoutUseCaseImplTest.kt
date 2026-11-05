@@ -39,6 +39,10 @@ class LogoutUseCaseImplTest {
         override suspend fun getUserById(id: String): User? = null
         override suspend fun updateUser(user: User) = Unit
         override suspend fun refreshCurrentUser() = Unit
+        override suspend fun uploadProfileImage(bytes: ByteArray, contentType: String) = Unit
+        override suspend fun removeProfileImage() = Unit
+        override suspend fun sendFeedback(content: String) = Unit
+        override suspend fun updatePushToken(token: String) = Unit
         override suspend fun clearUser() { cleared += "user" }
     }
     private val region = object : RegionRepository {

@@ -22,6 +22,20 @@ class UserRepositoryImpl @Inject constructor(
         localDataSource.saveUser(remoteDataSource.fetchCurrentUser())
     }
 
+    override suspend fun uploadProfileImage(bytes: ByteArray, contentType: String) {
+        remoteDataSource.uploadProfileImage(bytes, contentType)
+        refreshCurrentUser()
+    }
+
+    override suspend fun removeProfileImage() {
+        remoteDataSource.removeProfileImage()
+        refreshCurrentUser()
+    }
+
+    override suspend fun sendFeedback(content: String) = remoteDataSource.sendFeedback(content)
+
+    override suspend fun updatePushToken(token: String) = remoteDataSource.updatePushToken(token)
+
     override suspend fun clearUser() {
         localDataSource.clearUser()
     }

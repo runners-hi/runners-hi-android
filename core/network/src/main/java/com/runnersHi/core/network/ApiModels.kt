@@ -33,7 +33,8 @@ data class ApiErrorBody(val code: String = "", val message: String = "")
     val nickname: String,
     val profileImageUrl: String? = null,
     val region: RegionResponse? = null,
-    val district: DistrictResponse? = null
+    val district: DistrictResponse? = null,
+    val notificationEnabled: Boolean = true
 )
 @Serializable data class NicknameUpdateRequest(val nickname: String)
 
@@ -114,3 +115,17 @@ data class ApiErrorBody(val code: String = "", val message: String = "")
     val content: String,
     val createdAt: String
 )
+
+@Serializable data class ProfileImageUploadRequest(val contentType: String)
+@Serializable data class ProfileImageUploadResponse(val presignedUrl: String, val objectKey: String)
+@Serializable data class ProfileImageConfirmRequest(val objectKey: String)
+@Serializable data class FcmTokenRequest(val fcmToken: String)
+@Serializable data class NotificationSettingsRequest(val notificationEnabled: Boolean)
+@Serializable data class NotificationResponse(
+    val id: Long,
+    val title: String,
+    val body: String,
+    val isRead: Boolean = false,
+    val createdAt: String
+)
+@Serializable data class FeedbackRequest(val content: String)

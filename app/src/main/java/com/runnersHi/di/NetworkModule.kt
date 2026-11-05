@@ -16,6 +16,10 @@ import com.runnersHi.data.home.RemoteHomeDataSource
 import com.runnersHi.data.mission.MissionRemoteDataSource
 import com.runnersHi.data.mission.MockMissionDataSource
 import com.runnersHi.data.mission.RemoteMissionDataSource
+import com.runnersHi.core.network.ImageUploader
+import com.runnersHi.data.notification.EmptyNotificationDataSource
+import com.runnersHi.data.notification.NotificationRemoteDataSource
+import com.runnersHi.data.notification.RemoteNotificationDataSource
 import com.runnersHi.data.notice.EmptyNoticeDataSource
 import com.runnersHi.data.notice.NoticeRemoteDataSource
 import com.runnersHi.data.notice.RemoteNoticeDataSource
@@ -105,6 +109,17 @@ object NetworkModule {
     @Singleton
     fun provideHome(remote: Lazy<RemoteHomeDataSource>, mock: Lazy<MockHomeDataSource>): HomeDataSource =
         choose(remote, mock)
+
+    @Provides
+    @Singleton
+    fun provideImageUploader(): ImageUploader = ImageUploader()
+
+    @Provides
+    @Singleton
+    fun provideNotification(
+        remote: Lazy<RemoteNotificationDataSource>,
+        mock: Lazy<EmptyNotificationDataSource>
+    ): NotificationRemoteDataSource = choose(remote, mock)
 
     @Provides
     @Singleton

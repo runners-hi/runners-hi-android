@@ -62,6 +62,9 @@ class MainViewModel @Inject constructor(
             is MainContract.Event.MissionEventClicked -> {
                 updateState { copy(currentTab = BottomNavTab.MISSION) }
             }
+            is MainContract.Event.NotificationClicked -> {
+                sendEffect(MainContract.Effect.NavigateToNotifications)
+            }
             is MainContract.Event.BackToHome -> {
                 updateState { copy(currentTab = BottomNavTab.HOME) }
             }

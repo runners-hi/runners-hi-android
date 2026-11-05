@@ -41,6 +41,32 @@ interface RunnersHiApi {
     @PATCH("api/users/region")
     suspend fun updateRegion(@Body request: RegionUpdateRequest): ApiEnvelope<JsonElement>
 
+    @POST("api/users/me/profile-image/upload-url")
+    suspend fun createProfileImageUploadUrl(
+        @Body request: ProfileImageUploadRequest
+    ): ApiEnvelope<ProfileImageUploadResponse>
+
+    @PATCH("api/users/me/profile-image")
+    suspend fun confirmProfileImage(@Body request: ProfileImageConfirmRequest): ApiEnvelope<JsonElement>
+
+    @DELETE("api/users/me/profile-image")
+    suspend fun removeProfileImage(): ApiEnvelope<JsonElement>
+
+    @PATCH("api/users/fcm-token")
+    suspend fun updateFcmToken(@Body request: FcmTokenRequest): ApiEnvelope<JsonElement>
+
+    @PATCH("api/users/notification-settings")
+    suspend fun updateNotificationSettings(@Body request: NotificationSettingsRequest): ApiEnvelope<JsonElement>
+
+    @GET("api/notifications")
+    suspend fun getNotifications(): ApiEnvelope<List<NotificationResponse>>
+
+    @PATCH("api/notifications/read-all")
+    suspend fun markAllNotificationsRead(): ApiEnvelope<JsonElement>
+
+    @POST("api/feedback")
+    suspend fun sendFeedback(@Body request: FeedbackRequest): ApiEnvelope<JsonElement>
+
     @DELETE("api/users/me")
     suspend fun withdraw(): ApiEnvelope<JsonElement>
 

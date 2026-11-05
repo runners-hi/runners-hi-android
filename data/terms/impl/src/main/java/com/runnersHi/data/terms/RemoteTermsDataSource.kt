@@ -37,6 +37,8 @@ internal fun TermsResponse.toItem() = TermsItem(
 private val BUNDLED_ID = mapOf(
     "TERMS_OF_SERVICE" to "service",
     "PRIVACY_POLICY" to "privacy",
+    "HEALTH_DATA" to "health",
+    "LOCATION" to "location",
     "MARKETING" to "marketing",
     "SNS" to "sns",
     "AGE_VERIFICATION" to "age"
