@@ -1,0 +1,32 @@
+{
+  "requests": [
+    {
+      "id": 1,
+      "time": "2026-11-06 00:30:31",
+      "title": "서버 운영사 변경에 맞춰 동의 문구 수정",
+      "tokens": {
+        "input": 1528,
+        "output": 1038417,
+        "cacheCreation": 3814809,
+        "cacheRead": 100077166,
+        "total": 104931920
+      },
+      "cost": null
+    }
+  ],
+  "sessionCheckpoint": [
+    1528,
+    1038417,
+    3814809,
+    100077166
+  ],
+  "cumulative": {
+    "inputTokens": 1528,
+    "outputTokens": 1038417,
+    "cacheCreationTokens": 3814809,
+    "cacheReadTokens": 100077166,
+    "totalTokens": 104931920,
+    "totalCost": null
+  },
+  "costNote": "ccusage가 응답하지 않아 비용 미산출. 토큰은 세션 기록에서 집계"
+}
