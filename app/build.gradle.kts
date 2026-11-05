@@ -16,13 +16,13 @@ if (firebaseConfig.exists() && !firebaseConfig.readText().contains("placeholder"
 
 android {
     namespace = "com.runnersHi"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.runnersHi"
         minSdk = 26
-        targetSdk = 35
-        versionCode = 1
+        targetSdk = 36
+        versionCode = 2
         versionName = "1.0.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["clearPackageData"] = "true"

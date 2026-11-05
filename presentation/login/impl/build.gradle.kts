@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.runnersHi.presentation.login.impl"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 26
