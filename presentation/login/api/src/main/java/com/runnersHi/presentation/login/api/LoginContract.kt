@@ -23,7 +23,8 @@ object LoginContract {
      */
     data class State(
         val loadingType: LoadingType = LoadingType.NONE,
-        val errorMessage: String? = null
+        val errorMessage: String? = null,
+        val showAppleLogin: Boolean = true
     ) : UiState {
         val isLoading: Boolean get() = loadingType != LoadingType.NONE
         val isKakaoLoading: Boolean get() = loadingType == LoadingType.KAKAO
@@ -39,6 +40,7 @@ object LoginContract {
         data class KakaoTokenReceived(val token: String) : Event
         data class AppleTokenReceived(val token: String) : Event
         data class LoginFailed(val message: String) : Event
+        data object LoginCancelled : Event
         data object ErrorDismissed : Event
     }
 

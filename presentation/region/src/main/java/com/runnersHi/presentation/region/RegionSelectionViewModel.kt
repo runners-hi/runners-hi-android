@@ -7,9 +7,9 @@ import com.runnersHi.presentation.common.mvi.MviViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,14 +25,13 @@ class RegionSelectionViewModel @Inject constructor(
     private val searchQueryFlow = MutableStateFlow("")
 
     init {
-        // Debounce 300ms 적용
+        // Debounce 300ms 적용. 빈 검색어는 전체 목록이다(시안: 들어오자마자 지역 목록 표시).
         viewModelScope.launch {
             searchQueryFlow
                 .debounce(300)
-                // 지운 뒤 같은 검색어를 다시 입력해도 검색되도록 빈 값 제거는 중복 제거 뒤에 한다.
                 .distinctUntilChanged()
-                .filter { it.isNotBlank() }
-                .collect { query ->
+                // 입력이 바뀌면 진행 중인 검색을 취소해 늦게 온 옛 결과가 덮어쓰지 못하게 한다.
+                .collectLatest { query ->
                     searchRegions(query)
                 }
         }
@@ -56,45 +55,21 @@ class RegionSelectionViewModel @Inject constructor(
     private fun onSearchQueryChanged(query: String) {
         updateState { copy(searchQuery = query) }
         searchQueryFlow.value = query
-
-        // 검색어가 비어있으면 결과 초기화
-        if (query.isBlank()) {
-            updateState {
-                copy(
-                    searchResults = emptyList(),
-                    hasSearched = false,
-                    isSearching = false,
-                    isNetworkError = false
-                )
-            }
-        }
     }
 
     private fun clearSearchQuery() {
-        updateState {
-            copy(
-                searchQuery = "",
-                searchResults = emptyList(),
-                hasSearched = false,
-                isSearching = false,
-                isNetworkError = false
-            )
-        }
+        updateState { copy(searchQuery = "") }
         searchQueryFlow.value = ""
     }
 
     private fun retrySearch() {
-        val query = state.value.searchQuery
-        if (query.isNotBlank()) {
-            searchRegions(query)
-        }
+        viewModelScope.launch { searchRegions(state.value.searchQuery) }
     }
 
-    private fun searchRegions(query: String) {
-        viewModelScope.launch {
-            updateState { copy(isSearching = true, isNetworkError = false) }
+    private suspend fun searchRegions(query: String) {
+        updateState { copy(isSearching = true, isNetworkError = false) }
 
-            searchRegionsUseCase(query)
+        searchRegionsUseCase(query)
                 .onSuccess { regions ->
                     val uiModels = regions.map { region ->
                         // 검색어 하이라이팅 범위 계산
@@ -123,7 +98,6 @@ class RegionSelectionViewModel @Inject constructor(
                         )
                     }
                 }
-        }
     }
 
     private fun findHighlightRange(text: String, query: String): IntRange? {

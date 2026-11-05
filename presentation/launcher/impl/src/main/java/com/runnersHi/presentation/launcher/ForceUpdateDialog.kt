@@ -20,3 +20,20 @@ fun ForceUpdateDialog(
         }
     )
 }
+
+@Composable
+fun AppStartErrorDialog(
+    message: String,
+    onRetryClick: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = { /* 닫기 불가 */ },
+        title = { Text("앱을 시작할 수 없어요") },
+        text = { Text(message) },
+        confirmButton = {
+            TextButton(onClick = onRetryClick) {
+                Text("다시 시도")
+            }
+        }
+    )
+}

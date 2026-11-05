@@ -34,6 +34,7 @@ class MyPageViewModel @Inject constructor(
             MyPageContract.Event.RegionClicked -> sendEffect(MyPageContract.Effect.NavigateToRegion)
             MyPageContract.Event.TermsClicked -> sendEffect(MyPageContract.Effect.NavigateToTerms)
             MyPageContract.Event.AccountClicked -> sendEffect(MyPageContract.Effect.NavigateToAccount)
+            MyPageContract.Event.NoticesClicked -> sendEffect(MyPageContract.Effect.NavigateToNotices)
             MyPageContract.Event.NotReadyClicked ->
                 sendEffect(MyPageContract.Effect.ShowToast("준비 중인 기능이에요"))
         }

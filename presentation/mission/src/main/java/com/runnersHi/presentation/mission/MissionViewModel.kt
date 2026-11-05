@@ -71,6 +71,7 @@ class MissionViewModel @Inject constructor(
         subtitle = subtitle,
         iconName = iconName,
         isCompleted = isCompleted,
+        imageUrl = imageUrl,
         accentColor = when (accent) {
             MissionAccent.PRIMARY -> Primary
             MissionAccent.AMBER -> PrimaryAmber

@@ -1,6 +1,14 @@
 package com.runnersHi.presentation.ranking
 
+import android.graphics.BlurMaskFilter
 import androidx.compose.foundation.Image
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -95,7 +103,7 @@ private fun TitleBar(regionName: String) {
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp)
-            .padding(horizontal = 24.dp),
+            .padding(start = 24.dp, end = 24.dp, top = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(text = "랭킹", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
@@ -105,7 +113,7 @@ private fun TitleBar(regionName: String) {
                 painter = painterResource(id = CommonR.drawable.ic_location_main),
                 contentDescription = null,
                 tint = BlueGray40,
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(24.dp)
             )
             Spacer(modifier = Modifier.width(4.dp))
             Text(
@@ -121,23 +129,27 @@ private fun TitleBar(regionName: String) {
 @Composable
 private fun RankingList(state: RankingContract.State) {
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 20.dp),
+        modifier = Modifier.fillMaxSize(),
+        // 1위 카드의 빛이 잘리지 않도록 패딩을 스크롤 영역 안쪽에 둔다.
+        contentPadding = PaddingValues(horizontal = 20.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         state.topEntries.firstOrNull()?.let { first ->
-            item(key = "first") { FirstPlaceCard(first) }
+            item(key = "first") {
+                FirstPlaceCard(first, Modifier.padding(bottom = 10.dp))
+            }
         }
         items(state.topEntries.drop(1), key = { it.rank }) { entry -> RankingRow(entry) }
         state.myEntry?.let { me ->
             item(key = "ellipsis") {
-                Text(
-                    text = "⋮",
-                    color = BlueGray40,
-                    fontSize = 20.sp,
-                    modifier = Modifier.fillMaxWidth().padding(start = 40.dp)
-                )
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    Icon(
+                        painter = painterResource(id = CommonR.drawable.ic_more_mono),
+                        contentDescription = null,
+                        tint = Color.Unspecified,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
             }
             item(key = "me") { RankingRow(me) }
         }
@@ -146,48 +158,49 @@ private fun RankingList(state: RankingContract.State) {
 }
 
 @Composable
-private fun FirstPlaceCard(entry: RankingEntry) {
+private fun FirstPlaceCard(entry: RankingEntry, modifier: Modifier = Modifier) {
     val shape = RoundedCornerShape(40.dp)
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .padding(top = 50.dp + 16.dp),
+            .padding(top = 34.dp),
         contentAlignment = Alignment.TopCenter
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .shadow(
-                    elevation = 16.dp,
-                    shape = shape,
-                    ambientColor = Primary.copy(alpha = 0.78f),
-                    spotColor = Primary.copy(alpha = 0.78f)
-                )
+                .height(184.dp)
+                .primaryGlow(radius = 40.dp, blur = 16.dp)
                 .clip(shape)
                 .background(BlueGray80)
                 .border(1.dp, Primary, shape)
-                .padding(start = 20.dp, end = 20.dp, top = 58.dp, bottom = 20.dp),
+                .padding(start = 20.dp, end = 20.dp, top = 74.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                modifier = Modifier.height(24.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 AvatarCircle(size = 24)
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = entry.displayNickname,
                     color = Color.White,
                     fontSize = 16.sp,
+                    lineHeight = 24.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
             }
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(6.dp))
             TierLabel(entry.tier)
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = entry.distanceKm.toKm(),
                 color = Primary,
                 fontSize = 20.sp,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                lineHeight = 24.sp
             )
         }
         Image(
@@ -195,23 +208,39 @@ private fun FirstPlaceCard(entry: RankingEntry) {
             contentDescription = "1위",
             modifier = Modifier
                 .size(100.dp)
-                .offset(y = (-50).dp)
+                .offset(y = (-34).dp)
+        )
+    }
+}
+
+/** Figma의 box-shadow 0 0 blur Primary 78% */
+private fun Modifier.primaryGlow(radius: Dp, blur: Dp): Modifier = drawBehind {
+    val paint = Paint().asFrameworkPaint().apply {
+        color = Primary.copy(alpha = 0.78f).toArgb()
+        maskFilter = BlurMaskFilter(blur.toPx(), BlurMaskFilter.Blur.NORMAL)
+    }
+    drawIntoCanvas { canvas ->
+        canvas.nativeCanvas.drawRoundRect(
+            0f, 0f, size.width, size.height, radius.toPx(), radius.toPx(), paint
         )
     }
 }
 
 @Composable
 private fun RankingRow(entry: RankingEntry) {
+    val shape = RoundedCornerShape(36.dp)
+    val shadow = Color.Black.copy(alpha = 0.25f)
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(64.dp)
-            .clip(RoundedCornerShape(36.dp))
+            .shadow(elevation = 4.dp, shape = shape, ambientColor = shadow, spotColor = shadow)
+            .clip(shape)
             .background(BlueGray80)
             .padding(start = 12.dp, end = 19.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(modifier = Modifier.width(60.dp), contentAlignment = Alignment.Center) {
+        Box(modifier = Modifier.width(40.dp), contentAlignment = Alignment.Center) {
             val medal = when (entry.rank) {
                 2 -> CommonR.drawable.ranking_silver
                 3 -> CommonR.drawable.ranking_bronze
@@ -227,10 +256,17 @@ private fun RankingRow(entry: RankingEntry) {
                 Text(text = entry.rank.toString(), color = Color.White, fontSize = 14.sp)
             }
         }
-        Column(modifier = Modifier.weight(1f)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+        Spacer(modifier = Modifier.width(10.dp))
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Row(
+                modifier = Modifier.height(20.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 AvatarCircle(size = 20)
-                Spacer(modifier = Modifier.width(4.dp))
+                Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     text = entry.displayNickname,
                     color = BlueGray5,
@@ -277,8 +313,8 @@ private fun TierLabel(tier: Tier) {
             contentDescription = null,
             modifier = Modifier.size(width = 18.dp, height = 12.dp)
         )
-        Spacer(modifier = Modifier.width(4.dp))
-        Text(text = tier.displayName(), color = BlueGray30, fontSize = 14.sp)
+        Spacer(modifier = Modifier.width(5.dp))
+        Text(text = tier.displayName(), color = BlueGray30, fontSize = 14.sp, lineHeight = 16.sp)
     }
 }
 

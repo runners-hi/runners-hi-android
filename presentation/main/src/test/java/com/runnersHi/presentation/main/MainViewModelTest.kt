@@ -88,6 +88,9 @@ class MainViewModelTest {
         },
         getWeekRunningDataUseCase = object : GetWeekRunningDataUseCase {
             override suspend fun invoke() = Result.success(records)
+        },
+        syncRunningRecordsUseCase = object : com.runnersHi.domain.health.usecase.SyncRunningRecordsUseCase {
+            override suspend fun invoke() = Result.success(0)
         }
     )
 

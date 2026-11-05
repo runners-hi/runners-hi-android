@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -195,7 +196,7 @@ fun TermsAgreementScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp)
-                    .padding(bottom = 40.dp)
+                    .padding(bottom = 20.dp)
                     .height(56.dp),
                 shape = RoundedCornerShape(71.dp),
                 colors = ButtonDefaults.buttonColors(
@@ -239,6 +240,7 @@ private fun TopNavigationBar(
             modifier = Modifier
                 .align(Alignment.CenterStart)
                 .padding(start = 12.dp)
+                .offset(y = 8.dp)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow_back),

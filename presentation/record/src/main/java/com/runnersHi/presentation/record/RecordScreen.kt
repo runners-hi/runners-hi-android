@@ -87,7 +87,7 @@ fun RecordScreen(
             fontWeight = FontWeight.Bold,
             modifier = Modifier
                 .height(56.dp)
-                .padding(horizontal = 24.dp)
+                .padding(start = 24.dp, end = 24.dp, top = 12.dp)
                 .wrapContentHeight(Alignment.CenterVertically)
         )
         when {
@@ -172,9 +172,10 @@ private fun TodayCard(today: TodayRecordUiModel?) {
             text = "Today's Run",
             color = BlueGray20,
             fontSize = 16.sp,
-            fontWeight = FontWeight.SemiBold
+            fontWeight = FontWeight.SemiBold,
+            lineHeight = 20.sp
         )
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(16.dp))
         if (today == null) {
             Column(
                 modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
@@ -190,7 +191,10 @@ private fun TodayCard(today: TodayRecordUiModel?) {
                 Text(text = "러닝으로 하루를 채워보세요", color = Color.White, fontSize = 14.sp)
             }
         } else {
-            Row(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
                 TodayStat(CommonR.drawable.ic_track, Primary, today.distance, "Distance", Modifier.weight(1f))
                 TodayStat(CommonR.drawable.ic_flame, PrimaryRed, today.pace, "Pace", Modifier.weight(1f))
                 TodayStat(CommonR.drawable.ic_timer, PrimaryYellow, today.time, "Time", Modifier.weight(1f))
@@ -222,8 +226,16 @@ private fun TodayStat(
                 modifier = Modifier.size(20.dp)
             )
         }
-        Spacer(modifier = Modifier.height(12.dp))
-        Text(text = value, color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
+        Spacer(modifier = Modifier.height(6.dp))
+        Text(
+            text = value,
+            color = Color.White,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.SemiBold,
+            lineHeight = 24.sp,
+            maxLines = 1
+        )
+        Spacer(modifier = Modifier.height(4.dp))
         Text(text = label, color = BlueGray40, fontSize = 14.sp)
     }
 }
@@ -231,9 +243,12 @@ private fun TodayStat(
 @Composable
 private fun PastCard(record: PastRecordUiModel) {
     RecordCard {
-        Text(text = record.date, color = BlueGray20, fontSize = 16.sp)
-        Spacer(modifier = Modifier.height(16.dp))
-        Row(modifier = Modifier.fillMaxWidth()) {
+        Text(text = record.date, color = BlueGray20, fontSize = 16.sp, lineHeight = 20.sp)
+        Spacer(modifier = Modifier.height(15.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
             PastStat(CommonR.drawable.ic_distance_mono, record.distance, "Distance", Modifier.weight(1f))
             PastStat(CommonR.drawable.ic_pace_mono, record.pace, "Pace", Modifier.weight(1f))
             PastStat(CommonR.drawable.ic_time_mono, record.time, "Time", Modifier.weight(1f))
@@ -249,19 +264,27 @@ private fun PastStat(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = value, color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.SemiBold)
+        Text(
+            text = value,
+            color = Color.White,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.SemiBold,
+            lineHeight = 24.sp,
+            maxLines = 1
+        )
         Spacer(modifier = Modifier.height(8.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
                 painter = painterResource(id = icon),
                 contentDescription = null,
                 tint = BlueGray40,
-                modifier = Modifier.size(16.dp)
+                modifier = Modifier.size(20.dp)
             )
             Text(
                 text = label,
                 color = BlueGray40,
                 fontSize = 14.sp,
+                lineHeight = 20.sp,
                 modifier = Modifier.padding(start = 4.dp)
             )
         }

@@ -26,6 +26,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
@@ -41,8 +42,11 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.runnersHi.presentation.common.mvi.collectEffect
 import com.runnersHi.presentation.common.mvi.collectState
+import com.runnersHi.presentation.common.R as CommonR
 import com.runnersHi.presentation.common.theme.BlueGray90
 import com.runnersHi.presentation.common.theme.Primary
+import com.runnersHi.domain.auth.model.SocialLoginCancelledException
+import kotlinx.coroutines.CancellationException
 import com.runnersHi.presentation.launcher.api.LauncherContract
 import com.runnersHi.presentation.launcher.impl.R
 import com.runnersHi.presentation.login.api.LoginContent
@@ -96,10 +100,16 @@ fun LauncherRoute(
                                     LoginContract.Event.KakaoTokenReceived(token)
                                 )
                             )
+                        } catch (e: SocialLoginCancelledException) {
+                            viewModel.sendEvent(
+                                LauncherContract.Event.LoginEvent(LoginContract.Event.LoginCancelled)
+                            )
+                        } catch (e: CancellationException) {
+                            throw e
                         } catch (e: Exception) {
                             viewModel.sendEvent(
                                 LauncherContract.Event.LoginEvent(
-                                    LoginContract.Event.LoginFailed(e.message ?: "카카오 로그인 실패")
+                                    LoginContract.Event.LoginFailed("카카오 로그인에 실패했어요")
                                 )
                             )
                         }
@@ -116,10 +126,16 @@ fun LauncherRoute(
                                     LoginContract.Event.AppleTokenReceived(token)
                                 )
                             )
+                        } catch (e: SocialLoginCancelledException) {
+                            viewModel.sendEvent(
+                                LauncherContract.Event.LoginEvent(LoginContract.Event.LoginCancelled)
+                            )
+                        } catch (e: CancellationException) {
+                            throw e
                         } catch (e: Exception) {
                             viewModel.sendEvent(
                                 LauncherContract.Event.LoginEvent(
-                                    LoginContract.Event.LoginFailed(e.message ?: "Apple 로그인 실패")
+                                    LoginContract.Event.LoginFailed("Apple 로그인에 실패했어요")
                                 )
                             )
                         }
@@ -143,8 +159,20 @@ fun LauncherRoute(
         )
     }
 
+    // 버전 확인에 실패하거나 점검 중이면 이유를 보여주고 다시 시도하게 한다.
+    state.splashState.errorMessage?.let { message ->
+        AppStartErrorDialog(
+            message = message,
+            onRetryClick = {
+                viewModel.sendEvent(LauncherContract.Event.CheckAppStatus(currentVersion))
+            }
+        )
+    }
+
     LauncherScreen(
-        state = state,
+        state = state.copy(
+            loginState = state.loginState.copy(showAppleLogin = onAppleLogin != null)
+        ),
         splashContent = splashContent,
         loginContent = loginContent,
         onEvent = viewModel::sendEvent
@@ -184,7 +212,7 @@ fun LauncherScreen(
     // 로그인 UI 전환 애니메이션
     LaunchedEffect(showLoginUI) {
         if (showLoginUI) {
-            val targetOffset = -(screenHeightDp * 0.12f)
+            val targetOffset = -(screenHeightDp * 0.0935f)
 
             // 동시에 실행
             launch {
@@ -247,13 +275,13 @@ fun LauncherScreen(
             }
 
             if (showLoginUI) {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "Runners HI",
-                    color = Primary,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Medium,
-                    modifier = Modifier.alpha(appNameAlpha.value)
+                Image(
+                    painter = painterResource(id = CommonR.drawable.img_wordmark),
+                    contentDescription = "Runners HI",
+                    colorFilter = ColorFilter.tint(Primary),
+                    modifier = Modifier
+                        .size(width = 136.dp, height = 40.dp)
+                        .alpha(appNameAlpha.value)
                 )
             }
         }
@@ -278,7 +306,7 @@ fun LauncherScreen(
                 Modifier
                     .align(Alignment.BottomCenter)
                     .padding(horizontal = 24.dp)
-                    .padding(bottom = 104.dp)
+                    .padding(bottom = 68.dp)
                     .alpha(buttonsAlpha.value)
                     .offset { IntOffset(0, buttonsOffsetY.value.dp.roundToPx()) }
             )

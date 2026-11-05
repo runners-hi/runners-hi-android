@@ -2,6 +2,7 @@ package com.runnersHi.presentation.common.component
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import coil.compose.AsyncImage
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -12,7 +13,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,6 +32,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.runnersHi.presentation.common.theme.BlueGray20
@@ -45,8 +49,20 @@ data class MissionItemModel(
     val subtitle: String,
     val iconName: String,
     val isCompleted: Boolean,
-    val accentColor: Color
+    val accentColor: Color,
+    val imageUrl: String? = null
 )
+
+/** 홈과 미션 탭은 글자 굵기와 줄 간격이 다르다 */
+enum class MissionGridStyle(
+    val titleWeight: FontWeight,
+    val titleLineHeight: TextUnit,
+    val subtitleLineHeight: TextUnit,
+    val textGap: Dp
+) {
+    HOME(FontWeight.SemiBold, 21.sp, 19.5.sp, 4.dp),
+    TAB(FontWeight.Normal, 22.4.sp, 20.8.sp, 2.dp)
+}
 
 /** 시즌 미션 기간을 보여주는 알약 모양 배너 */
 @Composable
@@ -74,6 +90,7 @@ fun SeasonBannerPill(
 fun MissionGrid(
     items: List<MissionItemModel>,
     modifier: Modifier = Modifier,
+    style: MissionGridStyle = MissionGridStyle.TAB,
     onItemClick: ((String) -> Unit)? = null
 ) {
     Column(
@@ -81,10 +98,11 @@ fun MissionGrid(
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         items.chunked(COLUMNS).forEach { row ->
-            Row(horizontalArrangement = Arrangement.spacedBy(18.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 row.forEach { item ->
                     MissionItemView(
                         item = item,
+                        style = style,
                         modifier = Modifier.weight(1f),
                         onClick = onItemClick?.let { { it(item.id) } }
                     )
@@ -98,6 +116,7 @@ fun MissionGrid(
 @Composable
 private fun MissionItemView(
     item: MissionItemModel,
+    style: MissionGridStyle,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null
 ) {
@@ -116,37 +135,60 @@ private fun MissionItemView(
                 .border(border, CircleShape),
             contentAlignment = Alignment.Center
         ) {
-            Image(
-                painter = painterResource(id = missionIconRes(item.iconName)),
-                contentDescription = item.title,
-                colorFilter = if (item.isCompleted) null else grayscaleFilter,
-                modifier = Modifier
-                    .size(60.dp)
-                    .alpha(if (item.isCompleted) 1f else 0.6f)
-            )
+            val placement = missionImagePlacement(item.iconName)
+            val imageModifier = Modifier
+                .requiredSize(placement.size)
+                .offset(y = placement.offsetY)
+                .alpha(if (item.isCompleted) 1f else 0.6f)
+            if (item.imageUrl != null) {
+                AsyncImage(
+                    model = item.imageUrl,
+                    contentDescription = item.title,
+                    colorFilter = if (item.isCompleted) null else grayscaleFilter,
+                    placeholder = painterResource(id = missionIconRes(item.iconName)),
+                    error = painterResource(id = missionIconRes(item.iconName)),
+                    modifier = imageModifier
+                )
+            } else {
+                Image(
+                    painter = painterResource(id = missionIconRes(item.iconName)),
+                    contentDescription = item.title,
+                    colorFilter = if (item.isCompleted) null else grayscaleFilter,
+                    modifier = imageModifier
+                )
+            }
         }
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = item.title,
             color = BlueGray5,
             fontSize = 14.sp,
-            fontWeight = FontWeight.SemiBold,
+            fontWeight = style.titleWeight,
+            lineHeight = style.titleLineHeight,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.height(2.dp))
+        Spacer(modifier = Modifier.height(style.textGap))
         Text(
             text = item.subtitle,
             color = BlueGray40,
             fontSize = 13.sp,
             letterSpacing = (-0.39).sp,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = 2.dp)
+            lineHeight = style.subtitleLineHeight,
+            textAlign = TextAlign.Center
         )
     }
+}
+
+private class MissionImagePlacement(val size: Dp, val offsetY: Dp = 0.dp)
+
+/** Figma의 미션별 이미지 크기. 알약 밖으로 나간 부분은 잘린다. */
+private fun missionImagePlacement(iconName: String): MissionImagePlacement = when (iconName) {
+    "mission_hangawi" -> MissionImagePlacement(104.dp, 3.dp)
+    "mission_songpyeon" -> MissionImagePlacement(63.dp, 1.5.dp)
+    "mission_god" -> MissionImagePlacement(65.dp)
+    else -> MissionImagePlacement(60.dp)
 }
 
 private const val COLUMNS = 3
