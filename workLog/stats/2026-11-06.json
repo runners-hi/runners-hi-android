@@ -90,20 +90,33 @@
         "total": 17340833
       },
       "cost": null
+    },
+    {
+      "id": 8,
+      "time": "2026-11-06 05:58:58",
+      "title": "버전 코드 3 Play 초안 교체",
+      "tokens": {
+        "input": 62,
+        "output": 14449,
+        "cacheCreation": 30843,
+        "cacheRead": 3791105,
+        "total": 3836459
+      },
+      "cost": null
     }
   ],
   "sessionCheckpoint": [
-    2290,
-    1366416,
-    5048952,
-    153301622
+    2352,
+    1380865,
+    5079795,
+    157092727
   ],
   "cumulative": {
-    "inputTokens": 2290,
-    "outputTokens": 1366416,
-    "cacheCreationTokens": 5048952,
-    "cacheReadTokens": 153301622,
-    "totalTokens": 159719280,
+    "inputTokens": 2352,
+    "outputTokens": 1380865,
+    "cacheCreationTokens": 5079795,
+    "cacheReadTokens": 157092727,
+    "totalTokens": 163555739,
     "totalCost": null
   },
   "costNote": "ccusage가 응답하지 않아 비용 미산출. 토큰은 세션 기록에서 집계"
