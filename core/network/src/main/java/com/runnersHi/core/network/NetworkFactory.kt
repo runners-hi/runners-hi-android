@@ -49,7 +49,8 @@ object NetworkFactory {
         val root = if (baseUrl.endsWith("/")) baseUrl else "$baseUrl/"
         val plainClient = OkHttpClient.Builder()
             .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(20, TimeUnit.SECONDS)
+            // 쉬던 서버는 깨어나는 데 약 30초 걸린다
+            .readTimeout(60, TimeUnit.SECONDS)
             .build()
         val authClient = plainClient.newBuilder()
             .addInterceptor(AuthInterceptor(tokenStore))
