@@ -1,5 +1,7 @@
 package com.runnersHi
 
+import android.Manifest
+import android.os.Build
 import android.view.KeyEvent
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertCountEquals
@@ -36,6 +38,11 @@ class LoginToHomeFlowTest {
     fun clearSession() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         context.dataDir.resolve("shared_prefs").listFiles()?.forEach { it.delete() }
+        // Firebase가 설정된 빌드는 홈에서 알림 권한을 묻는다. 권한 창이 화면을 가리지 않게 미리 허용한다.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            InstrumentationRegistry.getInstrumentation().uiAutomation
+                .grantRuntimePermission(context.packageName, Manifest.permission.POST_NOTIFICATIONS)
+        }
     }
 
     @Test
