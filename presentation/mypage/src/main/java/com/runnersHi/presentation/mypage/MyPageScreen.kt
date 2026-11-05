@@ -6,7 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
@@ -36,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.runnersHi.presentation.common.R as CommonR
+import com.runnersHi.presentation.common.component.ProfileAvatar
 import com.runnersHi.presentation.common.mvi.collectEffect
 import com.runnersHi.presentation.common.mvi.collectState
 import com.runnersHi.presentation.common.theme.BlueGray20
@@ -105,20 +104,7 @@ fun MyPageScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .size(80.dp)
-                    .clip(CircleShape)
-                    .background(BlueGray70),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    painter = painterResource(id = CommonR.drawable.ic_user_mono),
-                    contentDescription = null,
-                    tint = BlueGray40,
-                    modifier = Modifier.size(48.dp)
-                )
-            }
+            ProfileAvatar(imageUrl = state.profileImageUrl, size = 80.dp, iconSize = 48.dp)
             Text(text = state.nickname, color = Color.White, fontSize = 20.sp, lineHeight = 24.sp)
         }
 

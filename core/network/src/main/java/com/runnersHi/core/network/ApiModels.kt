@@ -52,7 +52,8 @@ data class ApiErrorBody(val code: String = "", val message: String = "")
     val userId: Long,
     val nickname: String,
     val tier: String,
-    val totalDistance: Int
+    val totalDistance: Int,
+    val profileImageUrl: String? = null
 )
 @Serializable data class RankingListResponse(
     val rankings: List<RankingResponse> = emptyList(),
@@ -63,7 +64,8 @@ data class ApiErrorBody(val code: String = "", val message: String = "")
     val rank: Int,
     val nickname: String,
     val tier: String,
-    val totalDistance: Int
+    val totalDistance: Int,
+    val profileImageUrl: String? = null
 )
 
 @Serializable data class MissionGroupResponse(

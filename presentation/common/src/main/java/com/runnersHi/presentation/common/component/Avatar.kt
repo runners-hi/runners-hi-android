@@ -3,8 +3,10 @@ package com.runnersHi.presentation.common.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -15,11 +17,15 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.runnersHi.presentation.common.R
+import com.runnersHi.presentation.common.theme.BlueGray40
+import com.runnersHi.presentation.common.theme.BlueGray70
 import com.runnersHi.presentation.common.theme.OnBackgroundSecondary
 import com.runnersHi.presentation.common.theme.Primary
 import com.runnersHi.presentation.common.theme.PrimarySecondary
@@ -81,6 +87,38 @@ fun Avatar(
                 text = name.firstOrNull()?.uppercase() ?: "?",
                 style = MaterialTheme.typography.titleMedium,
                 color = OnBackgroundSecondary
+            )
+        }
+    }
+}
+
+/** 사진이 없거나 불러오지 못하면 기본 사람 아이콘을 보여 준다 */
+@Composable
+fun ProfileAvatar(
+    imageUrl: String?,
+    size: Dp,
+    iconSize: Dp,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .size(size)
+            .clip(CircleShape)
+            .background(BlueGray70),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_user_mono),
+            contentDescription = null,
+            tint = BlueGray40,
+            modifier = Modifier.size(iconSize)
+        )
+        if (!imageUrl.isNullOrBlank()) {
+            AsyncImage(
+                model = imageUrl,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
             )
         }
     }

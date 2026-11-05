@@ -38,20 +38,33 @@
         "total": 34688408
       },
       "cost": null
+    },
+    {
+      "id": 4,
+      "time": "2026-11-05 10:08:53",
+      "title": "랭킹과 마이페이지 프로필 사진 표시",
+      "tokens": {
+        "input": 74,
+        "output": 36381,
+        "cacheCreation": 149952,
+        "cacheRead": 5273684,
+        "total": 5460091
+      },
+      "cost": null
     }
   ],
   "sessionCheckpoint": [
-    696,
-    549241,
-    2291272,
-    45216665
+    770,
+    585622,
+    2441224,
+    50490349
   ],
   "cumulative": {
-    "inputTokens": 596,
-    "outputTokens": 466428,
-    "cacheCreationTokens": 1827676,
-    "cacheReadTokens": 39945124,
-    "totalTokens": 42239824,
+    "inputTokens": 670,
+    "outputTokens": 502809,
+    "cacheCreationTokens": 1977628,
+    "cacheReadTokens": 45218808,
+    "totalTokens": 47699915,
     "totalCost": null
   },
   "costNote": "ccusage가 응답하지 않아 비용 미산출. 토큰은 세션 기록에서 집계"

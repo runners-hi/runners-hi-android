@@ -33,7 +33,14 @@ internal fun toRankingBoard(
     mine: MyRankingResponse,
     profile: MyProfileResponse
 ): RankingBoard {
-    val myEntry = RankingEntry(mine.rank, mine.nickname, mine.tier.toTier(), mine.totalDistance / 1000.0, isMe = true)
+    val myEntry = RankingEntry(
+        rank = mine.rank,
+        nickname = mine.nickname,
+        tier = mine.tier.toTier(),
+        distanceKm = mine.totalDistance / 1000.0,
+        isMe = true,
+        profileImageUrl = mine.profileImageUrl
+    )
     return RankingBoard(
         regionName = profile.district?.name ?: profile.region?.name.orEmpty(),
         entries = rankings.map {
@@ -42,7 +49,8 @@ internal fun toRankingBoard(
                 nickname = it.nickname,
                 tier = it.tier.toTier(),
                 distanceKm = it.totalDistance / 1000.0,
-                isMe = it.nickname == mine.nickname
+                isMe = it.nickname == mine.nickname,
+                profileImageUrl = it.profileImageUrl
             )
         },
         myEntry = myEntry
