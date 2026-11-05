@@ -7,6 +7,8 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,11 +18,15 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -202,6 +208,19 @@ fun LauncherScreen(
     val showLoginUI = state.phase == LauncherContract.Phase.LOGIN ||
                       state.phase == LauncherContract.Phase.LOGGING_IN
 
+    // 스토어 심사 로그인. 로고를 7번 누르면 열린다
+    var logoTapCount by remember { mutableIntStateOf(0) }
+    var showReviewLogin by remember { mutableStateOf(false) }
+    if (showReviewLogin) {
+        ReviewLoginDialog(
+            onDismiss = { showReviewLogin = false },
+            onSubmit = { code ->
+                showReviewLogin = false
+                onEvent(LauncherContract.Event.LoginEvent(LoginContract.Event.ReviewCodeSubmitted(code)))
+            }
+        )
+    }
+
     // 애니메이션 상태
     val logoOffsetY = remember { Animatable(0f) }
     val appNameAlpha = remember { Animatable(0f) }
@@ -270,7 +289,19 @@ fun LauncherScreen(
                 Image(
                     painter = painterResource(id = R.drawable.ic_logo_runnershi),
                     contentDescription = "RunnersHi Logo",
-                    modifier = Modifier.size(80.dp)
+                    modifier = Modifier
+                        .size(80.dp)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null,
+                            enabled = state.phase == LauncherContract.Phase.LOGIN
+                        ) {
+                            logoTapCount += 1
+                            if (logoTapCount >= REVIEW_LOGIN_TAPS) {
+                                logoTapCount = 0
+                                showReviewLogin = true
+                            }
+                        }
                 )
             }
 
@@ -350,3 +381,26 @@ private fun AnimatedSplashLogo(modifier: Modifier = Modifier) {
         )
     }
 }
+
+@Composable
+private fun ReviewLoginDialog(onDismiss: () -> Unit, onSubmit: (String) -> Unit) {
+    var code by remember { mutableStateOf("") }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("심사 계정 로그인") },
+        text = {
+            OutlinedTextField(
+                value = code,
+                onValueChange = { code = it },
+                singleLine = true,
+                label = { Text("심사 코드") }
+            )
+        },
+        confirmButton = {
+            TextButton(enabled = code.isNotBlank(), onClick = { onSubmit(code.trim()) }) { Text("로그인") }
+        },
+        dismissButton = { TextButton(onClick = onDismiss) { Text("취소") } }
+    )
+}
+
+private const val REVIEW_LOGIN_TAPS = 7

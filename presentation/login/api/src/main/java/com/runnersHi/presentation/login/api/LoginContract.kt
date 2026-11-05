@@ -15,7 +15,8 @@ object LoginContract {
     enum class LoadingType {
         NONE,
         KAKAO,
-        APPLE
+        APPLE,
+        REVIEW
     }
 
     /**
@@ -39,6 +40,8 @@ object LoginContract {
         data object AppleLoginClicked : Event
         data class KakaoTokenReceived(val token: String) : Event
         data class AppleTokenReceived(val token: String) : Event
+        /** 로고를 7번 눌러 입력한 스토어 심사 코드 */
+        data class ReviewCodeSubmitted(val code: String) : Event
         data class LoginFailed(val message: String) : Event
         data object LoginCancelled : Event
         data object ErrorDismissed : Event

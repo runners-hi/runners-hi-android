@@ -14,6 +14,7 @@ data class ApiEnvelope<T>(
 data class ApiErrorBody(val code: String = "", val message: String = "")
 
 @Serializable data class KakaoLoginRequest(val accessToken: String)
+@Serializable data class ReviewLoginRequest(val code: String)
 @Serializable data class AppleLoginRequest(val idToken: String, val authorizationCode: String)
 @Serializable data class RefreshTokenRequest(val refreshToken: String)
 @Serializable data class AuthResponse(val accessToken: String, val refreshToken: String, val isNewUser: Boolean = false)
@@ -96,7 +97,14 @@ data class ApiErrorBody(val code: String = "", val message: String = "")
     val endedAt: String,
     val source: String
 )
-@Serializable data class RunningRecordResponse(val id: Long, val startedAt: String)
+@Serializable data class RunningRecordResponse(
+    val id: Long,
+    val startedAt: String,
+    val endedAt: String? = null,
+    val distance: Int? = null,
+    val duration: Int? = null,
+    val calories: Int? = null
+)
 @Serializable data class RunningRecordListResponse(
     val records: List<RunningRecordResponse> = emptyList(),
     val nextCursor: Long? = null,

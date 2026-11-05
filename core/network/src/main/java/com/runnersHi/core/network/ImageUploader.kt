@@ -16,6 +16,8 @@ class ImageUploader(private val client: OkHttpClient = OkHttpClient()) {
             .url(url)
             .put(bytes.toRequestBody(contentType.toMediaType()))
             .header("Content-Type", contentType)
+            // 서버가 서명에 넣은 값과 같아야 한다
+            .header("Cache-Control", "public, max-age=300")
             .build()
         try {
             client.newCall(request).execute().use { response ->

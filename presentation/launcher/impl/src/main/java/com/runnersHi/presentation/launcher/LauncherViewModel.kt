@@ -70,6 +70,15 @@ class LauncherViewModel @Inject constructor(
             is LoginContract.Event.AppleTokenReceived -> {
                 loginWithSocial(SocialLoginType.APPLE, event.token)
             }
+            is LoginContract.Event.ReviewCodeSubmitted -> {
+                updateState {
+                    copy(
+                        phase = LauncherContract.Phase.LOGGING_IN,
+                        loginState = loginState.copy(loadingType = LoginContract.LoadingType.REVIEW)
+                    )
+                }
+                loginWithSocial(SocialLoginType.REVIEW, event.code)
+            }
             is LoginContract.Event.LoginFailed -> {
                 updateState {
                     copy(

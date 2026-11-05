@@ -13,6 +13,9 @@ import retrofit2.http.Query
 /** runners-hi-backend REST API. 데이터 없는 응답은 서버가 빈 객체로 주므로 JsonElement로 받는다. */
 interface RunnersHiApi {
 
+    @POST("api/auth/review")
+    suspend fun loginForReview(@Body request: ReviewLoginRequest): ApiEnvelope<AuthResponse>
+
     @POST("api/auth/kakao")
     suspend fun loginWithKakao(@Body request: KakaoLoginRequest): ApiEnvelope<AuthResponse>
 

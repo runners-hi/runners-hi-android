@@ -4,6 +4,7 @@ import com.runnersHi.core.network.ApiException
 import com.runnersHi.core.network.AppleLoginRequest
 import com.runnersHi.core.network.KakaoLoginRequest
 import com.runnersHi.core.network.RefreshTokenRequest
+import com.runnersHi.core.network.ReviewLoginRequest
 import com.runnersHi.core.network.RunnersHiApi
 import com.runnersHi.core.network.apiCall
 import com.runnersHi.core.network.apiCallNullable
@@ -30,6 +31,7 @@ class RemoteAuthDataSource @Inject constructor(
     override suspend fun loginWithSocial(type: SocialLoginType, token: String): SocialLoginResponse {
         val response = when (type) {
             SocialLoginType.KAKAO -> apiCall { api.loginWithKakao(KakaoLoginRequest(token)) }
+            SocialLoginType.REVIEW -> apiCall { api.loginForReview(ReviewLoginRequest(token)) }
             SocialLoginType.APPLE -> {
                 val credential = AppleCredential.fromSocialToken(token)
                     ?: throw ApiException("INVALID_APPLE_TOKEN", 400, "Apple 로그인 정보를 확인할 수 없어요")
