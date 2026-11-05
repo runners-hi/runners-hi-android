@@ -19,12 +19,17 @@ import org.junit.Test
 class LogoutUseCaseImplTest {
 
     private val cleared = mutableListOf<String>()
+    private var serverFails = false
 
     private val auth = object : AuthRepository {
         override suspend fun getStoredToken(): AuthToken? = null
         override suspend fun refreshToken(refreshToken: String) = Result.failure<AuthToken>(UnsupportedOperationException())
         override suspend fun saveToken(token: AuthToken) = Unit
         override suspend fun clearToken() { cleared += "token" }
+        override suspend fun logoutFromServer() {
+            cleared += "server"
+            if (serverFails) error("network")
+        }
         override fun isLoggedIn() = false
         override suspend fun loginWithSocial(type: SocialLoginType, token: String) =
             Result.failure<LoginResult>(UnsupportedOperationException())
@@ -53,6 +58,15 @@ class LogoutUseCaseImplTest {
     fun `로그아웃하면 토큰과 사용자, 지역, 약관 동의를 모두 지운다`() = runTest {
         LogoutUseCaseImpl(auth, user, region, terms).invoke()
 
-        assertEquals(setOf("token", "user", "region", "terms"), cleared.toSet())
+        assertEquals(setOf("server", "token", "user", "region", "terms"), cleared.toSet())
+    }
+
+    @Test
+    fun `서버 로그아웃이 실패해도 기기에서는 로그아웃한다`() = runTest {
+        serverFails = true
+
+        LogoutUseCaseImpl(auth, user, region, terms).invoke()
+
+        assertEquals(setOf("server", "token", "user", "region", "terms"), cleared.toSet())
     }
 }

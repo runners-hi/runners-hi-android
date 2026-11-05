@@ -1,36 +1,39 @@
 package com.runnersHi.auth
 
 import android.content.Context
+import android.content.Intent
+import com.runnersHi.BuildConfig
+import com.runnersHi.domain.auth.model.AppleCredential
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.delay
 
 /**
- * Apple Sign In 핸들러
+ * Apple 로그인 핸들러
  *
- * TODO: 실제 Apple Sign In 연동 시 구현
- * 현재는 Mock 모드로 동작
+ * 안드로이드에는 Apple 네이티브 로그인이 없어 웹 로그인을 쓴다.
+ * 실서버에서는 APPLE_SERVICE_ID와 APPLE_REDIRECT_URI가 있어야 동작하고, 없으면 버튼을 숨긴다.
  */
 object AppleLoginHandler {
 
-    // Mock 모드 플래그 (실제 연동 시 false로 변경)
-    private const val USE_MOCK = true
+    private val isMock = BuildConfig.API_BASE_URL.isBlank()
+    private val isConfigured =
+        BuildConfig.APPLE_SERVICE_ID.isNotBlank() && BuildConfig.APPLE_REDIRECT_URI.isNotBlank()
 
-    /**
-     * Apple Sign In 실행
-     * @return Apple ID 토큰
-     */
+    val isAvailable: Boolean = isMock || isConfigured
+
+    internal var pending: CompletableDeferred<AppleCredential>? = null
+        private set
+
+    /** @return 서버로 보낼 소셜 토큰 */
     suspend fun login(context: Context): String {
-        if (USE_MOCK) {
-            // Mock: 로그인 지연 시뮬레이션
+        if (isMock) {
             delay(1500)
             return "mock_apple_id_token_${System.currentTimeMillis()}"
         }
-
-        // TODO: 실제 Apple Sign In 구현
-        // Apple Developer 콘솔에서 Service ID 설정 필요
-        // 1. App ID 생성 및 Sign In with Apple 활성화
-        // 2. Service ID 생성
-        // 3. 키 생성 및 다운로드
-        // 4. 서버 사이드 검증 로직 구현
-        throw NotImplementedError("Apple Sign In not configured")
+        pending?.cancel()
+        val result = CompletableDeferred<AppleCredential>()
+        pending = result
+        context.startActivity(Intent(context, AppleLoginActivity::class.java))
+        return result.await().toSocialToken()
     }
 }

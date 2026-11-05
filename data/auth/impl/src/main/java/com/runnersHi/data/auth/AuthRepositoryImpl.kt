@@ -20,8 +20,11 @@ class AuthRepositoryImpl @Inject constructor(
             val newToken = remoteDataSource.refreshToken(refreshToken)
             localDataSource.saveToken(newToken)
             Result.success(newToken)
-        } catch (e: Exception) {
+        } catch (e: TokenExpiredException) {
             localDataSource.clearToken()
+            Result.failure(e)
+        } catch (e: Exception) {
+            // 네트워크 오류로는 로그인을 풀지 않는다.
             Result.failure(e)
         }
     }
@@ -33,6 +36,12 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun clearToken() {
         localDataSource.clearToken()
     }
+
+    override suspend fun logoutFromServer() {
+        if (localDataSource.hasToken()) remoteDataSource.logout()
+    }
+
+    override suspend fun withdraw(): Result<Unit> = runCatching { remoteDataSource.withdraw() }
 
     override fun isLoggedIn(): Boolean {
         return localDataSource.hasToken()

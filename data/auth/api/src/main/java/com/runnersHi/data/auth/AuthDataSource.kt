@@ -13,4 +13,6 @@ interface AuthLocalDataSource {
 interface AuthRemoteDataSource {
     suspend fun refreshToken(refreshToken: String): AuthToken
     suspend fun loginWithSocial(type: SocialLoginType, token: String): SocialLoginResponse
+    suspend fun logout() {}
+    suspend fun withdraw() {}
 }
