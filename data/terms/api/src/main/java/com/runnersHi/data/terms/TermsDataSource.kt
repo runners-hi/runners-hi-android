@@ -15,6 +15,11 @@ interface TermsRemoteDataSource {
      * 약관 동의 처리
      */
     suspend fun agreeTerms(agreedTermIds: List<String>)
+
+    /**
+     * 서버에 기록된 필수 약관 동의 여부. 목업은 null
+     */
+    suspend fun fetchHasAgreedRequired(): Boolean? = null
 }
 
 /**

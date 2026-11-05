@@ -10,7 +10,8 @@ data class MissionEvent(
     val subtitle: String,
     val iconName: String,
     val isCompleted: Boolean,
-    val accent: MissionAccent
+    val accent: MissionAccent,
+    val imageUrl: String? = null
 )
 
 data class SeasonBanner(

@@ -23,6 +23,10 @@ class RegionRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun syncFromServer() {
+        remoteDataSource.fetchMyRegion()?.let { localDataSource.saveSelectedRegion(it) }
+    }
+
     override fun observeSelectedRegion(): Flow<Region?> = localDataSource.observeSelectedRegion()
 
     override suspend fun clearSelectedRegion() {

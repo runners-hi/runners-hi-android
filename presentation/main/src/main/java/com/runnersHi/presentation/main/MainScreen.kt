@@ -3,6 +3,14 @@ package com.runnersHi.presentation.main
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,12 +28,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -38,7 +43,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -61,6 +65,7 @@ import com.runnersHi.presentation.common.theme.BlueGray20
 import com.runnersHi.presentation.common.theme.BlueGray30
 import com.runnersHi.presentation.common.theme.BlueGray40
 import com.runnersHi.presentation.common.theme.BlueGray5
+import com.runnersHi.presentation.common.component.MissionGridStyle
 import com.runnersHi.presentation.common.theme.BlueGray70
 import com.runnersHi.presentation.common.theme.BlueGray80
 import com.runnersHi.presentation.common.theme.BlueGray90
@@ -76,6 +81,9 @@ import com.runnersHi.presentation.common.theme.TierSilverProgress
 import kotlinx.coroutines.launch
 
 // Colors from design spec (Figma)
+/** Figma: 900 높이 화면에서 시트 780 (손잡이 28 제외한 내용 752) */
+private const val TIER_SHEET_HEIGHT_RATIO = 0.8584f
+
 private val CardBackground = BlueGray80          // #2E3238
 private val CardBorder = BlueGray70              // #454B54
 private val ProgressBackground = BlueGray70     // #454B54
@@ -223,7 +231,7 @@ private fun HomeContent(
 
         // Title Bar 하단 고정 영역
         item {
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(20.dp))
         }
 
         // Tier Card
@@ -276,7 +284,7 @@ private fun HomeContent(
             }
         }
 
-        item { Spacer(modifier = Modifier.height(24.dp)) }
+        item { Spacer(modifier = Modifier.height(40.dp)) }
 
         // Mission Event Section
         item {
@@ -285,7 +293,7 @@ private fun HomeContent(
                     missionEvent = missionEvent,
                     onHeaderClick = { onEvent(MainContract.Event.MissionEventClicked) },
                     onMissionClick = { onEvent(MainContract.Event.MissionEventClicked) },
-                    modifier = Modifier.padding(horizontal = 20.dp)
+                    modifier = Modifier.padding(horizontal = 24.dp)
                 )
             }
         }
@@ -298,20 +306,19 @@ private fun TitleBar(modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxWidth()
             .height(56.dp)
-            .padding(horizontal = 24.dp),
+            .padding(start = 24.dp, end = 24.dp, top = 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = "Runners HI",
-            color = Primary,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold
+        Image(
+            painter = painterResource(id = CommonR.drawable.img_wordmark),
+            contentDescription = "Runners HI",
+            modifier = Modifier.size(width = 95.2.dp, height = 28.dp)
         )
         Icon(
-            imageVector = Icons.Default.Notifications,
+            painter = painterResource(id = CommonR.drawable.ic_notification_home),
             contentDescription = "알림",
-            tint = TextPrimary,
+            tint = Color.Unspecified,
             modifier = Modifier.size(28.dp)
         )
     }
@@ -324,93 +331,107 @@ private fun TierCard(
     onArrowClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // 서버가 레벨 진행도를 주지 않으면 진행 막대 없이 줄인다.
+    val hasProgress = tierInfo.progressText.isNotBlank()
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(140.dp)
+            .height(if (hasProgress) 140.dp else 86.dp)
             .clip(RoundedCornerShape(24.dp))
             .background(CardBackground)
             .border(1.dp, CardBorder, RoundedCornerShape(24.dp))
             .clickable(onClick = onClick)
-            .padding(20.dp)
     ) {
-        Column {
-            // Tier info row
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                // Tier Icon - use vector drawable
-                Icon(
-                    painter = painterResource(id = tierInfo.tier.toTierIconRes()),
-                    contentDescription = tierInfo.tierName,
-                    tint = Color.Unspecified,
-                    modifier = Modifier.size(60.dp, 40.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 20.dp, end = 20.dp, top = 20.dp)
+                .height(46.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                painter = painterResource(id = tierInfo.tier.toTierIconRes()),
+                contentDescription = tierInfo.tierName,
+                tint = Color.Unspecified,
+                modifier = Modifier.size(60.dp, 40.dp)
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Box(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = tierInfo.tierName,
+                    color = TextPrimary,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    lineHeight = 25.sp
                 )
-                Spacer(modifier = Modifier.width(16.dp))
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = tierInfo.tierName,
-                        color = TextPrimary,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
+                if (tierInfo.level.isNotBlank()) {
                     Text(
                         text = tierInfo.level,
-                        color = BlueGray5,
-                        fontSize = 14.sp
-                    )
-                }
-                // Arrow button with background
-                Box(
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .clickable(onClick = onArrowClick),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_arrow_bg_right),
-                        contentDescription = "티어 정보",
-                        tint = Color.Unspecified,
-                        modifier = Modifier.size(24.dp)
+                        color = TextSecondary,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(top = 29.dp)
                     )
                 }
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Progress text row - "Progress to next level" and "10%" on same line
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Progress to next level",
-                    color = TextTertiary,
-                    fontSize = 14.sp
-                )
-                Text(
-                    text = tierInfo.progressText,
-                    color = TextPrimary,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // Progress Bar - no dot, continuous bar
-            LinearProgressIndicator(
-                progress = { tierInfo.progressPercent / 100f },
+            Icon(
+                painter = painterResource(id = R.drawable.ic_arrow_bg_right),
+                contentDescription = "티어 정보",
+                tint = Color.Unspecified,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(12.dp)
-                    .clip(RoundedCornerShape(100.dp)),
-                color = tierInfo.tier.toProgressColor(),
-                trackColor = ProgressBackground,
-                strokeCap = StrokeCap.Round
+                    .size(24.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .clickable(onClick = onArrowClick)
+            )
+        }
+        if (hasProgress) {
+            TierProgress(
+                tierInfo = tierInfo,
+                modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 82.dp)
+            )
+        }
+    }
+}
+
+/** 막대가 위, "Progress to next level"이 아래 */
+@Composable
+private fun TierProgress(
+    tierInfo: TierInfoUiModel,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(12.dp)
+                .clip(RoundedCornerShape(100.dp))
+                .background(ProgressBackground)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(tierInfo.progressPercent.coerceIn(0, 100) / 100f)
+                    .fillMaxHeight()
+                    .clip(RoundedCornerShape(100.dp))
+                    .background(tierInfo.tier.toProgressColor())
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Progress to next level",
+                color = TextTertiary,
+                fontSize = 14.sp,
+                lineHeight = 18.sp
+            )
+            Text(
+                text = tierInfo.progressText,
+                color = BlueGray5,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold,
+                lineHeight = 18.sp
             )
         }
     }
@@ -422,66 +443,65 @@ private fun TodaysRunCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(
+    Column(
         modifier = modifier
             .fillMaxWidth()
+            .height(171.dp)
             .clip(RoundedCornerShape(24.dp))
             .background(CardBackground)
             .border(1.dp, CardBorder, RoundedCornerShape(24.dp))
             .clickable(onClick = onClick)
-            .padding(20.dp)
+            .padding(start = 20.dp, end = 20.dp, top = 20.dp)
     ) {
-        Column {
-            // Header row
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Today's Run",
-                    color = TextSecondary,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-                // Arrow icon (20x20)
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_arrow_right_mono),
-                    contentDescription = "상세 보기",
-                    tint = Color.Unspecified,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(20.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Today's Run",
+                color = TextSecondary,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+                lineHeight = 20.sp
+            )
+            Icon(
+                painter = painterResource(id = R.drawable.ic_arrow_right_mono),
+                contentDescription = "상세 보기",
+                tint = Color.Unspecified,
+                modifier = Modifier.size(20.dp)
+            )
+        }
 
-            Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-            // Data items row
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                RunDataItem(
-                    iconRes = CommonR.drawable.ic_track,
-                    iconBackgroundColor = Primary.copy(alpha = 0.2f),
-                    value = todaysRun.distance,
-                    label = "Distance",
-                    modifier = Modifier.weight(1f)
-                )
-                RunDataItem(
-                    iconRes = CommonR.drawable.ic_flame,
-                    iconBackgroundColor = PrimaryRed.copy(alpha = 0.2f),
-                    value = todaysRun.pace,
-                    label = "Pace",
-                    modifier = Modifier.weight(1f)
-                )
-                RunDataItem(
-                    iconRes = CommonR.drawable.ic_timer,
-                    iconBackgroundColor = PrimaryYellow.copy(alpha = 0.2f),
-                    value = todaysRun.time,
-                    label = "Time",
-                    modifier = Modifier.weight(1f)
-                )
-            }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            RunDataItem(
+                iconRes = CommonR.drawable.ic_track,
+                iconBackgroundColor = Primary.copy(alpha = 0.2f),
+                value = todaysRun.distance,
+                label = "Distance",
+                modifier = Modifier.weight(1f)
+            )
+            RunDataItem(
+                iconRes = CommonR.drawable.ic_flame,
+                iconBackgroundColor = PrimaryRed.copy(alpha = 0.2f),
+                value = todaysRun.pace,
+                label = "Pace",
+                modifier = Modifier.weight(1f)
+            )
+            RunDataItem(
+                iconRes = CommonR.drawable.ic_timer,
+                iconBackgroundColor = PrimaryYellow.copy(alpha = 0.2f),
+                value = todaysRun.time,
+                label = "Time",
+                modifier = Modifier.weight(1f)
+            )
         }
     }
 }
@@ -495,12 +515,9 @@ private fun RunDataItem(
     modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier
-            .clip(RoundedCornerShape(12.dp))
-            .padding(8.dp),
+        modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Icon pill (34x44) with icon centered
         Box(
             modifier = Modifier
                 .size(34.dp, 44.dp)
@@ -511,7 +528,7 @@ private fun RunDataItem(
             Icon(
                 painter = painterResource(id = iconRes),
                 contentDescription = label,
-                tint = TextPrimary,
+                tint = Color.Unspecified,
                 modifier = Modifier.size(20.dp)
             )
         }
@@ -520,8 +537,11 @@ private fun RunDataItem(
             text = value,
             color = TextPrimary,
             fontSize = 20.sp,
-            fontWeight = FontWeight.SemiBold
+            fontWeight = FontWeight.SemiBold,
+            lineHeight = 24.sp,
+            maxLines = 1
         )
+        Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = label,
             color = TextTertiary,
@@ -535,45 +555,38 @@ private fun ThisWeekCard(
     thisWeek: ThisWeekUiModel,
     modifier: Modifier = Modifier
 ) {
-    Box(
+    Column(
         modifier = modifier
             .fillMaxWidth()
+            .heightIn(min = 186.dp)
             .clip(RoundedCornerShape(24.dp))
             .background(CardBackground)
             .border(1.dp, CardBorder, RoundedCornerShape(24.dp))
-            .padding(20.dp)
+            .padding(20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            // Title - left aligned
-            Text(
-                text = "This Week",
-                color = TextSecondary,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // Total distance - center aligned
-            Text(
-                text = thisWeek.totalDistance,
-                color = TextPrimary,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Day indicators
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                thisWeek.days.forEach { day ->
-                    DayIndicator(day = day)
-                }
-            }
+        Text(
+            text = "This Week",
+            color = TextSecondary,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.SemiBold,
+            lineHeight = 20.sp,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(15.dp))
+        Text(
+            text = thisWeek.totalDistance,
+            color = TextPrimary,
+            fontSize = 24.sp,
+            fontWeight = FontWeight.SemiBold,
+            lineHeight = 29.sp
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            thisWeek.days.forEach { day -> DayIndicator(day = day) }
         }
     }
 }
@@ -614,7 +627,10 @@ private fun DayIndicator(
                 color = TextSecondary,
                 fontSize = 14.sp,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.width(30.dp)
+                softWrap = false,
+                modifier = Modifier
+                    .width(30.dp)
+                    .wrapContentWidth(unbounded = true)
             )
         }
     }
@@ -628,12 +644,10 @@ private fun MissionEventSection(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        // Header - "미션 이벤트" with arrow
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable(onClick = onHeaderClick)
-                .padding(horizontal = 4.dp),
+                .clickable(onClick = onHeaderClick),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -644,7 +658,6 @@ private fun MissionEventSection(
                 fontWeight = FontWeight.SemiBold,
                 lineHeight = 24.sp
             )
-            // Arrow icon (24x24)
             Icon(
                 painter = painterResource(id = CommonR.drawable.ic_arrow_right_w),
                 contentDescription = "더보기",
@@ -653,15 +666,16 @@ private fun MissionEventSection(
             )
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
         missionEvent.banner?.let { banner ->
             SeasonBannerPill(title = banner.title, period = banner.period)
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(20.dp))
         }
 
         MissionGrid(
             items = missionEvent.missions,
+            style = MissionGridStyle.HOME,
             onItemClick = { onMissionClick() }
         )
     }
@@ -672,67 +686,54 @@ private fun TodaysRunEmptyCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(
+    Column(
         modifier = modifier
             .fillMaxWidth()
+            .height(171.dp)
             .clip(RoundedCornerShape(24.dp))
             .background(CardBackground)
             .border(1.dp, CardBorder, RoundedCornerShape(24.dp))
             .clickable(onClick = onClick)
-            .padding(20.dp)
+            .padding(20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
+        Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Today's Run",
-                    color = TextSecondary,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_arrow_right_mono),
-                    contentDescription = "상세 보기",
-                    tint = Color.Unspecified,
-                    modifier = Modifier.size(20.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Empty State Illustration
-            Image(
-                painter = painterResource(id = CommonR.drawable.ic_empty_track),
-                contentDescription = null,
-                modifier = Modifier.height(60.dp),
-                contentScale = ContentScale.FillHeight
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
             Text(
-                text = "오늘 달린 기록이 없어요",
+                text = "Today's Run",
                 color = TextSecondary,
                 fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.SemiBold,
+                lineHeight = 20.sp
             )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "러닝하러 가기",
-                color = Primary,
-                fontSize = 14.sp
+            Icon(
+                painter = painterResource(id = R.drawable.ic_arrow_right_mono),
+                contentDescription = "상세 보기",
+                tint = Color.Unspecified,
+                modifier = Modifier.size(20.dp)
             )
-
-            Spacer(modifier = Modifier.height(8.dp))
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Image(
+            painter = painterResource(id = CommonR.drawable.ic_empty_track),
+            contentDescription = null,
+            modifier = Modifier.height(60.dp),
+            contentScale = ContentScale.FillHeight
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = "러닝으로 하루를 채워보세요",
+            color = TextPrimary,
+            fontSize = 14.sp,
+            lineHeight = 19.sp
+        )
     }
 }
 
@@ -740,49 +741,47 @@ private fun TodaysRunEmptyCard(
 private fun ThisWeekEmptyCard(
     modifier: Modifier = Modifier
 ) {
-    Box(
+    Column(
         modifier = modifier
             .fillMaxWidth()
+            .height(160.dp)
             .clip(RoundedCornerShape(24.dp))
             .background(CardBackground)
             .border(1.dp, CardBorder, RoundedCornerShape(24.dp))
-            .padding(20.dp)
+            .padding(20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            text = "This Week",
+            color = TextSecondary,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.SemiBold,
+            lineHeight = 20.sp,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Spacer(modifier = Modifier.height(15.dp))
+        Text(
+            text = "0 km",
+            color = TextPrimary,
+            fontSize = 24.sp,
+            fontWeight = FontWeight.SemiBold,
+            lineHeight = 29.sp
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(40.dp)
+                .clip(RoundedCornerShape(100.dp))
+                .background(BlueGray70),
+            contentAlignment = Alignment.Center
+        ) {
             Text(
-                text = "This Week",
-                color = TextSecondary,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Text(
-                text = "0 km",
+                text = "달리면 이곳에 기록이 쌓여요 🏃\u200D♂️",
                 color = TextPrimary,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.SemiBold
+                fontSize = 14.sp,
+                lineHeight = 16.sp
             )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Empty week indicators
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                listOf("M", "T", "W", "T", "F", "S", "S").forEach { day ->
-                    DayIndicator(
-                        day = DayUiModel(
-                            label = day,
-                            distance = null,
-                            hasRun = false
-                        )
-                    )
-                }
-            }
         }
     }
 }
@@ -800,14 +799,15 @@ private fun TierInfoBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
         containerColor = BlueGray80,
+        shape = RoundedCornerShape(topStart = 36.dp, topEnd = 36.dp),
         dragHandle = {
             Box(
                 modifier = Modifier
-                    .padding(vertical = 12.dp)
-                    .width(40.dp)
+                    .padding(top = 18.dp, bottom = 6.dp)
+                    .width(66.dp)
                     .height(4.dp)
                     .clip(RoundedCornerShape(2.dp))
-                    .background(BlueGray70)
+                    .background(BlueGray40)
             )
         },
         modifier = modifier
@@ -815,94 +815,82 @@ private fun TierInfoBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp)
-                .padding(bottom = 32.dp)
+                .fillMaxHeight(TIER_SHEET_HEIGHT_RATIO)
+                .verticalScroll(rememberScrollState())
+                .navigationBarsPadding()
+                .padding(bottom = 40.dp)
         ) {
-            // Header
-            Text(
-                text = "러너 티어",
-                color = TextPrimary,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-            // Current Tier Info
             tierInfo?.let { info ->
-                Row(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(BlueGray90)
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                        .padding(horizontal = 40.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    Spacer(modifier = Modifier.height(32.dp))
                     Icon(
                         painter = painterResource(id = info.tier.toTierIconRes()),
                         contentDescription = info.tierName,
                         tint = Color.Unspecified,
-                        modifier = Modifier.size(48.dp, 32.dp)
+                        modifier = Modifier.size(60.dp, 40.dp)
                     )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Column {
-                        Text(
-                            text = info.tierName,
-                            color = TextPrimary,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        Text(
-                            text = info.level,
-                            color = TextSecondary,
-                            fontSize = 14.sp
-                        )
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Text(
+                        text = info.tierName,
+                        color = TextPrimary,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        lineHeight = 25.sp
+                    )
+                    if (info.level.isNotBlank()) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(text = info.level, color = BlueGray5, fontSize = 14.sp)
+                    }
+                    if (info.progressText.isNotBlank()) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        TierProgress(tierInfo = info)
                     }
                 }
+                Spacer(modifier = Modifier.height(32.dp))
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .fillMaxWidth()
+                    .border(1.dp, CardBorder, RoundedCornerShape(40.dp))
+                    .padding(start = 43.dp, end = 16.dp, top = 24.dp, bottom = 24.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                tierGuideList.forEach { guideItem -> TierGuideRow(guideItem = guideItem) }
+            }
 
-            // Tier Guide List
+            Spacer(modifier = Modifier.height(40.dp))
+
             Text(
-                text = "티어 가이드",
-                color = TextSecondary,
-                fontSize = 14.sp,
-                modifier = Modifier.padding(bottom = 12.dp)
+                text = "티어 안내",
+                color = TextPrimary,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.SemiBold,
+                lineHeight = 24.sp,
+                modifier = Modifier.padding(horizontal = 24.dp)
             )
-
-            tierGuideList.forEach { guideItem ->
-                TierGuideRow(
-                    guideItem = guideItem,
-                    isCurrentTier = tierInfo?.tier == guideItem.tier
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-
             Spacer(modifier = Modifier.height(16.dp))
-
-            // Tier Info Texts
-            Text(
-                text = "안내",
-                color = TextSecondary,
-                fontSize = 14.sp,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-
             tierInfoTexts.forEach { text ->
-                Row(
-                    modifier = Modifier.padding(vertical = 4.dp)
-                ) {
+                Row(modifier = Modifier.padding(horizontal = 24.dp)) {
                     Text(
                         text = "•",
-                        color = TextTertiary,
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(end = 8.dp)
+                        color = BlueGray5,
+                        fontSize = 14.sp,
+                        lineHeight = 21.sp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.width(21.dp)
                     )
                     Text(
                         text = text,
-                        color = TextTertiary,
-                        fontSize = 12.sp,
-                        lineHeight = 18.sp
+                        color = BlueGray5,
+                        fontSize = 14.sp,
+                        lineHeight = 21.sp
                     )
                 }
             }
@@ -913,48 +901,34 @@ private fun TierInfoBottomSheet(
 @Composable
 private fun TierGuideRow(
     guideItem: TierGuideItem,
-    isCurrentTier: Boolean,
     modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(if (isCurrentTier) BlueGray90 else Color.Transparent)
-            .border(
-                width = if (isCurrentTier) 1.dp else 0.dp,
-                color = if (isCurrentTier) guideItem.tier.toProgressColor() else Color.Transparent,
-                shape = RoundedCornerShape(12.dp)
-            )
-            .padding(12.dp),
+            .height(46.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             painter = painterResource(id = guideItem.tier.toTierIconRes()),
             contentDescription = guideItem.tierName,
             tint = Color.Unspecified,
-            modifier = Modifier.size(36.dp, 24.dp)
+            modifier = Modifier.size(48.dp, 32.dp)
         )
-        Spacer(modifier = Modifier.width(12.dp))
-        Column(modifier = Modifier.weight(1f)) {
+        Spacer(modifier = Modifier.width(24.dp))
+        Box {
             Text(
                 text = guideItem.tierName,
                 color = TextPrimary,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+                lineHeight = 25.sp
             )
             Text(
                 text = guideItem.levelRange,
                 color = TextTertiary,
-                fontSize = 12.sp
-            )
-        }
-        if (isCurrentTier) {
-            Text(
-                text = "현재",
-                color = Primary,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.SemiBold
+                fontSize = 14.sp,
+                modifier = Modifier.padding(top = 29.dp)
             )
         }
     }

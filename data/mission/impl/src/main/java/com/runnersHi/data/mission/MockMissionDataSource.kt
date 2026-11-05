@@ -9,7 +9,7 @@ import kotlinx.coroutines.delay
 import java.time.LocalDate
 import javax.inject.Inject
 
-/** iOS MissionBoard.mock과 같은 값 */
+/** iOS MissionBoard.mock과 같은 값. 시즌은 이번 달로 두어 홈이 항상 진행 중 시즌을 보여준다. */
 class MockMissionDataSource @Inject constructor() : MissionRemoteDataSource {
 
     override suspend fun fetchMissionBoard(): MissionBoard {
@@ -27,13 +27,13 @@ class MockMissionDataSource @Inject constructor() : MissionRemoteDataSource {
         )
     )
 
-    private fun moonlight() = MissionSection(
+    private fun moonlight(today: LocalDate = LocalDate.now()) = MissionSection(
         id = "moonlight",
         title = "보름달 챌린지",
         seasonBanner = SeasonBanner(
             title = "추석 이벤트",
-            startDate = LocalDate.of(2025, 10, 1),
-            endDate = LocalDate.of(2025, 10, 31)
+            startDate = today.withDayOfMonth(1),
+            endDate = today.withDayOfMonth(today.lengthOfMonth())
         ),
         events = listOf(
             MissionEvent("m1", "문라이트", "10월 러닝 인증", "mission_moonlight", false, MissionAccent.AMBER),

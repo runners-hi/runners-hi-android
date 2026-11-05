@@ -17,6 +17,7 @@ object MyPageContract {
         data object RegionClicked : Event
         data object TermsClicked : Event
         data object AccountClicked : Event
+        data object NoticesClicked : Event
         data object NotReadyClicked : Event
     }
 
@@ -24,6 +25,7 @@ object MyPageContract {
         data object NavigateToRegion : Effect
         data object NavigateToTerms : Effect
         data object NavigateToAccount : Effect
+        data object NavigateToNotices : Effect
         data class ShowToast(val message: String) : Effect
     }
 

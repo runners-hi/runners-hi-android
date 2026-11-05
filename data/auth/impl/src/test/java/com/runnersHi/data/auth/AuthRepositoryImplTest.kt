@@ -22,8 +22,11 @@ class AuthRepositoryImplTest {
         override fun hasToken() = stored != null
     }
 
-    private class FakeRemote(private val response: () -> SocialLoginResponse) : AuthRemoteDataSource {
-        override suspend fun refreshToken(refreshToken: String) = throw TokenExpiredException("expired")
+    private class FakeRemote(
+        private val refreshError: Exception = TokenExpiredException("expired"),
+        private val response: () -> SocialLoginResponse
+    ) : AuthRemoteDataSource {
+        override suspend fun refreshToken(refreshToken: String) = throw refreshError
         override suspend fun loginWithSocial(type: SocialLoginType, token: String) = response()
     }
 
@@ -63,5 +66,16 @@ class AuthRepositoryImplTest {
 
         assertTrue(result.isFailure)
         assertNull(local.stored)
+    }
+
+    @Test
+    fun `네트워크 오류로 갱신에 실패하면 토큰을 유지한다`() = runTest {
+        val local = FakeLocal().apply { stored = token }
+        val repository = AuthRepositoryImpl(local, FakeRemote(java.io.IOException("offline")) { error("unused") })
+
+        val result = repository.refreshToken("refresh")
+
+        assertTrue(result.isFailure)
+        assertEquals(token, local.stored)
     }
 }

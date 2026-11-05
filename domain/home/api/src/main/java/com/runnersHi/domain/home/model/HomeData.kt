@@ -9,8 +9,8 @@ data class HomeData(
 data class TierInfo(
     val tier: Tier,
     val tierName: String,
-    val level: Int,
-    val progressPercent: Int
+    val level: Int?,
+    val progressPercent: Int?
 )
 
 data class TodaysRun(

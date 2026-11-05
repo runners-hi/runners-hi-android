@@ -24,6 +24,7 @@ rootProject.name = "RunnersHi"
 
 include(":app")
 include(":core:common")
+include(":core:network")
 
 // Domain modules
 include(":domain:splash:api")
@@ -44,6 +45,8 @@ include(":domain:health:api")
 include(":domain:health:impl")
 include(":domain:mission:api")
 include(":domain:mission:impl")
+include(":domain:notice:api")
+include(":domain:notice:impl")
 
 // Data modules
 include(":data:splash:api")
@@ -64,6 +67,8 @@ include(":data:health:api")
 include(":data:health:impl")
 include(":data:mission:api")
 include(":data:mission:impl")
+include(":data:notice:api")
+include(":data:notice:impl")
 
 // Presentation modules
 include(":presentation:splash:api")
@@ -78,5 +83,6 @@ include(":presentation:main")
 include(":presentation:ranking")
 include(":presentation:record")
 include(":presentation:mission")
+include(":presentation:notice")
 include(":presentation:mypage")
 include(":presentation:common")

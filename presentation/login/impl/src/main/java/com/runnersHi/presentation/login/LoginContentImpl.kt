@@ -68,11 +68,13 @@ private fun LoginButtons(
         )
 
         // Apple 로그인 버튼
-        AppleLoginButton(
-            isLoading = state.isAppleLoading,
-            enabled = !state.isLoading,
-            onClick = { onEvent(LoginContract.Event.AppleLoginClicked) }
-        )
+        if (state.showAppleLogin) {
+            AppleLoginButton(
+                isLoading = state.isAppleLoading,
+                enabled = !state.isLoading,
+                onClick = { onEvent(LoginContract.Event.AppleLoginClicked) }
+            )
+        }
 
         // Error Message
         state.errorMessage?.let { error ->

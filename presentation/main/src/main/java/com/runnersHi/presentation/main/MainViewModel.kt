@@ -6,6 +6,7 @@ import com.runnersHi.domain.health.model.ExerciseRecord
 import com.runnersHi.domain.health.usecase.CheckHealthPermissionUseCase
 import com.runnersHi.domain.health.usecase.GetTodayRunningDataUseCase
 import com.runnersHi.domain.health.usecase.GetWeekRunningDataUseCase
+import com.runnersHi.domain.health.usecase.SyncRunningRecordsUseCase
 import com.runnersHi.domain.home.model.HomeData
 import com.runnersHi.domain.home.usecase.GetHomeDataUseCase
 import com.runnersHi.domain.mission.model.MissionAccent
@@ -31,7 +32,8 @@ class MainViewModel @Inject constructor(
     private val getMissionBoardUseCase: GetMissionBoardUseCase,
     private val checkHealthPermissionUseCase: CheckHealthPermissionUseCase,
     private val getTodayRunningDataUseCase: GetTodayRunningDataUseCase,
-    private val getWeekRunningDataUseCase: GetWeekRunningDataUseCase
+    private val getWeekRunningDataUseCase: GetWeekRunningDataUseCase,
+    private val syncRunningRecordsUseCase: SyncRunningRecordsUseCase
 ) : MviViewModel<MainContract.State, MainContract.Event, MainContract.Effect>(
     MainContract.State()
 ) {
@@ -118,6 +120,9 @@ class MainViewModel @Inject constructor(
                 updateState { copy(isLoading = false, errorMessage = "로그인 정보가 없습니다.") }
                 return@launch
             }
+
+            // 서버 집계(티어·랭킹·미션)가 최신 기록을 반영하도록 먼저 올린다. 실패해도 홈은 보여 준다.
+            if (state.value.healthPermissionGranted) syncRunningRecordsUseCase()
 
             // Load home data (tier, etc.)
             val homeDataResult = async { getHomeDataUseCase(token.accessToken) }
@@ -248,9 +253,9 @@ class MainViewModel @Inject constructor(
         return TierInfoUiModel(
             tier = tier.tier,
             tierName = tier.tierName,
-            level = "Level ${tier.level}",
-            progressPercent = tier.progressPercent,
-            progressText = "${tier.progressPercent}%"
+            level = tier.level?.let { "Level $it" }.orEmpty(),
+            progressPercent = tier.progressPercent ?: 0,
+            progressText = tier.progressPercent?.let { "$it%" }.orEmpty()
         )
     }
 
@@ -270,6 +275,7 @@ class MainViewModel @Inject constructor(
                     subtitle = mission.subtitle,
                     iconName = mission.iconName,
                     isCompleted = mission.isCompleted,
+                    imageUrl = mission.imageUrl,
                     accentColor = when (mission.accent) {
                         MissionAccent.PRIMARY -> Primary
                         MissionAccent.AMBER -> PrimaryAmber

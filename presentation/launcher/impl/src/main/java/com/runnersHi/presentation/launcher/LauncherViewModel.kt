@@ -81,6 +81,17 @@ class LauncherViewModel @Inject constructor(
                     )
                 }
             }
+            is LoginContract.Event.LoginCancelled -> {
+                updateState {
+                    copy(
+                        phase = LauncherContract.Phase.LOGIN,
+                        loginState = loginState.copy(
+                            loadingType = LoginContract.LoadingType.NONE,
+                            errorMessage = null
+                        )
+                    )
+                }
+            }
             is LoginContract.Event.ErrorDismissed -> {
                 updateState {
                     copy(loginState = loginState.copy(errorMessage = null))
@@ -95,7 +106,7 @@ class LauncherViewModel @Inject constructor(
             updateState {
                 copy(
                     phase = LauncherContract.Phase.SPLASH,
-                    splashState = splashState.copy(progress = 0f)
+                    splashState = splashState.copy(progress = 0f, errorMessage = null)
                 )
             }
 

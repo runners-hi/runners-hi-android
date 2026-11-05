@@ -15,6 +15,8 @@ class LogoutUseCaseImpl @Inject constructor(
 ) : LogoutUseCase {
 
     override suspend fun invoke() {
+        // 서버 로그아웃이 실패해도 기기에서는 로그아웃한다.
+        runCatching { authRepository.logoutFromServer() }
         authRepository.clearToken()
         userRepository.clearUser()
         regionRepository.clearSelectedRegion()

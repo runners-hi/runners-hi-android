@@ -95,13 +95,12 @@ class LoginToHomeFlowTest {
             waitFor("Welcome Mission")
             waitFor("보름달 챌린지")
 
-            // 마이페이지: 프로필, 지역, 버전
+            // 마이페이지: 프로필, 버전 (Figma대로 지역 이름은 랭킹에만 표시)
             rule.onNodeWithText("마이페이지").performClick()
             waitFor("잘먹는프로도")
-            waitFor("인천광역시")
             waitFor(BuildConfig.VERSION_NAME)
 
-            // 지역을 바꾸면 마이페이지와 랭킹에 바로 반영된다.
+            // 지역을 바꾸면 랭킹에 바로 반영된다.
             rule.onNodeWithText("내 지역 설정").performClick()
             waitFor("러닝 지역을 골라주세요")
             // 시스템 뒤로가기는 앱을 끄지 않고 마이페이지로 돌아간다.
@@ -113,7 +112,6 @@ class LoginToHomeFlowTest {
             waitFor("강릉시")
             rule.onNodeWithText("강릉시").performClick()
             waitFor("내 지역 설정")
-            waitFor("강릉시")
             rule.onNodeWithText("랭킹").performClick()
             waitFor("강릉시")
             rule.onNodeWithText("마이페이지").performClick()

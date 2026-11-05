@@ -20,7 +20,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.RunnersHi">
+        android:theme="@style/Theme.RunnersHi"
+        android:usesCleartextTraffic="${usesCleartextTraffic}">
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -30,6 +31,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Apple 로그인 웹 화면 -->
+        <activity
+            android:name=".auth.AppleLoginActivity"
+            android:configChanges="orientation|screenSize|keyboard|keyboardHidden"
+            android:exported="false" />
 
         <!-- Kakao Login Redirect Activity -->
         <activity

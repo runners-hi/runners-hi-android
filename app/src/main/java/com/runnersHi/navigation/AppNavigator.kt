@@ -22,6 +22,9 @@ class AppNavigatorViewModel : ViewModel() {
     private val stack = mutableStateListOf<Screen>(Screen.Launcher)
     private val stores = mutableMapOf<Screen, ViewModelStore>()
 
+    /** 화면의 저장 상태를 지울 수 있는 쪽(NavHost)이 등록한다. */
+    var onScreenDropped: ((Screen) -> Unit)? = null
+
     val current: Screen get() = stack.last()
     val canPop: Boolean get() = stack.size > 1
 
@@ -36,9 +39,20 @@ class AppNavigatorViewModel : ViewModel() {
         return true
     }
 
+    /**
+     * 스택을 비우고 [screen]으로 간다.
+     * 밑에 깔려 있던 화면은 사라질 때 정리될 기회가 없으므로 여기서 지운다.
+     * 지우지 않으면 로그아웃 뒤 이전 사용자의 화면 상태가 그대로 남는다.
+     */
     fun resetTo(screen: Screen) {
+        val leaving = current
+        val covered = stack.filter { it != leaving && it != screen }
         stack.clear()
         stack.add(screen)
+        covered.forEach {
+            stores.remove(it)?.clear()
+            onScreenDropped?.invoke(it)
+        }
     }
 
     fun isInStack(screen: Screen): Boolean = screen in stack

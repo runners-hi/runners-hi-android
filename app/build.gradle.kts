@@ -31,6 +31,21 @@ android {
             ?: ""
         buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"$kakaoAppKey\"")
         manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] = kakaoAppKey
+
+        // 값은 저장소 밖(-P 옵션 또는 local.properties)에 둔다. 서버 주소가 없으면 목업으로 동작한다.
+        fun config(name: String, default: String = ""): String =
+            project.findProperty(name) as? String ?: localProperties.getProperty(name) ?: default
+        val apiBaseUrl = config("API_BASE_URL")
+        buildConfigField("String", "API_BASE_URL", "\"$apiBaseUrl\"")
+        buildConfigField("String", "APPLE_SERVICE_ID", "\"${config("APPLE_SERVICE_ID")}\"")
+        buildConfigField("String", "APPLE_REDIRECT_URI", "\"${config("APPLE_REDIRECT_URI")}\"")
+        buildConfigField(
+            "String",
+            "APPLE_AUTHORIZE_URL",
+            "\"${config("APPLE_AUTHORIZE_URL", "https://appleid.apple.com/auth/authorize")}\""
+        )
+        // 로컬 서버(http)로 붙을 때만 평문 통신을 허용한다.
+        manifestPlaceholders["usesCleartextTraffic"] = apiBaseUrl.startsWith("http://").toString()
     }
 
     testOptions {
@@ -82,6 +97,7 @@ android {
 dependencies {
     // Module dependencies
     implementation(project(":core:common"))
+    implementation(project(":core:network"))
 
     // Domain modules
     implementation(project(":domain:splash:api"))
@@ -102,6 +118,8 @@ dependencies {
     implementation(project(":domain:health:impl"))
     implementation(project(":domain:mission:api"))
     implementation(project(":domain:mission:impl"))
+    implementation(project(":domain:notice:api"))
+    implementation(project(":domain:notice:impl"))
 
     // Data modules
     implementation(project(":data:splash:api"))
@@ -122,6 +140,8 @@ dependencies {
     implementation(project(":data:health:impl"))
     implementation(project(":data:mission:api"))
     implementation(project(":data:mission:impl"))
+    implementation(project(":data:notice:api"))
+    implementation(project(":data:notice:impl"))
 
     // Presentation modules
     implementation(project(":presentation:common"))
@@ -137,6 +157,7 @@ dependencies {
     implementation(project(":presentation:ranking"))
     implementation(project(":presentation:record"))
     implementation(project(":presentation:mission"))
+    implementation(project(":presentation:notice"))
     implementation(project(":presentation:mypage"))
 
     implementation(libs.androidx.core.ktx)
@@ -173,4 +194,15 @@ dependencies {
 
     // Health Connect
     implementation(libs.health.connect)
+}
+
+// 목업으로 출시되는 일을 막는다. 스토어용 번들은 실서버 주소와 카카오 키가 있어야 만들어진다.
+tasks.matching { it.name == "bundleRelease" }.configureEach {
+    val releaseFields = android.defaultConfig.buildConfigFields
+    val baseUrl = releaseFields["API_BASE_URL"]?.value.orEmpty().trim('"')
+    val kakaoKey = releaseFields["KAKAO_NATIVE_APP_KEY"]?.value.orEmpty().trim('"')
+    doFirst {
+        check(baseUrl.startsWith("https://")) { "출시 빌드에는 https API_BASE_URL이 필요합니다" }
+        check(kakaoKey.isNotBlank()) { "출시 빌드에는 KAKAO_NATIVE_APP_KEY가 필요합니다" }
+    }
 }

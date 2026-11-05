@@ -11,4 +11,6 @@ interface AuthRepository {
     suspend fun clearToken()
     fun isLoggedIn(): Boolean
     suspend fun loginWithSocial(type: SocialLoginType, token: String): Result<LoginResult>
+    suspend fun logoutFromServer() {}
+    suspend fun withdraw(): Result<Unit> = Result.success(Unit)
 }

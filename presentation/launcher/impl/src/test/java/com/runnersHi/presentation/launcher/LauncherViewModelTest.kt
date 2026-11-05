@@ -42,10 +42,11 @@ class LauncherViewModelTest {
         login: LoginCheckResult = LoginCheckResult.LoggedIn,
         loginResult: LoginResult = LoginResult.Success,
         agreed: Boolean = true,
-        region: Region? = Region("1", "인천광역시")
+        region: Region? = Region("1", "인천광역시"),
+        version: () -> VersionCheckResult = { VersionCheckResult.UpToDate }
     ) = LauncherViewModel(
         checkAppVersionUseCase = object : CheckAppVersionUseCase {
-            override suspend fun invoke(currentVersion: String) = VersionCheckResult.UpToDate
+            override suspend fun invoke(currentVersion: String) = version()
         },
         checkLoginStatusUseCase = object : CheckLoginStatusUseCase {
             override suspend fun invoke() = login
@@ -87,6 +88,24 @@ class LauncherViewModelTest {
             LauncherContract.Effect.NavigateToRegionSelection,
             effectAfterStart(viewModel(region = null))
         )
+    }
+
+    @Test
+    fun `버전 확인이 실패하면 이유를 보여주고 다시 시도하면 이어서 진행한다`() = runTest(dispatcher) {
+        var result: VersionCheckResult = VersionCheckResult.Error(Exception("서버에 연결할 수 없어요"))
+        val vm = viewModel(login = LoginCheckResult.NotLoggedIn, version = { result })
+
+        vm.sendEvent(LauncherContract.Event.CheckAppStatus("1.0.0"))
+        advanceUntilIdle()
+        assertEquals("서버에 연결할 수 없어요", vm.state.value.splashState.errorMessage)
+        assertEquals(LauncherContract.Phase.SPLASH, vm.state.value.phase)
+
+        result = VersionCheckResult.UpToDate
+        vm.sendEvent(LauncherContract.Event.CheckAppStatus("1.0.0"))
+        advanceUntilIdle()
+
+        assertEquals(null, vm.state.value.splashState.errorMessage)
+        assertEquals(LauncherContract.Phase.LOGIN, vm.state.value.phase)
     }
 
     @Test

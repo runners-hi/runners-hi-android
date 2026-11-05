@@ -23,8 +23,9 @@ object HealthModule {
     fun provideHealthDataSource(
         @ApplicationContext context: Context
     ): HealthDataSource {
-        // iOS DEBUG와 같이 디버그 빌드는 목업 기록을 쓴다.
-        return if (BuildConfig.DEBUG) MockHealthDataSource() else HealthConnectDataSource(context)
+        // 디버그 빌드는 목업 기록을 쓴다. 단, https 실서버로 붙으면 가짜 기록이 올라가지 않게 실제 기록만 쓴다.
+        val useMock = BuildConfig.DEBUG && !BuildConfig.API_BASE_URL.startsWith("https://")
+        return if (useMock) MockHealthDataSource() else HealthConnectDataSource(context)
     }
 
     @Provides

@@ -51,7 +51,7 @@ fun MissionScreen(
             fontWeight = FontWeight.Bold,
             modifier = Modifier
                 .height(56.dp)
-                .padding(horizontal = 24.dp)
+                .padding(start = 24.dp, end = 24.dp, top = 12.dp)
                 .wrapContentHeight(Alignment.CenterVertically)
         )
         when {
@@ -76,8 +76,8 @@ fun MissionScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
-                    .padding(start = 24.dp, end = 24.dp, top = 24.dp, bottom = 40.dp),
-                verticalArrangement = Arrangement.spacedBy(40.dp)
+                    .padding(start = 24.dp, end = 24.dp, top = 20.dp, bottom = 40.dp),
+                verticalArrangement = Arrangement.spacedBy(56.dp)
             ) {
                 state.sections.forEach { section -> SectionView(section) }
             }
@@ -87,16 +87,19 @@ fun MissionScreen(
 
 @Composable
 private fun SectionView(section: MissionSectionUiModel) {
-    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    Column {
         Text(
             text = section.title,
             color = Color.White,
             fontSize = 20.sp,
-            fontWeight = FontWeight.SemiBold
+            fontWeight = FontWeight.SemiBold,
+            lineHeight = 24.sp
         )
         if (section.bannerTitle != null && section.bannerPeriod != null) {
+            Spacer(modifier = Modifier.height(16.dp))
             SeasonBannerPill(title = section.bannerTitle, period = section.bannerPeriod)
         }
+        Spacer(modifier = Modifier.height(20.dp))
         MissionGrid(items = section.items)
     }
 }

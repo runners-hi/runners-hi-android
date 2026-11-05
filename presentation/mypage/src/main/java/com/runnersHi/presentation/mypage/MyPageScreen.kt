@@ -51,6 +51,7 @@ fun MyPageRoute(
     onNavigateToRegion: () -> Unit,
     onNavigateToTerms: () -> Unit,
     onNavigateToAccount: () -> Unit,
+    onNavigateToNotices: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: MyPageViewModel = hiltViewModel()
 ) {
@@ -62,6 +63,7 @@ fun MyPageRoute(
             MyPageContract.Effect.NavigateToRegion -> onNavigateToRegion()
             MyPageContract.Effect.NavigateToTerms -> onNavigateToTerms()
             MyPageContract.Effect.NavigateToAccount -> onNavigateToAccount()
+            MyPageContract.Effect.NavigateToNotices -> onNavigateToNotices()
             is MyPageContract.Effect.ShowToast ->
                 Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
         }
@@ -94,14 +96,14 @@ fun MyPageScreen(
             fontWeight = FontWeight.Bold,
             modifier = Modifier
                 .height(56.dp)
-                .padding(horizontal = 24.dp)
+                .padding(start = 24.dp, end = 24.dp, top = 12.dp)
                 .wrapContentHeight(Alignment.CenterVertically)
         )
-        Spacer(modifier = Modifier.height(42.dp))
+        Spacer(modifier = Modifier.height(20.dp))
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             Box(
                 modifier = Modifier
@@ -114,19 +116,18 @@ fun MyPageScreen(
                     painter = painterResource(id = CommonR.drawable.ic_user_mono),
                     contentDescription = null,
                     tint = BlueGray40,
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.size(48.dp)
                 )
             }
-            Text(text = state.nickname, color = Color.White, fontSize = 20.sp)
+            Text(text = state.nickname, color = Color.White, fontSize = 20.sp, lineHeight = 24.sp)
         }
 
-        Spacer(modifier = Modifier.height(37.dp))
+        Spacer(modifier = Modifier.height(24.dp))
         SettingCard(title = "설정", radius = 24.dp) {
             SettingRow(
                 icon = CommonR.drawable.ic_location_main,
                 iconTint = Primary,
                 title = "내 지역 설정",
-                trailing = state.regionName,
                 onClick = { onEvent(MyPageContract.Event.RegionClicked) }
             )
             SettingRow(
@@ -142,7 +143,7 @@ fun MyPageScreen(
             SettingRow(
                 icon = CommonR.drawable.ic_volume_mono,
                 title = "공지사항",
-                onClick = { onEvent(MyPageContract.Event.NotReadyClicked) }
+                onClick = { onEvent(MyPageContract.Event.NoticesClicked) }
             )
             SettingRow(
                 icon = CommonR.drawable.ic_info_mono,
@@ -189,8 +190,8 @@ private fun SettingCard(
             text = title,
             color = BlueGray20,
             fontSize = 16.sp,
-            fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.padding(start = 20.dp, top = 20.dp, bottom = 8.dp)
+            lineHeight = 20.sp,
+            modifier = Modifier.padding(start = 20.dp, top = 20.dp, bottom = 7.dp)
         )
         content()
     }
@@ -212,6 +213,7 @@ private fun SettingRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        // Figma: 줄 전체 높이 48, 화살표 앞 간격 8
         Icon(
             painter = painterResource(id = icon),
             contentDescription = null,
@@ -222,6 +224,7 @@ private fun SettingRow(
             text = title,
             color = BlueGray5,
             fontSize = 16.sp,
+            lineHeight = 24.sp,
             modifier = Modifier.weight(1f)
         )
         if (trailing != null) {
@@ -231,8 +234,8 @@ private fun SettingRow(
             Icon(
                 painter = painterResource(id = CommonR.drawable.ic_arrow_right_w),
                 contentDescription = null,
-                tint = BlueGray5,
-                modifier = Modifier.size(18.dp)
+                tint = Color.Unspecified,
+                modifier = Modifier.size(24.dp)
             )
         }
     }

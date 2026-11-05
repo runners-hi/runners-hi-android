@@ -3,6 +3,12 @@ package com.runnersHi.presentation.region
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import com.runnersHi.presentation.common.theme.Pretendard
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -124,9 +130,10 @@ fun RegionSelectionScreen(
                 color = BlueGray5,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.SemiBold,
+                lineHeight = 36.sp,
                 modifier = Modifier
                     .padding(horizontal = 24.dp)
-                    .padding(top = 24.dp)
+                    .padding(top = 20.dp)
             )
 
             // 서브 텍스트
@@ -134,12 +141,13 @@ fun RegionSelectionScreen(
                 text = "러닝 지역은 한 곳만 선택할 수 있어요.",
                 color = Primary,
                 fontSize = 14.sp,
+                lineHeight = 21.sp,
                 modifier = Modifier
                     .padding(horizontal = 24.dp)
-                    .padding(top = 8.dp)
+                    .padding(top = 12.dp)
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(40.dp))
 
             // 검색 입력 필드
             SearchTextField(
@@ -151,7 +159,7 @@ fun RegionSelectionScreen(
                 modifier = Modifier.padding(horizontal = 24.dp)
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             // 검색 결과 영역
             Box(
@@ -186,7 +194,7 @@ fun RegionSelectionScreen(
                     }
                     // 검색 결과 있음
                     state.searchResults.isNotEmpty() -> {
-                        LazyColumn {
+                        LazyColumn(contentPadding = PaddingValues(top = 8.dp)) {
                             items(state.searchResults) { region ->
                                 RegionItem(
                                     region = region,
@@ -238,6 +246,7 @@ private fun TopNavigationBar(
             modifier = Modifier
                 .align(Alignment.CenterStart)
                 .padding(start = 12.dp)
+                .offset(y = 8.dp)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow_back),
@@ -258,12 +267,15 @@ private fun SearchTextField(
     focusRequester: FocusRequester,
     modifier: Modifier = Modifier
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isFocused by interactionSource.collectIsFocusedAsState()
     Box(
         modifier = modifier
             .fillMaxWidth()
             .height(52.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(BlueGray80)
+            .border(1.dp, if (isFocused) Primary else BlueGray70, RoundedCornerShape(16.dp))
             .padding(horizontal = 19.dp)
     ) {
         Row(
@@ -278,17 +290,21 @@ private fun SearchTextField(
                     .focusRequester(focusRequester),
                 textStyle = TextStyle(
                     color = BlueGrayWhite,
-                    fontSize = 16.sp
+                    fontSize = 16.sp,
+                    lineHeight = 20.sp,
+                    fontFamily = Pretendard
                 ),
+                interactionSource = interactionSource,
                 cursorBrush = SolidColor(Primary),
                 singleLine = true,
                 decorationBox = { innerTextField ->
                     Box {
-                        if (value.isEmpty()) {
+                        if (value.isEmpty() && !isFocused) {
                             Text(
                                 text = "지역(시) 검색",
                                 color = BlueGray20,
-                                fontSize = 16.sp
+                                fontSize = 16.sp,
+                                lineHeight = 20.sp
                             )
                         }
                         innerTextField()
