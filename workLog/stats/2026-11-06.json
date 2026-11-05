@@ -25,20 +25,33 @@
         "total": 8096555
       },
       "cost": null
+    },
+    {
+      "id": 3,
+      "time": "2026-11-06 01:24:47",
+      "title": "출시 정책 정리와 iOS 빌드 복구",
+      "tokens": {
+        "input": 72,
+        "output": 46058,
+        "cacheCreation": 158391,
+        "cacheRead": 5474231,
+        "total": 5678752
+      },
+      "cost": null
     }
   ],
   "sessionCheckpoint": [
-    1646,
-    1096280,
-    3986592,
-    107943957
+    1718,
+    1142338,
+    4144983,
+    113418188
   ],
   "cumulative": {
-    "inputTokens": 1646,
-    "outputTokens": 1096280,
-    "cacheCreationTokens": 3986592,
-    "cacheReadTokens": 107943957,
-    "totalTokens": 113028475,
+    "inputTokens": 1718,
+    "outputTokens": 1142338,
+    "cacheCreationTokens": 4144983,
+    "cacheReadTokens": 113418188,
+    "totalTokens": 118707227,
     "totalCost": null
   },
   "costNote": "ccusage가 응답하지 않아 비용 미산출. 토큰은 세션 기록에서 집계"
