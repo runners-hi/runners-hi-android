@@ -61,7 +61,7 @@ fun AccountManagementRoute(
             onDismissRequest = { viewModel.sendEvent(AccountManagementContract.Event.WithdrawDismissed) },
             containerColor = BlueGray80,
             title = { Text(text = "정말 탈퇴할까요?", color = BlueGray5) },
-            text = { Text(text = "계정 정보와 미션 달성 내역이 삭제되고 되돌릴 수 없어요. 러닝 기록은 누구 것인지 알 수 없게 처리되어 남아요.", color = BlueGray40) },
+            text = { Text(text = "러닝 기록, 미션 달성 내역, 프로필 사진 등 계정 정보가 모두 삭제되고 되돌릴 수 없어요.", color = BlueGray40) },
             confirmButton = {
                 TextButton(onClick = { viewModel.sendEvent(AccountManagementContract.Event.WithdrawConfirmed) }) {
                     Text(text = "탈퇴하기", color = Primary)

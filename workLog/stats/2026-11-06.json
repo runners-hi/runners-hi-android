@@ -51,20 +51,33 @@
         "total": 6946662
       },
       "cost": null
+    },
+    {
+      "id": 5,
+      "time": "2026-11-06 02:22:21",
+      "title": "탈퇴 안내 문구 수정",
+      "tokens": {
+        "input": 104,
+        "output": 43320,
+        "cacheCreation": 159933,
+        "cacheRead": 8368880,
+        "total": 8572237
+      },
+      "cost": null
     }
   ],
   "sessionCheckpoint": [
-    1812,
-    1200342,
-    4344297,
-    120107438
+    1916,
+    1243662,
+    4504230,
+    128476318
   ],
   "cumulative": {
-    "inputTokens": 1812,
-    "outputTokens": 1200342,
-    "cacheCreationTokens": 4344297,
-    "cacheReadTokens": 120107438,
-    "totalTokens": 125653889,
+    "inputTokens": 1916,
+    "outputTokens": 1243662,
+    "cacheCreationTokens": 4504230,
+    "cacheReadTokens": 128476318,
+    "totalTokens": 134226126,
     "totalCost": null
   },
   "costNote": "ccusage가 응답하지 않아 비용 미산출. 토큰은 세션 기록에서 집계"
