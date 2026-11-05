@@ -103,20 +103,33 @@
         "total": 7177342
       },
       "cost": null
+    },
+    {
+      "id": 9,
+      "time": "2026-11-05 22:58:09",
+      "title": "약관을 실제 서비스에 맞게 수정",
+      "tokens": {
+        "input": 86,
+        "output": 70780,
+        "cacheCreation": 193621,
+        "cacheRead": 5954060,
+        "total": 6218547
+      },
+      "cost": null
     }
   ],
   "sessionCheckpoint": [
-    1118,
-    816303,
-    3204532,
-    72616279
+    1204,
+    887083,
+    3398153,
+    78570339
   ],
   "cumulative": {
-    "inputTokens": 1018,
-    "outputTokens": 733490,
-    "cacheCreationTokens": 2740936,
-    "cacheReadTokens": 67344738,
-    "totalTokens": 70820182,
+    "inputTokens": 1104,
+    "outputTokens": 804270,
+    "cacheCreationTokens": 2934557,
+    "cacheReadTokens": 73298798,
+    "totalTokens": 77038729,
     "totalCost": null
   },
   "costNote": "ccusage가 응답하지 않아 비용 미산출. 토큰은 세션 기록에서 집계"
