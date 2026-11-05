@@ -12,20 +12,33 @@
         "total": 104931920
       },
       "cost": null
+    },
+    {
+      "id": 2,
+      "time": "2026-11-06 01:06:56",
+      "title": "카카오 로그인 설정과 운영 서버 확인",
+      "tokens": {
+        "input": 118,
+        "output": 57863,
+        "cacheCreation": 171783,
+        "cacheRead": 7866791,
+        "total": 8096555
+      },
+      "cost": null
     }
   ],
   "sessionCheckpoint": [
-    1528,
-    1038417,
-    3814809,
-    100077166
+    1646,
+    1096280,
+    3986592,
+    107943957
   ],
   "cumulative": {
-    "inputTokens": 1528,
-    "outputTokens": 1038417,
-    "cacheCreationTokens": 3814809,
-    "cacheReadTokens": 100077166,
-    "totalTokens": 104931920,
+    "inputTokens": 1646,
+    "outputTokens": 1096280,
+    "cacheCreationTokens": 3986592,
+    "cacheReadTokens": 107943957,
+    "totalTokens": 113028475,
     "totalCost": null
   },
   "costNote": "ccusage가 응답하지 않아 비용 미산출. 토큰은 세션 기록에서 집계"
