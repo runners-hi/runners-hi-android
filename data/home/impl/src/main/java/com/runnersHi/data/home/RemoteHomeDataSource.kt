@@ -43,7 +43,7 @@ internal fun MyRankingResponse?.toTierInfo(): TierInfo {
     return TierInfo(
         tier = tier,
         tierName = tier.name.lowercase().replaceFirstChar { it.uppercase() } + " Runner",
-        level = null,
-        progressPercent = null
+        level = this?.level,
+        progressPercent = this?.progressPercent
     )
 }

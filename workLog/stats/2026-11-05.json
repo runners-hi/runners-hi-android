@@ -51,20 +51,33 @@
         "total": 5460091
       },
       "cost": null
+    },
+    {
+      "id": 5,
+      "time": "2026-11-05 10:46:49",
+      "title": "홈 티어 카드에 서버 레벨과 진행률 표시",
+      "tokens": {
+        "input": 42,
+        "output": 34718,
+        "cacheCreation": 122716,
+        "cacheRead": 3357694,
+        "total": 3515170
+      },
+      "cost": null
     }
   ],
   "sessionCheckpoint": [
-    770,
-    585622,
-    2441224,
-    50490349
+    812,
+    620340,
+    2563940,
+    53848043
   ],
   "cumulative": {
-    "inputTokens": 670,
-    "outputTokens": 502809,
-    "cacheCreationTokens": 1977628,
-    "cacheReadTokens": 45218808,
-    "totalTokens": 47699915,
+    "inputTokens": 712,
+    "outputTokens": 537527,
+    "cacheCreationTokens": 2100344,
+    "cacheReadTokens": 48576502,
+    "totalTokens": 51215085,
     "totalCost": null
   },
   "costNote": "ccusage가 응답하지 않아 비용 미산출. 토큰은 세션 기록에서 집계"

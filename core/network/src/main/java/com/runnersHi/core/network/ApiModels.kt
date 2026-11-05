@@ -65,7 +65,9 @@ data class ApiErrorBody(val code: String = "", val message: String = "")
     val nickname: String,
     val tier: String,
     val totalDistance: Int,
-    val profileImageUrl: String? = null
+    val profileImageUrl: String? = null,
+    val level: Int? = null,
+    val progressPercent: Int? = null
 )
 
 @Serializable data class MissionGroupResponse(
