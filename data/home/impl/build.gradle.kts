@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.runnersHi.data.home.impl"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 26

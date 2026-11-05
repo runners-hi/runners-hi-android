@@ -64,20 +64,33 @@
         "total": 8572237
       },
       "cost": null
+    },
+    {
+      "id": 6,
+      "time": "2026-11-06 02:53:09",
+      "title": "타겟 SDK 36 적용",
+      "tokens": {
+        "input": 116,
+        "output": 43352,
+        "cacheCreation": 94211,
+        "cacheRead": 8014642,
+        "total": 8152321
+      },
+      "cost": null
     }
   ],
   "sessionCheckpoint": [
-    1916,
-    1243662,
-    4504230,
-    128476318
+    2032,
+    1287014,
+    4598441,
+    136490960
   ],
   "cumulative": {
-    "inputTokens": 1916,
-    "outputTokens": 1243662,
-    "cacheCreationTokens": 4504230,
-    "cacheReadTokens": 128476318,
-    "totalTokens": 134226126,
+    "inputTokens": 2032,
+    "outputTokens": 1287014,
+    "cacheCreationTokens": 4598441,
+    "cacheReadTokens": 136490960,
+    "totalTokens": 142378447,
     "totalCost": null
   },
   "costNote": "ccusage가 응답하지 않아 비용 미산출. 토큰은 세션 기록에서 집계"
