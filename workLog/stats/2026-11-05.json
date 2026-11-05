@@ -90,20 +90,33 @@
         "total": 3023694
       },
       "cost": null
+    },
+    {
+      "id": 8,
+      "time": "2026-11-05 22:31:01",
+      "title": "흐름 테스트 알림 권한 대응",
+      "tokens": {
+        "input": 100,
+        "output": 45656,
+        "cacheCreation": 138415,
+        "cacheRead": 6993171,
+        "total": 7177342
+      },
+      "cost": null
     }
   ],
   "sessionCheckpoint": [
-    1018,
-    770647,
-    3066117,
-    65623108
+    1118,
+    816303,
+    3204532,
+    72616279
   ],
   "cumulative": {
-    "inputTokens": 918,
-    "outputTokens": 687834,
-    "cacheCreationTokens": 2602521,
-    "cacheReadTokens": 60351567,
-    "totalTokens": 63642840,
+    "inputTokens": 1018,
+    "outputTokens": 733490,
+    "cacheCreationTokens": 2740936,
+    "cacheReadTokens": 67344738,
+    "totalTokens": 70820182,
     "totalCost": null
   },
   "costNote": "ccusage가 응답하지 않아 비용 미산출. 토큰은 세션 기록에서 집계"
