@@ -37,7 +37,7 @@ class MockMissionDataSource @Inject constructor() : MissionRemoteDataSource {
         ),
         events = listOf(
             MissionEvent("m1", "문라이트", "10월 러닝 인증", "mission_moonlight", false, MissionAccent.AMBER),
-            MissionEvent("m2", "전력질주", "페이스 5'00\"", "mission_sprint", true, MissionAccent.AMBER),
+            MissionEvent("m2", "전력질주", "페이스 5’00”", "mission_sprint", true, MissionAccent.AMBER),
             MissionEvent("m3", "밤톨 러닝", "1km", "mission_acorn", false, MissionAccent.AMBER),
             MissionEvent("m4", "한가위", "5일~8일 러닝 인증", "mission_hangawi", false, MissionAccent.AMBER),
             MissionEvent("m5", "송편 파워", "7일 인증", "mission_songpyeon", true, MissionAccent.AMBER),

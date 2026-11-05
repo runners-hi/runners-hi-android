@@ -77,20 +77,33 @@
         "total": 8152321
       },
       "cost": null
+    },
+    {
+      "id": 7,
+      "time": "2026-11-06 05:50:48",
+      "title": "Figma 글리프·티어 안내 문구 정합",
+      "tokens": {
+        "input": 258,
+        "output": 79402,
+        "cacheCreation": 450511,
+        "cacheRead": 16810662,
+        "total": 17340833
+      },
+      "cost": null
     }
   ],
   "sessionCheckpoint": [
-    2032,
-    1287014,
-    4598441,
-    136490960
+    2290,
+    1366416,
+    5048952,
+    153301622
   ],
   "cumulative": {
-    "inputTokens": 2032,
-    "outputTokens": 1287014,
-    "cacheCreationTokens": 4598441,
-    "cacheReadTokens": 136490960,
-    "totalTokens": 142378447,
+    "inputTokens": 2290,
+    "outputTokens": 1366416,
+    "cacheCreationTokens": 5048952,
+    "cacheReadTokens": 153301622,
+    "totalTokens": 159719280,
     "totalCost": null
   },
   "costNote": "ccusage가 응답하지 않아 비용 미산출. 토큰은 세션 기록에서 집계"
