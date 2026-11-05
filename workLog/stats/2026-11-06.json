@@ -38,20 +38,33 @@
         "total": 5678752
       },
       "cost": null
+    },
+    {
+      "id": 4,
+      "time": "2026-11-06 01:57:09",
+      "title": "심사 로그인과 서버 기록 표시",
+      "tokens": {
+        "input": 94,
+        "output": 58004,
+        "cacheCreation": 199314,
+        "cacheRead": 6689250,
+        "total": 6946662
+      },
+      "cost": null
     }
   ],
   "sessionCheckpoint": [
-    1718,
-    1142338,
-    4144983,
-    113418188
+    1812,
+    1200342,
+    4344297,
+    120107438
   ],
   "cumulative": {
-    "inputTokens": 1718,
-    "outputTokens": 1142338,
-    "cacheCreationTokens": 4144983,
-    "cacheReadTokens": 113418188,
-    "totalTokens": 118707227,
+    "inputTokens": 1812,
+    "outputTokens": 1200342,
+    "cacheCreationTokens": 4344297,
+    "cacheReadTokens": 120107438,
+    "totalTokens": 125653889,
     "totalCost": null
   },
   "costNote": "ccusage가 응답하지 않아 비용 미산출. 토큰은 세션 기록에서 집계"

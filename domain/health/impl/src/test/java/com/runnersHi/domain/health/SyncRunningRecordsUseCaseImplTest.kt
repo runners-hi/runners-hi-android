@@ -38,6 +38,7 @@ class SyncRunningRecordsUseCaseImplTest {
             posted += record.id
             uploadedAt += record.startTime
         }
+        override suspend fun records(since: Instant) = emptyList<ExerciseRecord>()
     }
 
     @Test
@@ -85,6 +86,7 @@ class SyncRunningRecordsUseCaseImplTest {
         val server = object : RunningRecordRepository {
             override suspend fun uploadedStartTimes(since: Instant): Set<Instant> = error("500")
             override suspend fun upload(record: ExerciseRecord) = Unit
+            override suspend fun records(since: Instant) = emptyList<ExerciseRecord>()
         }
         val useCase = SyncRunningRecordsUseCaseImpl(FakeHealth(listOf(record("a", base))), server)
 
