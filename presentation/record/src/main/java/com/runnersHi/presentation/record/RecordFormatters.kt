@@ -17,7 +17,7 @@ internal object RecordFormatters {
     fun pace(meters: Double, durationMillis: Long): String {
         if (meters <= 0.0 || durationMillis <= 0L) return "-"
         val secondsPerKm = (durationMillis / 1000.0 / (meters / 1000)).toInt()
-        return String.format(Locale.US, "%d'%02d''", secondsPerKm / 60, secondsPerKm % 60)
+        return String.format(Locale.US, "%d’%02d’’", secondsPerKm / 60, secondsPerKm % 60)
     }
 
     /** m:ss, 1시간 이상이면 h:mm:ss */

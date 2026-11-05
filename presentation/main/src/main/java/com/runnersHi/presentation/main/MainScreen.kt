@@ -467,7 +467,7 @@ private fun TodaysRunCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Today's Run",
+                text = "Today’s Run",
                 color = TextSecondary,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
@@ -709,7 +709,7 @@ private fun TodaysRunEmptyCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Today's Run",
+                text = "Today’s Run",
                 color = TextSecondary,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
@@ -976,7 +976,7 @@ private fun MainScreenPreview() {
                 ),
                 todaysRun = TodaysRunUiModel(
                     distance = "7.4 km",
-                    pace = "8'00''",
+                    pace = "8’00’’",
                     time = "40:00"
                 ),
                 thisWeek = ThisWeekUiModel(
@@ -995,7 +995,7 @@ private fun MainScreenPreview() {
                     banner = EventBannerUiModel("추석 이벤트", "2025.10.01 - 2025.10.31"),
                     missions = listOf(
                         MissionItemModel("1", "문라이트", "10월 러닝 인증", "mission_moonlight", true, PrimaryAmber),
-                        MissionItemModel("2", "전력질주", "페이스 5'00\"", "mission_sprint", false, PrimaryAmber),
+                        MissionItemModel("2", "전력질주", "페이스 5’00”", "mission_sprint", false, PrimaryAmber),
                         MissionItemModel("3", "밤톨 러닝", "1km", "mission_acorn", true, PrimaryAmber)
                     )
                 )

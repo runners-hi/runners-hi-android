@@ -15,8 +15,8 @@ class RecordFormattersTest {
 
     @Test
     fun `페이스는 1km당 시간이다`() {
-        assertEquals("5'00''", RecordFormatters.pace(5_000.0, 25 * 60_000L))
-        assertEquals("5'30''", RecordFormatters.pace(1_000.0, 330_000L))
+        assertEquals("5’00’’", RecordFormatters.pace(5_000.0, 25 * 60_000L))
+        assertEquals("5’30’’", RecordFormatters.pace(1_000.0, 330_000L))
     }
 
     @Test

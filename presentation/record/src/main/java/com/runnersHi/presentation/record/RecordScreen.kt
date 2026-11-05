@@ -169,7 +169,7 @@ private fun RecordCard(content: @Composable () -> Unit) {
 private fun TodayCard(today: TodayRecordUiModel?) {
     RecordCard {
         Text(
-            text = "Today's Run",
+            text = "Today’s Run",
             color = BlueGray20,
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
