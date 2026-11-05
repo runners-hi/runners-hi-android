@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -36,9 +37,6 @@ class RunnersHiMessagingService : FirebaseMessagingService() {
         ) {
             return
         }
-        getSystemService(NotificationManager::class.java).createNotificationChannel(
-            NotificationChannel(CHANNEL_ID, "러닝 알림", NotificationManager.IMPORTANCE_DEFAULT)
-        )
         val openApp = PendingIntent.getActivity(
             this,
             0,
@@ -48,7 +46,7 @@ class RunnersHiMessagingService : FirebaseMessagingService() {
         NotificationManagerCompat.from(this).notify(
             System.currentTimeMillis().toInt(),
             NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle(notification.title)
                 .setContentText(notification.body)
                 .setContentIntent(openApp)
@@ -57,7 +55,14 @@ class RunnersHiMessagingService : FirebaseMessagingService() {
         )
     }
 
-    private companion object {
-        const val CHANNEL_ID = "running"
+    companion object {
+        private const val CHANNEL_ID = "running"
+
+        /** 앱이 꺼져 있을 때 온 푸시도 이 채널로 오도록 시작할 때 만든다. */
+        fun createChannel(context: Context) {
+            context.getSystemService(NotificationManager::class.java).createNotificationChannel(
+                NotificationChannel(CHANNEL_ID, "러닝 알림", NotificationManager.IMPORTANCE_DEFAULT)
+            )
+        }
     }
 }

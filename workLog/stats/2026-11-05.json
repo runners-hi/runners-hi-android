@@ -77,20 +77,33 @@
         "total": 9404061
       },
       "cost": null
+    },
+    {
+      "id": 7,
+      "time": "2026-11-05 21:53:07",
+      "title": "푸시 알림 아이콘과 기본 채널 추가",
+      "tokens": {
+        "input": 50,
+        "output": 29927,
+        "cacheCreation": 115789,
+        "cacheRead": 2877928,
+        "total": 3023694
+      },
+      "cost": null
     }
   ],
   "sessionCheckpoint": [
-    968,
-    740720,
-    2950328,
-    62745180
+    1018,
+    770647,
+    3066117,
+    65623108
   ],
   "cumulative": {
-    "inputTokens": 868,
-    "outputTokens": 657907,
-    "cacheCreationTokens": 2486732,
-    "cacheReadTokens": 57473639,
-    "totalTokens": 60619146,
+    "inputTokens": 918,
+    "outputTokens": 687834,
+    "cacheCreationTokens": 2602521,
+    "cacheReadTokens": 60351567,
+    "totalTokens": 63642840,
     "totalCost": null
   },
   "costNote": "ccusage가 응답하지 않아 비용 미산출. 토큰은 세션 기록에서 집계"
