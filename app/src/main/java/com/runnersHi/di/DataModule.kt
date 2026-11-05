@@ -21,6 +21,8 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import com.runnersHi.data.notice.NoticeRepositoryImpl
+import com.runnersHi.data.notification.NotificationRepositoryImpl
+import com.runnersHi.domain.notification.repository.NotificationRepository
 import com.runnersHi.domain.notice.repository.NoticeRepository
 import javax.inject.Singleton
 
@@ -75,6 +77,12 @@ abstract class DataModule {
     ): MissionRepository
 
     // Repositories - Home
+    @Binds
+    @Singleton
+    abstract fun bindNotificationRepository(
+        impl: NotificationRepositoryImpl
+    ): NotificationRepository
+
     @Binds
     @Singleton
     abstract fun bindNoticeRepository(

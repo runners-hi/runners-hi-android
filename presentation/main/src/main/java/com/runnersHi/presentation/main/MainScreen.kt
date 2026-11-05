@@ -97,6 +97,7 @@ fun MainRoute(
     viewModel: MainViewModel = hiltViewModel(),
     onRequestHealthPermission: () -> Unit = {},
     onOpenHealthConnectSettings: () -> Unit = {},
+    onNavigateToNotifications: () -> Unit = {},
     tabContent: @Composable (BottomNavTab, Modifier) -> Unit = { _, _ -> }
 ) {
     val state by viewModel.collectState()
@@ -106,6 +107,9 @@ fun MainRoute(
         when (effect) {
             is MainContract.Effect.ShowToast -> {
                 Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
+            }
+            is MainContract.Effect.NavigateToNotifications -> {
+                onNavigateToNotifications()
             }
             is MainContract.Effect.RequestHealthPermission -> {
                 onRequestHealthPermission()
@@ -226,7 +230,7 @@ private fun HomeContent(
     ) {
         // Title Bar
         item {
-            TitleBar()
+            TitleBar(onNotificationClick = { onEvent(MainContract.Event.NotificationClicked) })
         }
 
         // Title Bar 하단 고정 영역
@@ -301,7 +305,7 @@ private fun HomeContent(
 }
 
 @Composable
-private fun TitleBar(modifier: Modifier = Modifier) {
+private fun TitleBar(onNotificationClick: () -> Unit, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -319,7 +323,9 @@ private fun TitleBar(modifier: Modifier = Modifier) {
             painter = painterResource(id = CommonR.drawable.ic_notification_home),
             contentDescription = "알림",
             tint = Color.Unspecified,
-            modifier = Modifier.size(28.dp)
+            modifier = Modifier
+                .size(28.dp)
+                .clickable(onClick = onNotificationClick)
         )
     }
 }

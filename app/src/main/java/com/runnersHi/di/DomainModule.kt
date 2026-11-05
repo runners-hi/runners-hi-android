@@ -46,6 +46,22 @@ import com.runnersHi.domain.auth.WithdrawUseCaseImpl
 import com.runnersHi.domain.auth.usecase.WithdrawUseCase
 import com.runnersHi.domain.health.SyncRunningRecordsUseCaseImpl
 import com.runnersHi.domain.health.usecase.SyncRunningRecordsUseCase
+import com.runnersHi.domain.notification.GetNotificationsUseCaseImpl
+import com.runnersHi.domain.notification.GetPushEnabledUseCaseImpl
+import com.runnersHi.domain.notification.MarkNotificationsReadUseCaseImpl
+import com.runnersHi.domain.notification.SetPushEnabledUseCaseImpl
+import com.runnersHi.domain.notification.usecase.GetNotificationsUseCase
+import com.runnersHi.domain.notification.usecase.GetPushEnabledUseCase
+import com.runnersHi.domain.notification.usecase.MarkNotificationsReadUseCase
+import com.runnersHi.domain.notification.usecase.SetPushEnabledUseCase
+import com.runnersHi.domain.user.RemoveProfileImageUseCaseImpl
+import com.runnersHi.domain.user.SendFeedbackUseCaseImpl
+import com.runnersHi.domain.user.UpdateProfileImageUseCaseImpl
+import com.runnersHi.domain.user.UpdatePushTokenUseCaseImpl
+import com.runnersHi.domain.user.usecase.RemoveProfileImageUseCase
+import com.runnersHi.domain.user.usecase.SendFeedbackUseCase
+import com.runnersHi.domain.user.usecase.UpdateProfileImageUseCase
+import com.runnersHi.domain.user.usecase.UpdatePushTokenUseCase
 import com.runnersHi.domain.notice.GetNoticeDetailUseCaseImpl
 import com.runnersHi.domain.notice.GetNoticesUseCaseImpl
 import com.runnersHi.domain.notice.usecase.GetNoticeDetailUseCase
@@ -105,6 +121,46 @@ abstract class DomainModule {
     abstract fun bindWithdrawUseCase(
         impl: WithdrawUseCaseImpl
     ): WithdrawUseCase
+
+    @Binds
+    abstract fun bindGetNotificationsUseCase(
+        impl: GetNotificationsUseCaseImpl
+    ): GetNotificationsUseCase
+
+    @Binds
+    abstract fun bindMarkNotificationsReadUseCase(
+        impl: MarkNotificationsReadUseCaseImpl
+    ): MarkNotificationsReadUseCase
+
+    @Binds
+    abstract fun bindGetPushEnabledUseCase(
+        impl: GetPushEnabledUseCaseImpl
+    ): GetPushEnabledUseCase
+
+    @Binds
+    abstract fun bindSetPushEnabledUseCase(
+        impl: SetPushEnabledUseCaseImpl
+    ): SetPushEnabledUseCase
+
+    @Binds
+    abstract fun bindUpdateProfileImageUseCase(
+        impl: UpdateProfileImageUseCaseImpl
+    ): UpdateProfileImageUseCase
+
+    @Binds
+    abstract fun bindRemoveProfileImageUseCase(
+        impl: RemoveProfileImageUseCaseImpl
+    ): RemoveProfileImageUseCase
+
+    @Binds
+    abstract fun bindSendFeedbackUseCase(
+        impl: SendFeedbackUseCaseImpl
+    ): SendFeedbackUseCase
+
+    @Binds
+    abstract fun bindUpdatePushTokenUseCase(
+        impl: UpdatePushTokenUseCaseImpl
+    ): UpdatePushTokenUseCase
 
     @Binds
     abstract fun bindGetNoticesUseCase(

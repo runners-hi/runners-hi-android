@@ -59,6 +59,38 @@ class LoginToHomeFlowTest {
     }
 
     @Test
+    fun 알림과_개발자에게_화면이_열리고_돌아온다() {
+        ActivityScenario.launch(MainActivity::class.java).use {
+            waitFor("카카오로 시작하기")
+            rule.onNodeWithText("카카오로 시작하기").performClick()
+            waitFor("다음")
+            rule.onNodeWithText("약관에 모두 동의합니다.").performClick()
+            rule.onNodeWithText("다음").performClick()
+            waitFor("러닝 지역을 골라주세요")
+            rule.onNode(hasSetTextAction()).performTextInput("인천")
+            waitFor("인천광역시")
+            rule.onNodeWithText("인천광역시").performClick()
+            waitFor("Today's Run")
+
+            // 홈 종 아이콘 > 알림
+            rule.onNodeWithContentDescription("알림").performClick()
+            waitFor("푸시 알림 받기")
+            waitFor("아직 받은 알림이 없어요")
+            InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_BACK)
+            waitFor("Today's Run")
+
+            rule.onNodeWithText("마이페이지").performClick()
+            waitFor("개발자에게")
+            rule.onNodeWithText("개발자에게").performScrollTo().performClick()
+            waitFor("보내기")
+            rule.onNodeWithContentDescription("의견 입력").performTextInput("좋아요")
+            waitFor("3/1000")
+            rule.onNodeWithText("보내기").performClick()
+            waitFor("고객지원")
+        }
+    }
+
+    @Test
     fun 모든_탭과_지역변경_약관_로그아웃이_동작한다() {
         ActivityScenario.launch(MainActivity::class.java).use {
             waitFor("카카오로 시작하기")

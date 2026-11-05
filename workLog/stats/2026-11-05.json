@@ -64,20 +64,33 @@
         "total": 3515170
       },
       "cost": null
+    },
+    {
+      "id": 6,
+      "time": "2026-11-05 21:42:35",
+      "title": "알림, 개발자에게, 프로필 사진, 약관 2개, FCM 추가",
+      "tokens": {
+        "input": 156,
+        "output": 120380,
+        "cacheCreation": 386388,
+        "cacheRead": 8897137,
+        "total": 9404061
+      },
+      "cost": null
     }
   ],
   "sessionCheckpoint": [
-    812,
-    620340,
-    2563940,
-    53848043
+    968,
+    740720,
+    2950328,
+    62745180
   ],
   "cumulative": {
-    "inputTokens": 712,
-    "outputTokens": 537527,
-    "cacheCreationTokens": 2100344,
-    "cacheReadTokens": 48576502,
-    "totalTokens": 51215085,
+    "inputTokens": 868,
+    "outputTokens": 657907,
+    "cacheCreationTokens": 2486732,
+    "cacheReadTokens": 57473639,
+    "totalTokens": 60619146,
     "totalCost": null
   },
   "costNote": "ccusage가 응답하지 않아 비용 미산출. 토큰은 세션 기록에서 집계"

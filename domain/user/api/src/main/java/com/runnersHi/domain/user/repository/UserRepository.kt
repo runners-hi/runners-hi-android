@@ -9,4 +9,8 @@ interface UserRepository {
     suspend fun updateUser(user: User)
     suspend fun refreshCurrentUser()
     suspend fun clearUser()
+    suspend fun uploadProfileImage(bytes: ByteArray, contentType: String)
+    suspend fun removeProfileImage()
+    suspend fun sendFeedback(content: String)
+    suspend fun updatePushToken(token: String)
 }
