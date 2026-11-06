@@ -130,10 +130,10 @@ fun RegionSelectionScreen(
                 color = BlueGray5,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.SemiBold,
-                lineHeight = 36.sp,
+                lineHeight = 29.sp, // 24pt 기본 글줄
                 modifier = Modifier
                     .padding(horizontal = 24.dp)
-                    .padding(top = 20.dp)
+                    .padding(top = 16.dp)
             )
 
             // 서브 텍스트
@@ -141,20 +141,18 @@ fun RegionSelectionScreen(
                 text = "러닝 지역은 한 곳만 선택할 수 있어요.",
                 color = Primary,
                 fontSize = 14.sp,
-                lineHeight = 21.sp,
+                lineHeight = 17.sp, // 14pt 기본 글줄
                 modifier = Modifier
                     .padding(horizontal = 24.dp)
-                    .padding(top = 12.dp)
+                    .padding(top = 8.dp)
             )
 
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             // 검색 입력 필드
             SearchTextField(
                 value = state.searchQuery,
                 onValueChange = { onEvent(RegionSelectionContract.Event.SearchQueryChanged(it)) },
-                onClear = { onEvent(RegionSelectionContract.Event.ClearSearchQuery) },
-                isSearching = state.isSearching,
                 focusRequester = focusRequester,
                 modifier = Modifier.padding(horizontal = 24.dp)
             )
@@ -194,7 +192,7 @@ fun RegionSelectionScreen(
                     }
                     // 검색 결과 있음
                     state.searchResults.isNotEmpty() -> {
-                        LazyColumn(contentPadding = PaddingValues(top = 8.dp)) {
+                        LazyColumn {
                             items(state.searchResults) { region ->
                                 RegionItem(
                                     region = region,
@@ -220,11 +218,11 @@ fun RegionSelectionScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.5f))
+                    .background(Color.Black.copy(alpha = 0.3f))
                     .clickable(enabled = false) { },
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(color = Primary)
+                CircularProgressIndicator(color = BlueGrayWhite, modifier = Modifier.size(30.dp)) // iOS scaleEffect(1.5)
             }
         }
     }
@@ -246,7 +244,6 @@ private fun TopNavigationBar(
             modifier = Modifier
                 .align(Alignment.CenterStart)
                 .padding(start = 12.dp)
-                .offset(y = 8.dp)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow_back),
@@ -262,8 +259,6 @@ private fun TopNavigationBar(
 private fun SearchTextField(
     value: String,
     onValueChange: (String) -> Unit,
-    onClear: () -> Unit,
-    isSearching: Boolean,
     focusRequester: FocusRequester,
     modifier: Modifier = Modifier
 ) {
@@ -275,7 +270,7 @@ private fun SearchTextField(
             .height(52.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(BlueGray80)
-            .border(1.dp, if (isFocused) Primary else BlueGray70, RoundedCornerShape(16.dp))
+            .border(1.dp, BlueGray70, RoundedCornerShape(16.dp))
             .padding(horizontal = 19.dp)
     ) {
         Row(
@@ -299,7 +294,7 @@ private fun SearchTextField(
                 singleLine = true,
                 decorationBox = { innerTextField ->
                     Box {
-                        if (value.isEmpty() && !isFocused) {
+                        if (value.isEmpty()) {
                             Text(
                                 text = "지역(시) 검색",
                                 color = BlueGray20,
@@ -311,27 +306,6 @@ private fun SearchTextField(
                     }
                 }
             )
-
-            // 검색 중 로딩 또는 취소 버튼
-            if (isSearching) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(20.dp),
-                    color = BlueGray40,
-                    strokeWidth = 2.dp
-                )
-            } else if (value.isNotEmpty()) {
-                IconButton(
-                    onClick = onClear,
-                    modifier = Modifier.size(24.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_close),
-                        contentDescription = "검색어 지우기",
-                        tint = BlueGray20,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-            }
         }
     }
 }
@@ -351,25 +325,8 @@ private fun RegionItem(
             .padding(horizontal = 24.dp),
         contentAlignment = Alignment.CenterStart
     ) {
-        // 검색어 하이라이팅 적용
-        val annotatedText = buildAnnotatedString {
-            val highlightRange = region.highlightRange
-            if (highlightRange != null && highlightRange.first >= 0 && highlightRange.last <= region.name.length) {
-                // 하이라이트 전 텍스트
-                append(region.name.substring(0, highlightRange.first))
-                // 하이라이트 텍스트
-                withStyle(style = SpanStyle(color = Primary)) {
-                    append(region.name.substring(highlightRange.first, highlightRange.last))
-                }
-                // 하이라이트 후 텍스트
-                append(region.name.substring(highlightRange.last))
-            } else {
-                append(region.name)
-            }
-        }
-
         Text(
-            text = annotatedText,
+            text = region.name,
             color = BlueGrayWhite,
             fontSize = 16.sp
         )
