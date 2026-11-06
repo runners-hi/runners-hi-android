@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -148,10 +147,9 @@ private fun MissionItemView(
                 .clip(CircleShape),
             contentAlignment = Alignment.Center
         ) {
-            val placement = missionImagePlacement(item.iconName)
+            // 아이폰 MissionView: Image.resizable().scaledToFit().frame(60, 60) — 모든 미션 같은 틀
             val imageModifier = Modifier
-                .requiredSize(placement.size)
-                .offset(y = placement.offsetY)
+                .requiredSize(60.dp)
                 .alpha(if (item.isCompleted) 1f else 0.6f)
             if (item.imageUrl != null) {
                 AsyncImage(
@@ -195,15 +193,6 @@ private fun MissionItemView(
     }
 }
 
-private class MissionImagePlacement(val size: Dp, val offsetY: Dp = 0.dp)
-
-/** Figma의 미션별 이미지 크기. 알약 밖으로 나간 부분은 잘린다. */
-private fun missionImagePlacement(iconName: String): MissionImagePlacement = when (iconName) {
-    "mission_hangawi" -> MissionImagePlacement(104.dp, 3.dp)
-    "mission_songpyeon" -> MissionImagePlacement(63.dp, 1.5.dp)
-    "mission_god" -> MissionImagePlacement(65.dp)
-    else -> MissionImagePlacement(60.dp)
-}
 
 private const val COLUMNS = 3
 private val grayscaleFilter = ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
