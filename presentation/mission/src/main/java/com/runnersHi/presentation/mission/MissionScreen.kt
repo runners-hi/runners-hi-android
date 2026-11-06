@@ -76,7 +76,7 @@ fun MissionScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
-                    .padding(start = 24.dp, end = 24.dp, top = 24.dp, bottom = 40.dp),
+                    .padding(start = 24.dp, end = 24.dp, top = 24.dp, bottom = 112.dp), // 아이폰 40+120에서 탭 바에 가려지는 48을 뺀 값
                 verticalArrangement = Arrangement.spacedBy(40.dp)
             ) {
                 state.sections.forEach { section -> SectionView(section) }

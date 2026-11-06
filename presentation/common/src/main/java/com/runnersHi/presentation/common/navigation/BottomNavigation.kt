@@ -5,6 +5,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -183,8 +186,9 @@ private fun NavTabItem(
 
 @Composable
 private fun HomeIndicatorBar() {
-    // iOS: 탭 바 하단 패딩 28 (홈 인디케이터는 시스템이 그린다)
+    // iOS: 탭 바 하단 패딩 28 + 홈 인디케이터 안전 영역 (시스템 내비게이션 높이)
     Spacer(modifier = Modifier.fillMaxWidth().height(28.dp))
+    Spacer(modifier = Modifier.fillMaxWidth().windowInsetsBottomHeight(WindowInsets.navigationBars))
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFF17191C)

@@ -222,83 +222,80 @@ private fun HomeContent(
     onEvent: (MainContract.Event) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(
+    // 아이폰처럼 로고·알림 줄은 위에 고정하고 그 아래만 스크롤한다
+    Column(
         modifier = modifier
             .fillMaxSize()
-            .background(BlueGray90),
-        contentPadding = PaddingValues(bottom = 40.dp)
+            .background(BlueGray90)
     ) {
-        // Title Bar
-        item {
-            TitleBar(onNotificationClick = { onEvent(MainContract.Event.NotificationClicked) })
-        }
-
-        // Title Bar 하단 고정 영역
-        item {
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-
-        // Tier Card
-        item {
-            state.tierInfo?.let { tierInfo ->
-                TierCard(
-                    tierInfo = tierInfo,
-                    onClick = { onEvent(MainContract.Event.TierCardClicked) },
-                    onArrowClick = { onEvent(MainContract.Event.TierArrowClicked) },
-                    modifier = Modifier.padding(horizontal = 20.dp)
-                )
+        TitleBar(onNotificationClick = { onEvent(MainContract.Event.NotificationClicked) })
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            // 위 8: 아이폰 스크롤 내용 위 여백, 아래 8: 아이폰 하단 여백 16+40에서 탭 바에 가려지는 48을 뺀 값
+            contentPadding = PaddingValues(top = 8.dp, bottom = 8.dp)
+        ) {
+            // Tier Card
+            item {
+                state.tierInfo?.let { tierInfo ->
+                    TierCard(
+                        tierInfo = tierInfo,
+                        onClick = { onEvent(MainContract.Event.TierCardClicked) },
+                        onArrowClick = { onEvent(MainContract.Event.TierArrowClicked) },
+                        modifier = Modifier.padding(horizontal = 20.dp)
+                    )
+                }
             }
-        }
 
-        item { Spacer(modifier = Modifier.height(16.dp)) }
+            item { Spacer(modifier = Modifier.height(16.dp)) }
 
-        // Today's Run Card (Empty State or Normal)
-        item {
-            if (state.isTodayEmpty) {
-                TodaysRunEmptyCard(
-                    onClick = { onEvent(MainContract.Event.TodaysRunClicked) },
-                    modifier = Modifier.padding(horizontal = 20.dp)
-                )
-            } else {
-                state.todaysRun?.let { todaysRun ->
-                    TodaysRunCard(
-                        todaysRun = todaysRun,
+            // Today's Run Card (Empty State or Normal)
+            item {
+                if (state.isTodayEmpty) {
+                    TodaysRunEmptyCard(
                         onClick = { onEvent(MainContract.Event.TodaysRunClicked) },
                         modifier = Modifier.padding(horizontal = 20.dp)
                     )
+                } else {
+                    state.todaysRun?.let { todaysRun ->
+                        TodaysRunCard(
+                            todaysRun = todaysRun,
+                            onClick = { onEvent(MainContract.Event.TodaysRunClicked) },
+                            modifier = Modifier.padding(horizontal = 20.dp)
+                        )
+                    }
                 }
             }
-        }
 
-        item { Spacer(modifier = Modifier.height(16.dp)) }
+            item { Spacer(modifier = Modifier.height(16.dp)) }
 
-        // This Week Card (Empty State or Normal)
-        item {
-            if (state.isWeekEmpty) {
-                ThisWeekEmptyCard(
-                    modifier = Modifier.padding(horizontal = 20.dp)
-                )
-            } else {
-                state.thisWeek?.let { thisWeek ->
-                    ThisWeekCard(
-                        thisWeek = thisWeek,
+            // This Week Card (Empty State or Normal)
+            item {
+                if (state.isWeekEmpty) {
+                    ThisWeekEmptyCard(
+                        modifier = Modifier.padding(horizontal = 20.dp)
+                    )
+                } else {
+                    state.thisWeek?.let { thisWeek ->
+                        ThisWeekCard(
+                            thisWeek = thisWeek,
+                            modifier = Modifier.padding(horizontal = 20.dp)
+                        )
+                    }
+                }
+            }
+
+            item { Spacer(modifier = Modifier.height(24.dp)) }
+
+            // Mission Event Section
+            item {
+                state.missionEvent?.let { missionEvent ->
+                    MissionEventSection(
+                        missionEvent = missionEvent,
+                        onHeaderClick = { onEvent(MainContract.Event.MissionEventClicked) },
+                        onMissionClick = { onEvent(MainContract.Event.MissionEventClicked) },
                         modifier = Modifier.padding(horizontal = 20.dp)
                     )
                 }
-            }
-        }
-
-        item { Spacer(modifier = Modifier.height(24.dp)) }
-
-        // Mission Event Section
-        item {
-            state.missionEvent?.let { missionEvent ->
-                MissionEventSection(
-                    missionEvent = missionEvent,
-                    onHeaderClick = { onEvent(MainContract.Event.MissionEventClicked) },
-                    onMissionClick = { onEvent(MainContract.Event.MissionEventClicked) },
-                    modifier = Modifier.padding(horizontal = 20.dp)
-                )
             }
         }
     }
@@ -426,15 +423,13 @@ private fun TierProgress(
             Text(
                 text = "Progress to next level",
                 color = TextTertiary,
-                fontSize = 14.sp,
-                lineHeight = 18.sp
+                fontSize = 14.sp
             )
             Text(
                 text = tierInfo.progressText,
                 color = TextPrimary,
                 fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                lineHeight = 18.sp
+                fontWeight = FontWeight.SemiBold
             )
         }
     }
@@ -466,14 +461,13 @@ private fun TodaysRunCard(
                 text = "Today's Run",
                 color = TextSecondary,
                 fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
-                lineHeight = 20.sp
+                fontWeight = FontWeight.SemiBold
             )
             Icon(
-                painter = painterResource(id = R.drawable.ic_arrow_right_mono),
+                painter = painterResource(id = R.drawable.ic_arrow_right_small),
                 contentDescription = "상세 보기",
                 tint = Color.Unspecified,
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(14.dp)
             )
         }
 
@@ -540,7 +534,6 @@ private fun RunDataItem(
             color = TextPrimary,
             fontSize = 20.sp,
             fontWeight = FontWeight.SemiBold,
-            lineHeight = 24.sp,
             maxLines = 1
         )
         Spacer(modifier = Modifier.height(4.dp))
@@ -578,8 +571,7 @@ private fun ThisWeekCard(
             text = thisWeek.totalDistance,
             color = TextPrimary,
             fontSize = 24.sp,
-            fontWeight = FontWeight.SemiBold,
-            lineHeight = 29.sp
+            fontWeight = FontWeight.SemiBold
         )
         Spacer(modifier = Modifier.height(16.dp))
         Row(
@@ -615,8 +607,7 @@ private fun DayIndicator(
             Text(
                 text = day.label,
                 color = if (day.hasRun) Primary else TextTertiary,
-                fontSize = 14.sp,
-                lineHeight = 18.sp
+                fontSize = 14.sp
             )
         }
         // Distance below pill (iOS: always, frame height 18)
@@ -654,14 +645,16 @@ private fun MissionEventSection(
                 text = "미션 이벤트",
                 color = TextPrimary,
                 fontSize = 20.sp,
-                fontWeight = FontWeight.SemiBold,
-                lineHeight = 24.sp
+                fontWeight = FontWeight.SemiBold
             )
+            // 아이폰: SF 기호 chevron.right 20pt (화면에서 9x16.7, 오른쪽 2pt 여백)
             Icon(
-                painter = painterResource(id = CommonR.drawable.ic_arrow_right_w),
+                painter = painterResource(id = CommonR.drawable.ic_arrow_right_w_fit),
                 contentDescription = "더보기",
-                tint = Color.Unspecified,
-                modifier = Modifier.size(24.dp)
+                tint = TextPrimary,
+                modifier = Modifier
+                    .padding(end = 2.dp)
+                    .size(width = 9.dp, height = 16.7.dp)
             )
         }
 
@@ -709,10 +702,10 @@ private fun TodaysRunEmptyCard(
                 lineHeight = 20.sp
             )
             Icon(
-                painter = painterResource(id = R.drawable.ic_arrow_right_mono),
+                painter = painterResource(id = R.drawable.ic_arrow_right_small),
                 contentDescription = "상세 보기",
                 tint = Color.Unspecified,
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(14.dp)
             )
         }
 
@@ -969,7 +962,7 @@ private fun MainScreenPreview() {
                 ),
                 todaysRun = TodaysRunUiModel(
                     distance = "7.4 km",
-                    pace = "8'00''",
+                    pace = "8'00\"",
                     time = "40:00"
                 ),
                 thisWeek = ThisWeekUiModel(

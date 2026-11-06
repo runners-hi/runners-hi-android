@@ -182,7 +182,8 @@ fun MyPageScreen(
                 onClick = { onEvent(MyPageContract.Event.AccountClicked) }
             )
         }
-        Spacer(modifier = Modifier.height(24.dp))
+        // 아이폰 하단 여백 120에서 탭 바에 가려지는 48을 뺀 값
+        Spacer(modifier = Modifier.height(72.dp))
     }
 }
 
@@ -282,7 +283,7 @@ private fun SettingRow(
             Text(text = trailing, color = BlueGray40, fontSize = 14.sp)
         }
         Icon(
-            painter = painterResource(id = CommonR.drawable.ic_arrow_right_w),
+            painter = painterResource(id = CommonR.drawable.ic_arrow_right_w_fit),
             contentDescription = null,
             tint = BlueGray5,
             modifier = Modifier.size(18.dp)

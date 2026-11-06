@@ -20,7 +20,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -116,7 +119,7 @@ fun RegionSelectionScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .systemBarsPadding()
+                .statusBarsPadding()
                 .imePadding()
         ) {
             // 상단 네비게이션 바
@@ -192,7 +195,10 @@ fun RegionSelectionScreen(
                     }
                     // 검색 결과 있음
                     state.searchResults.isNotEmpty() -> {
-                        LazyColumn {
+                        // 아이폰처럼 목록 배경이 화면 맨 아래까지 이어지게 한다.
+                        LazyColumn(
+                            contentPadding = WindowInsets.navigationBars.asPaddingValues()
+                        ) {
                             items(state.searchResults) { region ->
                                 RegionItem(
                                     region = region,

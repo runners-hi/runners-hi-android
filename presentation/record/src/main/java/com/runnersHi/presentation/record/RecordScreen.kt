@@ -144,7 +144,8 @@ private fun RecordList(state: RecordContract.State) {
     ) {
         item(key = "today") { TodayCard(state.today) }
         items(state.past, key = { it.id }) { record -> PastCard(record) }
-        item(key = "bottom") { Spacer(modifier = Modifier.height(16.dp)) }
+        // 아이폰 하단 여백 100에서 탭 바에 가려지는 48을 뺀 값 (카드 간격 16 포함)
+        item(key = "bottom") { Spacer(modifier = Modifier.height(36.dp)) }
     }
 }
 
