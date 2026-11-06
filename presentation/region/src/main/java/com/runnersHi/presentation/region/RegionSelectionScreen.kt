@@ -252,7 +252,8 @@ private fun TopNavigationBar(
                 .padding(start = 12.dp)
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_arrow_back),
+                // 아이폰: Image(systemName: "arrow.left").font(.system(size: 24)), 흰색
+                painter = painterResource(id = R.drawable.ic_arrow_left_sf),
                 contentDescription = "뒤로가기",
                 tint = BlueGrayWhite,
                 modifier = Modifier.size(24.dp)

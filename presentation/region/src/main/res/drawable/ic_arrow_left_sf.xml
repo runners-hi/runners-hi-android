@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 아이폰 지역 화면 뒤로가기: SF Symbol arrow.left, 글자 크기 24. 아이폰 화면에서 잰 모양(21.7×17.7, 선 굵기 2)을 24 상자 안 같은 자리에 그림 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <path
+        android:pathData="M11.6,3.2 L3.6,11.03 L11.6,18.87 M3.6,11.03 L23.27,11.03"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>
