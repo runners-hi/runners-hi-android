@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -117,16 +119,24 @@ fun TermsAgreementScreen(
             )
 
             // 타이틀
-            Text(
-                text = "가입을 위해\n약관 동의가 필요해요",
-                color = BlueGray5,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.SemiBold,
-                lineHeight = 33.sp, // 24pt 글줄 ~29 + iOS VStack spacing 4
+            // iOS TermsAgreementView.swift:29-38: VStack(spacing 4) 두 줄, 24 semibold
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
                 modifier = Modifier
+                    .fillMaxWidth()
                     .padding(horizontal = 24.dp)
                     .padding(top = 16.dp, bottom = 32.dp)
-            )
+            ) {
+                listOf("가입을 위해", "약관 동의가 필요해요").forEach { line ->
+                    Text(
+                        text = line,
+                        color = BlueGray5,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        lineHeight = 29.sp
+                    )
+                }
+            }
 
             // 전체 동의
             AllAgreeRow(
@@ -210,7 +220,7 @@ fun TermsAgreementScreen(
                 } else {
                     Text(
                         text = "다음",
-                        color = if (state.canProceed) ButtonTextDisabled else ButtonTextDisabled,
+                        color = BlueGray90,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -240,7 +250,7 @@ private fun TopNavigationBar(
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow_back),
                 contentDescription = "뒤로가기",
-                tint = BlueGrayWhite,
+                tint = BlueGray5, // iOS arrow_back.svg #F1F2F4
                 modifier = Modifier.size(24.dp)
             )
         }
@@ -265,8 +275,8 @@ private fun AllAgreeRow(
                 id = if (isChecked) R.drawable.ic_check_on else R.drawable.ic_check_off
             ),
             contentDescription = if (isChecked) "선택됨" else "선택 안됨",
-            tint = Color.Unspecified,
-            modifier = Modifier.size(24.dp)
+            tint = if (isChecked) Color.Unspecified else BlueGray70, // iOS check_gray #454B54
+            modifier = Modifier.size(24.dp).scale(if (isChecked) 1.2f else 1f) // iOS check_main 은 20 뷰박스를 24 에 꽉 채움
         )
         Spacer(modifier = Modifier.width(16.dp))
         Text(
@@ -298,8 +308,8 @@ private fun TermsItemRow(
                 id = if (item.isAgreed) R.drawable.ic_check_on else R.drawable.ic_check_off
             ),
             contentDescription = if (item.isAgreed) "동의함" else "동의 안함",
-            tint = Color.Unspecified,
-            modifier = Modifier.size(24.dp)
+            tint = if (item.isAgreed) Color.Unspecified else BlueGray70, // iOS check_gray #454B54
+            modifier = Modifier.size(24.dp).scale(if (item.isAgreed) 1.2f else 1f) // iOS check_main 은 20 뷰박스를 24 에 꽉 채움
         )
         Spacer(modifier = Modifier.width(16.dp))
         Text(
@@ -312,7 +322,7 @@ private fun TermsItemRow(
         Icon(
             painter = painterResource(id = R.drawable.ic_arrow_right),
             contentDescription = "상세보기",
-            tint = BlueGrayWhite,
+            tint = BlueGray5, // iOS arrow_right.svg #F1F2F4
             modifier = Modifier
                 .size(24.dp)
                 .clickable { onArrowClick() }

@@ -276,7 +276,7 @@ private fun SearchTextField(
             .height(52.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(BlueGray80)
-            .border(1.dp, BlueGray70, RoundedCornerShape(16.dp))
+            .border(0.5.dp, BlueGray70, RoundedCornerShape(16.dp)) // iOS 1pt 선이 모서리 가운데에 그려진 뒤 잘려 안쪽 0.5만 보인다
             .padding(horizontal = 19.dp)
     ) {
         Row(

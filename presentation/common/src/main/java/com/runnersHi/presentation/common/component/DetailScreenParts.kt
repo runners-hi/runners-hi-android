@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import com.runnersHi.presentation.common.R
 import com.runnersHi.presentation.common.theme.BlueGray5
 import com.runnersHi.presentation.common.theme.BlueGray90
+import com.runnersHi.presentation.common.theme.BlueGrayWhite
 import com.runnersHi.presentation.common.theme.Primary
 
 /** 뒤로가기 아이콘만 있는 상단 바 (높이 56) */
@@ -46,7 +47,7 @@ fun BackTopBar(
         Icon(
             painter = painterResource(id = R.drawable.ic_arrow_back),
             contentDescription = "뒤로가기",
-            tint = Color.Unspecified,
+            tint = BlueGray5, // iOS arrow_back.svg #F1F2F4 (벡터 원본은 검정이라 색을 입혀야 보인다)
             modifier = Modifier
                 .size(24.dp)
                 .clickable(onClick = onBack)
@@ -84,7 +85,7 @@ fun TermsDetailContent(
         // iOS TermsDetailView.swift:40-46: 14pt 본문 한 덩어리, lineSpacing 4, 가로 24
         Text(
             text = content,
-            color = Color.White,
+            color = BlueGrayWhite,
             fontSize = 14.sp,
             lineHeight = 21.sp,
             modifier = Modifier

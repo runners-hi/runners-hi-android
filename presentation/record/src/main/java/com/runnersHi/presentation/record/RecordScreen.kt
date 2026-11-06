@@ -92,7 +92,7 @@ fun RecordScreen(
         )
         when {
             state.isLoading -> Box(Modifier.fillMaxSize(), Alignment.Center) {
-                CircularProgressIndicator(color = Primary)
+                CircularProgressIndicator(color = Color.White) // 아이폰: ProgressView.tint(.white)
             }
             state.access == RecordContract.Access.NEEDS_INSTALL -> GuideView(
                 message = "러닝 기록을 보려면 Health Connect가 필요해요",
@@ -184,7 +184,7 @@ private fun TodayCard(today: TodayRecordUiModel?) {
                 Image(
                     painter = painterResource(id = CommonR.drawable.ic_empty_track),
                     contentDescription = null,
-                    contentScale = ContentScale.FillHeight,
+                    contentScale = ContentScale.Fit,
                     modifier = Modifier.height(60.dp)
                 )
                 Text(text = "러닝으로 하루를 채워보세요", color = Color.White, fontSize = 14.sp)

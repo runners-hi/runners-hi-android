@@ -6,7 +6,6 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,7 +33,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawOutline
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
@@ -233,9 +235,15 @@ private fun SettingCard(
         modifier = Modifier
             .padding(horizontal = 20.dp)
             .fillMaxWidth()
-            .clip(shape)
-            .background(BlueGray80)
-            .border(1.dp, BlueGray70, shape)
+            .background(BlueGray80, shape)
+            // SwiftUI stroke는 테두리선이 경계 한가운데에 걸친다(안쪽 0.5, 바깥 0.5)
+            .drawBehind {
+                drawOutline(
+                    outline = shape.createOutline(size, layoutDirection, this),
+                    color = BlueGray70,
+                    style = Stroke(width = 1.dp.toPx())
+                )
+            }
             .padding(bottom = 20.dp)
     ) {
         Text(

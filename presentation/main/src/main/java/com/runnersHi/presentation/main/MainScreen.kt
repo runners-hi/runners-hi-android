@@ -77,7 +77,6 @@ import com.runnersHi.presentation.common.theme.PrimaryYellow
 import com.runnersHi.presentation.common.theme.RunnersHiTheme
 import com.runnersHi.presentation.common.theme.TierBronzeProgress
 import com.runnersHi.presentation.common.theme.TierPlatinumProgress
-import com.runnersHi.presentation.common.theme.TierSilverProgress
 import kotlinx.coroutines.launch
 
 // Colors from design spec (Figma)
@@ -365,13 +364,15 @@ private fun TierCard(
                     text = tierInfo.tierName,
                     color = TextPrimary,
                     fontSize = 20.sp,
+                    lineHeight = 24.sp,
                     fontWeight = FontWeight.SemiBold
                 )
                 if (tierInfo.level.isNotBlank()) {
                     Text(
                         text = tierInfo.level,
                         color = BlueGray5,
-                        fontSize = 14.sp
+                        fontSize = 14.sp,
+                        lineHeight = 17.sp
                     )
                 }
             }
@@ -423,12 +424,14 @@ private fun TierProgress(
             Text(
                 text = "Progress to next level",
                 color = TextTertiary,
-                fontSize = 14.sp
+                fontSize = 14.sp,
+                lineHeight = 17.sp
             )
             Text(
                 text = tierInfo.progressText,
                 color = TextPrimary,
                 fontSize = 14.sp,
+                lineHeight = 17.sp,
                 fontWeight = FontWeight.SemiBold
             )
         }
@@ -451,9 +454,7 @@ private fun TodaysRunCard(
             .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 20.dp)
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(20.dp),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -461,6 +462,7 @@ private fun TodaysRunCard(
                 text = "Today's Run",
                 color = TextSecondary,
                 fontSize = 16.sp,
+                lineHeight = 19.sp,
                 fontWeight = FontWeight.SemiBold
             )
             Icon(
@@ -533,6 +535,7 @@ private fun RunDataItem(
             text = value,
             color = TextPrimary,
             fontSize = 20.sp,
+            lineHeight = 24.sp,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1
         )
@@ -540,7 +543,8 @@ private fun RunDataItem(
         Text(
             text = label,
             color = TextTertiary,
-            fontSize = 14.sp
+            fontSize = 14.sp,
+            lineHeight = 17.sp
         )
     }
 }
@@ -563,6 +567,7 @@ private fun ThisWeekCard(
             text = "This Week",
             color = TextSecondary,
             fontSize = 16.sp,
+            lineHeight = 19.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.fillMaxWidth()
         )
@@ -571,6 +576,7 @@ private fun ThisWeekCard(
             text = thisWeek.totalDistance,
             color = TextPrimary,
             fontSize = 24.sp,
+            lineHeight = 29.sp,
             fontWeight = FontWeight.SemiBold
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -607,7 +613,8 @@ private fun DayIndicator(
             Text(
                 text = day.label,
                 color = if (day.hasRun) Primary else TextTertiary,
-                fontSize = 14.sp
+                fontSize = 14.sp,
+                lineHeight = 17.sp
             )
         }
         // Distance below pill (iOS: always, frame height 18)
@@ -616,6 +623,7 @@ private fun DayIndicator(
             text = day.distance.orEmpty(),
             color = TextSecondary,
             fontSize = 14.sp,
+            lineHeight = 17.sp,
             textAlign = TextAlign.Center,
             softWrap = false,
             maxLines = 1,
@@ -645,6 +653,7 @@ private fun MissionEventSection(
                 text = "미션 이벤트",
                 color = TextPrimary,
                 fontSize = 20.sp,
+                lineHeight = 24.sp,
                 fontWeight = FontWeight.SemiBold
             )
             // 아이폰: SF 기호 chevron.right 20pt (화면에서 9x16.7, 오른쪽 2pt 여백)
@@ -929,7 +938,7 @@ private fun TierGuideRow(
 private fun Tier.toProgressColor(): Color {
     return when (this) {
         Tier.BRONZE -> TierBronzeProgress
-        Tier.SILVER -> TierSilverProgress
+        Tier.SILVER -> BlueGray20
         Tier.GOLD -> PrimaryYellow
         Tier.PLATINUM -> TierPlatinumProgress
         Tier.DIAMOND -> Primary

@@ -192,7 +192,7 @@ private fun FirstPlaceCard(entry: RankingEntry, modifier: Modifier = Modifier) {
                     style = LocalTextStyle.current.copy(shadow = primaryTextGlow())
                 )
             }
-            TierLabel(entry.tier, glow = true)
+            TierLabel(entry.tier, effect = TierEffect.Glow)
             Text(
                 text = entry.distanceKm.toKm(),
                 color = Primary,
@@ -226,15 +226,33 @@ private fun primaryTextGlow(): Shadow = Shadow(
 
 private fun Modifier.primaryGlow(shape: Shape): Modifier = iosShadow(shape, GlowColor, GlowRadius)
 
+// 아이폰 행: .shadow(0C0D0E 25%, radius 2, y 4) 를 행 전체에 걸어서 안의 프로필·글자·티어에도 하나씩 그려진다
+private val RowShadowColor = BlueGray95.copy(alpha = 0.25f)
+private val RowShadowRadius = 2.dp
+private val RowShadowY = 4.dp
+
+@Composable
+private fun rowTextShadow(): Shadow {
+    val density = LocalDensity.current
+    return Shadow(
+        color = RowShadowColor,
+        offset = Offset(0f, with(density) { RowShadowY.toPx() }),
+        blurRadius = with(density) { iosShadowBlurPx(RowShadowRadius) }
+    )
+}
+
+private fun Modifier.rowShadow(shape: Shape): Modifier =
+    iosShadow(shape, RowShadowColor, RowShadowRadius, y = RowShadowY)
+
 @Composable
 private fun RankingRow(entry: RankingEntry) {
     val shape = RoundedCornerShape(36.dp)
-    val shadow = BlueGray95.copy(alpha = 0.25f)
+    val textStyle = LocalTextStyle.current.copy(shadow = rowTextShadow())
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(64.dp)
-            .iosShadow(shape, shadow, radius = 2.dp, y = 4.dp) // 아이폰: 0C0D0E 25%, radius 2, y 4
+            .rowShadow(shape) // 아이폰: 0C0D0E 25%, radius 2, y 4
             .clip(shape)
             .background(BlueGray80)
             .padding(start = 12.dp, end = 19.dp),
@@ -250,10 +268,12 @@ private fun RankingRow(entry: RankingEntry) {
                 Image(
                     painter = painterResource(id = medal),
                     contentDescription = "${entry.rank}위",
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier
+                        .rowShadow(CircleShape)
+                        .size(40.dp)
                 )
             } else {
-                Text(text = entry.rank.toString(), color = Color.White, fontSize = 14.sp)
+                Text(text = entry.rank.toString(), color = Color.White, fontSize = 14.sp, style = textStyle)
             }
         }
         Column(
@@ -264,35 +284,53 @@ private fun RankingRow(entry: RankingEntry) {
                 modifier = Modifier.height(20.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ProfileAvatar(imageUrl = entry.profileImageUrl, size = 20.dp, iconSize = 12.dp)
+                Box(modifier = Modifier.rowShadow(CircleShape)) {
+                    ProfileAvatar(imageUrl = entry.profileImageUrl, size = 20.dp, iconSize = 12.dp)
+                }
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     text = entry.displayNickname,
                     color = BlueGray5,
                     fontSize = 14.sp,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    style = textStyle
                 )
             }
-            TierLabel(entry.tier)
+            TierLabel(entry.tier, effect = TierEffect.RowShadow)
         }
         Text(
             text = entry.distanceKm.toKm(),
             color = if (entry.rank <= 3) Primary else Color.White,
             fontSize = 16.sp,
-            fontWeight = FontWeight.SemiBold
+            fontWeight = FontWeight.SemiBold,
+            style = textStyle
         )
     }
 }
 
+private enum class TierEffect { None, Glow, RowShadow }
+
 @Composable
-private fun TierLabel(tier: Tier, glow: Boolean = false) {
+private fun TierLabel(tier: Tier, effect: TierEffect = TierEffect.None) {
+    val tierShape = RoundedCornerShape(6.dp)
+    val textStyle = when (effect) {
+        TierEffect.None -> LocalTextStyle.current
+        TierEffect.Glow -> LocalTextStyle.current.copy(shadow = primaryTextGlow())
+        TierEffect.RowShadow -> LocalTextStyle.current.copy(shadow = rowTextShadow())
+    }
     Row(verticalAlignment = Alignment.CenterVertically) {
         Image(
             painter = painterResource(id = tier.iconRes()),
             contentDescription = null,
             modifier = Modifier
-                .then(if (glow) Modifier.primaryGlow(RoundedCornerShape(6.dp)) else Modifier)
+                .then(
+                    when (effect) {
+                        TierEffect.None -> Modifier
+                        TierEffect.Glow -> Modifier.primaryGlow(tierShape)
+                        TierEffect.RowShadow -> Modifier.rowShadow(tierShape)
+                    }
+                )
                 .size(width = 18.dp, height = 12.dp)
         )
         Spacer(modifier = Modifier.width(4.dp))
@@ -300,7 +338,7 @@ private fun TierLabel(tier: Tier, glow: Boolean = false) {
             text = tier.displayName(),
             color = BlueGray30,
             fontSize = 14.sp,
-            style = if (glow) LocalTextStyle.current.copy(shadow = primaryTextGlow()) else LocalTextStyle.current
+            style = textStyle
         )
     }
 }
