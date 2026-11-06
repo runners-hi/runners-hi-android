@@ -41,6 +41,7 @@ import com.runnersHi.presentation.common.theme.BlueGray40
 import com.runnersHi.presentation.common.theme.BlueGray5
 import com.runnersHi.presentation.common.theme.BlueGray70
 import com.runnersHi.presentation.common.theme.BlueGray80
+import com.runnersHi.presentation.common.theme.BlueGray90
 
 @Immutable
 data class MissionItemModel(
@@ -131,6 +132,12 @@ private fun MissionItemView(
         Box(
             modifier = Modifier
                 .size(width = 72.dp, height = 100.dp)
+                // 아이폰 미션 탭에만: .shadow(color: blueGray90 30%, radius: 11, y: 4)
+                .then(
+                    if (style == MissionGridStyle.TAB) {
+                        Modifier.iosShadow(CircleShape, BlueGray90.copy(alpha = 0.3f), radius = 11.dp, y = 4.dp)
+                    } else Modifier
+                )
                 .clip(CircleShape)
                 .background(if (item.isCompleted) item.accentColor.copy(alpha = 0.2f) else BlueGray80)
                 .border(border, CircleShape),
