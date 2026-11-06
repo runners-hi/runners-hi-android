@@ -36,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
@@ -314,8 +315,11 @@ fun LauncherScreen(
 
             if (showLoginUI) {
                 Spacer(modifier = Modifier.height(16.dp)) // iOS LoginView.swift:17 spacing 16
+                // 아이폰 LoginView: Image("logo_text").resizable().aspectRatio(.fit).frame(width: 136, height: 40)
+                // logo_text.svg(131.016x23.605)를 맞춰 그리면 136x24.5 → 같은 모양의 ic_logo_text를 Fit으로 그림
                 Image(
-                    painter = painterResource(id = CommonR.drawable.img_wordmark),
+                    painter = painterResource(id = CommonR.drawable.ic_logo_text),
+                    contentScale = ContentScale.Fit,
                     contentDescription = "Runners HI",
                     colorFilter = ColorFilter.tint(Primary),
                     modifier = Modifier

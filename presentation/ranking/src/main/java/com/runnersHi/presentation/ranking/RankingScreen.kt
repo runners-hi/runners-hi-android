@@ -142,11 +142,13 @@ private fun RankingList(state: RankingContract.State) {
         state.myEntry?.let { me ->
             item(key = "ellipsis") {
                 Box(modifier = Modifier.fillMaxWidth().height(24.dp), contentAlignment = Alignment.Center) {
+                    // 아이폰: SF ellipsis 18 bold, 90도 회전 → 실제 그림 3.5x17.25 (glyph.swift)
+                    // ic_more_mono는 24칸 안 그림 높이 18 → 칸 23이면 그림 높이 17.25
                     Icon(
                         painter = painterResource(id = CommonR.drawable.ic_more_mono),
                         contentDescription = null,
                         tint = Color.Unspecified,
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(23.dp)
                     )
                 }
             }
@@ -181,7 +183,7 @@ private fun FirstPlaceCard(entry: RankingEntry, modifier: Modifier = Modifier) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(modifier = Modifier.primaryGlow(CircleShape)) {
-                    ProfileAvatar(imageUrl = entry.profileImageUrl, size = 24.dp, iconSize = 14.4.dp)
+                    ProfileAvatar(imageUrl = entry.profileImageUrl, size = 24.dp, iconSize = sfPersonFillHeight(24.dp))
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
@@ -287,7 +289,7 @@ private fun RankingRow(entry: RankingEntry) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Box(modifier = Modifier.rowShadow(CircleShape)) {
-                    ProfileAvatar(imageUrl = entry.profileImageUrl, size = 20.dp, iconSize = 12.dp)
+                    ProfileAvatar(imageUrl = entry.profileImageUrl, size = 20.dp, iconSize = sfPersonFillHeight(20.dp))
                 }
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
@@ -357,3 +359,10 @@ private fun Tier.displayName(): String =
     name.lowercase(Locale.ROOT).replaceFirstChar { it.titlecase(Locale.ROOT) }
 
 private fun Double.toKm(): String = String.format(Locale.US, "%.2fkm", this)
+
+/**
+ * 아이폰 RankingView.ProfileAvatar: Image(systemName: "person.fill").font(.system(size: size * 0.6))
+ * person.fill 실제 그림 높이(glyph.swift): 14.4pt → 12.88, 12pt → 10.88. ic_user_mono는 칸을 꽉 채우므로 그 높이를 칸 크기로 쓴다.
+ */
+private fun sfPersonFillHeight(avatarSize: androidx.compose.ui.unit.Dp) =
+    if (avatarSize >= 24.dp) 12.88.dp else 10.88.dp

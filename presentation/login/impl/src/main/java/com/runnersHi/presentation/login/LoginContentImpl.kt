@@ -166,12 +166,15 @@ private fun AppleLoginButton(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
+                // 아이폰: Image(systemName: "apple.logo").font(.system(size: 24)) + HStack(spacing: 16)
+                // SF 실제 그림 19.88x23.12, 틀 22 안 오른쪽 여백 1.0 (glyph.swift)
+                // ic_logo_apple은 24칸에 19.09x24 → 칸 23.12면 그림 높이 23.12, 오른쪽 여백 2.8 → 간격 16-1.8
                 Image(
                     painter = painterResource(id = R.drawable.ic_logo_apple),
                     contentDescription = null,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(23.12.dp)
                 )
-                Spacer(modifier = Modifier.width(16.dp))
+                Spacer(modifier = Modifier.width(14.2.dp))
                 Text(
                     text = "Apple ID로 시작하기",
                     color = BlueGrayWhite,

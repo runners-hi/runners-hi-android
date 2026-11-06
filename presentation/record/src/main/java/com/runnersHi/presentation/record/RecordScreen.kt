@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -194,7 +195,9 @@ private fun TodayCard(today: TodayRecordUiModel?) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 20.dp, end = 20.dp, bottom = 20.dp),
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                // 아이폰: HStack(spacing: 4) — 세로 기본 가운데 정렬
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 TodayStat(CommonR.drawable.ic_track, Primary, today.distance, "Distance", Modifier.weight(1f))
                 TodayStat(CommonR.drawable.ic_flame, PrimaryRed, today.pace, "Pace", Modifier.weight(1f))
@@ -254,7 +257,9 @@ private fun PastCard(record: PastRecordUiModel) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
+                .padding(start = 20.dp, end = 20.dp, bottom = 20.dp),
+            // 아이폰: HStack(spacing: 0) — 세로 기본 가운데 정렬
+            verticalAlignment = Alignment.CenterVertically
         ) {
             PastStat(CommonR.drawable.ic_distance_mono, record.distance, "Distance", Modifier.weight(1f))
             PastStat(CommonR.drawable.ic_pace_mono, record.pace, "Pace", Modifier.weight(1f))
@@ -280,10 +285,13 @@ private fun PastStat(
         )
         Spacer(modifier = Modifier.height(8.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(
+            // 아이폰: .scaledToFit().frame(height: 16) → 너비는 비율대로(16x16.0, 13.02, 13.49)
+            // Icon은 높이만 주면 원래 너비(17.5·15·13.34)를 그대로 잡으므로 Image(Fit)로 그린다
+            Image(
                 painter = painterResource(id = icon),
                 contentDescription = null,
-                tint = BlueGray40,
+                colorFilter = ColorFilter.tint(BlueGray40),
+                contentScale = ContentScale.Fit,
                 modifier = Modifier.height(16.dp)
             )
             Text(

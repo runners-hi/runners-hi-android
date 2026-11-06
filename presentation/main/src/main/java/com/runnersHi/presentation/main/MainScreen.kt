@@ -477,9 +477,11 @@ private fun TodaysRunCard(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // 아이폰: HStack(spacing: 4) — 세로 기본 가운데 정렬
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             RunDataItem(
                 iconRes = CommonR.drawable.ic_track,
@@ -658,14 +660,16 @@ private fun MissionEventSection(
                 lineHeight = 24.sp,
                 fontWeight = FontWeight.SemiBold
             )
-            // 아이폰: SF 기호 chevron.right 20pt (화면에서 9x16.7, 오른쪽 2pt 여백)
-            Icon(
+            // 아이폰: Image(systemName: "chevron.right").font(.system(size: 20))
+            // SF 기호 실제 그림 9.88x18, 틀 15x20 안 오른쪽 여백 1.12 (glyph.swift)
+            Image(
                 painter = painterResource(id = CommonR.drawable.ic_arrow_right_w_fit),
                 contentDescription = "더보기",
-                tint = TextPrimary,
+                colorFilter = ColorFilter.tint(TextPrimary),
+                contentScale = ContentScale.FillBounds,
                 modifier = Modifier
-                    .padding(end = 2.dp)
-                    .size(width = 9.dp, height = 16.7.dp)
+                    .padding(end = 1.12.dp)
+                    .size(width = 9.88.dp, height = 18.dp)
             )
         }
 
