@@ -32,7 +32,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
+import com.runnersHi.presentation.common.component.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -133,7 +133,7 @@ fun RegionSelectionScreen(
                 color = BlueGray5,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.SemiBold,
-                lineHeight = 29.sp, // 24pt 기본 글줄
+                lineHeight = 28.64.sp, // 24pt 기본 글줄
                 modifier = Modifier
                     .padding(horizontal = 24.dp)
                     .padding(top = 16.dp)
@@ -144,7 +144,7 @@ fun RegionSelectionScreen(
                 text = "러닝 지역은 한 곳만 선택할 수 있어요.",
                 color = Primary,
                 fontSize = 14.sp,
-                lineHeight = 17.sp, // 14pt 기본 글줄
+                lineHeight = 16.71.sp, // 14pt 기본 글줄
                 modifier = Modifier
                     .padding(horizontal = 24.dp)
                     .padding(top = 8.dp)
@@ -293,8 +293,9 @@ private fun SearchTextField(
                 textStyle = TextStyle(
                     color = BlueGrayWhite,
                     fontSize = 16.sp,
-                    lineHeight = 20.sp,
-                    fontFamily = Pretendard
+                    lineHeight = 19.09.sp,
+                    fontFamily = Pretendard,
+                    fontFeatureSettings = "'kern' 0"
                 ),
                 interactionSource = interactionSource,
                 cursorBrush = SolidColor(Primary),

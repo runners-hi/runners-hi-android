@@ -19,7 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
+import com.runnersHi.presentation.common.component.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
@@ -179,7 +179,7 @@ private fun NavTabItem(
             color = color,
             fontSize = 12.sp,
             fontWeight = FontWeight.Normal,
-            lineHeight = 14.3.sp
+            lineHeight = 14.32.sp
         )
     }
 }

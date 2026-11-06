@@ -33,7 +33,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import com.runnersHi.presentation.common.component.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -366,7 +366,7 @@ private fun TierCard(
                     text = tierInfo.tierName,
                     color = TextPrimary,
                     fontSize = 20.sp,
-                    lineHeight = 24.sp,
+                    lineHeight = 23.87.sp,
                     fontWeight = FontWeight.SemiBold
                 )
                 if (tierInfo.level.isNotBlank()) {
@@ -374,7 +374,7 @@ private fun TierCard(
                         text = tierInfo.level,
                         color = BlueGray5,
                         fontSize = 14.sp,
-                        lineHeight = 17.sp
+                        lineHeight = 16.71.sp
                     )
                 }
             }
@@ -427,13 +427,13 @@ private fun TierProgress(
                 text = "Progress to next level",
                 color = TextTertiary,
                 fontSize = 14.sp,
-                lineHeight = 17.sp
+                lineHeight = 16.71.sp
             )
             Text(
                 text = tierInfo.progressText,
                 color = TextPrimary,
                 fontSize = 14.sp,
-                lineHeight = 17.sp,
+                lineHeight = 16.71.sp,
                 fontWeight = FontWeight.SemiBold
             )
         }
@@ -464,7 +464,7 @@ private fun TodaysRunCard(
                 text = "Today's Run",
                 color = TextSecondary,
                 fontSize = 16.sp,
-                lineHeight = 19.sp,
+                lineHeight = 19.09.sp,
                 fontWeight = FontWeight.SemiBold
             )
             Icon(
@@ -477,9 +477,11 @@ private fun TodaysRunCard(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // 아이폰: HStack(spacing: 4) — 세로 기본 가운데 정렬
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             RunDataItem(
                 iconRes = CommonR.drawable.ic_track,
@@ -537,7 +539,7 @@ private fun RunDataItem(
             text = value,
             color = TextPrimary,
             fontSize = 20.sp,
-            lineHeight = 24.sp,
+            lineHeight = 23.87.sp,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1
         )
@@ -546,7 +548,7 @@ private fun RunDataItem(
             text = label,
             color = TextTertiary,
             fontSize = 14.sp,
-            lineHeight = 17.sp
+            lineHeight = 16.71.sp
         )
     }
 }
@@ -569,7 +571,7 @@ private fun ThisWeekCard(
             text = "This Week",
             color = TextSecondary,
             fontSize = 16.sp,
-            lineHeight = 19.sp,
+            lineHeight = 19.09.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.fillMaxWidth()
         )
@@ -578,7 +580,7 @@ private fun ThisWeekCard(
             text = thisWeek.totalDistance,
             color = TextPrimary,
             fontSize = 24.sp,
-            lineHeight = 29.sp,
+            lineHeight = 28.64.sp,
             fontWeight = FontWeight.SemiBold
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -616,7 +618,7 @@ private fun DayIndicator(
                 text = day.label,
                 color = if (day.hasRun) Primary else TextTertiary,
                 fontSize = 14.sp,
-                lineHeight = 17.sp
+                lineHeight = 16.71.sp
             )
         }
         // Distance below pill (iOS: always, frame height 18)
@@ -625,7 +627,7 @@ private fun DayIndicator(
             text = day.distance.orEmpty(),
             color = TextSecondary,
             fontSize = 14.sp,
-            lineHeight = 17.sp,
+            lineHeight = 16.71.sp,
             textAlign = TextAlign.Center,
             softWrap = false,
             maxLines = 1,
@@ -655,17 +657,19 @@ private fun MissionEventSection(
                 text = "미션 이벤트",
                 color = TextPrimary,
                 fontSize = 20.sp,
-                lineHeight = 24.sp,
+                lineHeight = 23.87.sp,
                 fontWeight = FontWeight.SemiBold
             )
-            // 아이폰: SF 기호 chevron.right 20pt (화면에서 9x16.7, 오른쪽 2pt 여백)
-            Icon(
+            // 아이폰: Image(systemName: "chevron.right").font(.system(size: 20))
+            // SF 기호 실제 그림 9.88x18, 틀 15x20 안 오른쪽 여백 1.12 (glyph.swift)
+            Image(
                 painter = painterResource(id = CommonR.drawable.ic_arrow_right_w_fit),
                 contentDescription = "더보기",
-                tint = TextPrimary,
+                colorFilter = ColorFilter.tint(TextPrimary),
+                contentScale = ContentScale.FillBounds,
                 modifier = Modifier
-                    .padding(end = 2.dp)
-                    .size(width = 9.dp, height = 16.7.dp)
+                    .padding(end = 1.12.dp)
+                    .size(width = 9.88.dp, height = 18.dp)
             )
         }
 
@@ -768,7 +772,7 @@ private fun ThisWeekEmptyCard(
             color = TextPrimary,
             fontSize = 24.sp,
             fontWeight = FontWeight.SemiBold,
-            lineHeight = 29.sp
+            lineHeight = 28.64.sp
         )
         Spacer(modifier = Modifier.height(16.dp))
         Box(
@@ -783,7 +787,7 @@ private fun ThisWeekEmptyCard(
                 text = "달리면 이곳에 기록이 쌓여요 🏃\u200D♂️",
                 color = TextPrimary,
                 fontSize = 14.sp,
-                lineHeight = 16.sp
+                lineHeight = 16.71.sp
             )
         }
     }
@@ -875,7 +879,7 @@ private fun TierInfoBottomSheet(
                 color = TextPrimary,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold,
-                lineHeight = 24.sp,
+                lineHeight = 23.87.sp,
                 modifier = Modifier.padding(horizontal = 24.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
