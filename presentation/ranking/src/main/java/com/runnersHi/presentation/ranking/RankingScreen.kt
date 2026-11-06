@@ -102,26 +102,24 @@ private fun TitleBar(regionName: String) {
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp)
-            .padding(start = 24.dp, end = 24.dp, top = 12.dp),
+            .padding(horizontal = 24.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(text = "랭킹", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.weight(1f))
-        if (regionName.isNotEmpty()) {
-            Icon(
-                painter = painterResource(id = CommonR.drawable.ic_location_main),
-                contentDescription = null,
-                tint = BlueGray40,
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                text = regionName,
-                color = BlueGray40,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
+        Icon(
+            painter = painterResource(id = CommonR.drawable.ic_location_main),
+            contentDescription = null,
+            tint = BlueGray40,
+            modifier = Modifier.size(20.dp)
+        )
+        Spacer(modifier = Modifier.width(4.dp))
+        Text(
+            text = regionName,
+            color = BlueGray40,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.SemiBold
+        )
     }
 }
 
@@ -135,13 +133,13 @@ private fun RankingList(state: RankingContract.State) {
     ) {
         state.topEntries.firstOrNull()?.let { first ->
             item(key = "first") {
-                FirstPlaceCard(first, Modifier.padding(bottom = 10.dp))
+                FirstPlaceCard(first, Modifier.padding(bottom = 4.dp))
             }
         }
         items(state.topEntries.drop(1), key = { it.rank }) { entry -> RankingRow(entry) }
         state.myEntry?.let { me ->
             item(key = "ellipsis") {
-                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                Box(modifier = Modifier.fillMaxWidth().height(24.dp), contentAlignment = Alignment.Center) {
                     Icon(
                         painter = painterResource(id = CommonR.drawable.ic_more_mono),
                         contentDescription = null,
@@ -162,52 +160,49 @@ private fun FirstPlaceCard(entry: RankingEntry, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = 34.dp),
+            .padding(top = 50.dp),
         contentAlignment = Alignment.TopCenter
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(184.dp)
                 .primaryGlow(radius = 40.dp, blur = 16.dp)
                 .clip(shape)
                 .background(BlueGray80)
-                .border(1.dp, Primary, shape)
-                .padding(start = 20.dp, end = 20.dp, top = 74.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .border(1.dp, Primary, shape),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            Spacer(modifier = Modifier.height(58.dp))
             Row(
-                modifier = Modifier.height(24.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ProfileAvatar(imageUrl = entry.profileImageUrl, size = 24.dp, iconSize = 12.dp)
-                Spacer(modifier = Modifier.width(4.dp))
+                ProfileAvatar(imageUrl = entry.profileImageUrl, size = 24.dp, iconSize = 14.4.dp)
+                Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = entry.displayNickname,
                     color = Color.White,
                     fontSize = 16.sp,
-                    lineHeight = 24.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
             }
-            Spacer(modifier = Modifier.height(6.dp))
             TierLabel(entry.tier)
-            Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = entry.distanceKm.toKm(),
                 color = Primary,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold,
-                lineHeight = 24.sp
+                modifier = Modifier.padding(top = 2.dp)
             )
+            Spacer(modifier = Modifier.height(20.dp))
         }
         Image(
             painter = painterResource(id = CommonR.drawable.ranking_gold),
             contentDescription = "1위",
             modifier = Modifier
                 .size(100.dp)
-                .offset(y = (-34).dp)
+                .offset(y = (-50).dp)
         )
     }
 }
@@ -239,7 +234,7 @@ private fun RankingRow(entry: RankingEntry) {
             .padding(start = 12.dp, end = 19.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(modifier = Modifier.width(40.dp), contentAlignment = Alignment.Center) {
+        Box(modifier = Modifier.width(60.dp), contentAlignment = Alignment.Center) {
             val medal = when (entry.rank) {
                 2 -> CommonR.drawable.ranking_silver
                 3 -> CommonR.drawable.ranking_bronze
@@ -255,7 +250,6 @@ private fun RankingRow(entry: RankingEntry) {
                 Text(text = entry.rank.toString(), color = Color.White, fontSize = 14.sp)
             }
         }
-        Spacer(modifier = Modifier.width(10.dp))
         Column(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -264,7 +258,7 @@ private fun RankingRow(entry: RankingEntry) {
                 modifier = Modifier.height(20.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ProfileAvatar(imageUrl = entry.profileImageUrl, size = 20.dp, iconSize = 10.dp)
+                ProfileAvatar(imageUrl = entry.profileImageUrl, size = 20.dp, iconSize = 12.dp)
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     text = entry.displayNickname,
@@ -276,7 +270,6 @@ private fun RankingRow(entry: RankingEntry) {
             }
             TierLabel(entry.tier)
         }
-        Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = entry.distanceKm.toKm(),
             color = if (entry.rank <= 3) Primary else Color.White,
@@ -294,8 +287,8 @@ private fun TierLabel(tier: Tier) {
             contentDescription = null,
             modifier = Modifier.size(width = 18.dp, height = 12.dp)
         )
-        Spacer(modifier = Modifier.width(5.dp))
-        Text(text = tier.displayName(), color = BlueGray30, fontSize = 14.sp, lineHeight = 16.sp)
+        Spacer(modifier = Modifier.width(4.dp))
+        Text(text = tier.displayName(), color = BlueGray30, fontSize = 14.sp)
     }
 }
 

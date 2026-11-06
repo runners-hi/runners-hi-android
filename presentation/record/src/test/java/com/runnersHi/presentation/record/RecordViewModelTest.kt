@@ -61,7 +61,7 @@ class RecordViewModelTest {
         val state = loaded(records = Result.success(listOf(record("a", now), record("b", now), record("c", old))))
 
         assertEquals("10.0 km", state.today?.distance)
-        assertEquals("5’00’’", state.today?.pace)
+        assertEquals("5'00''", state.today?.pace)
         assertEquals(listOf("c"), state.past.map { it.id })
     }
 

@@ -18,7 +18,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -126,21 +126,20 @@ fun MyPageScreen(
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
-                .height(56.dp)
-                .padding(start = 24.dp, end = 24.dp, top = 12.dp)
-                .wrapContentHeight(Alignment.CenterVertically)
+                .fillMaxWidth()
+                .padding(start = 24.dp, end = 24.dp, top = 14.dp)
         )
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(42.dp))
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             EditableAvatar(state = state, onEvent = onEvent)
-            Text(text = state.nickname, color = Color.White, fontSize = 20.sp, lineHeight = 24.sp)
+            Text(text = state.nickname, color = Color.White, fontSize = 20.sp)
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(37.dp))
         SettingCard(title = "설정", radius = 24.dp) {
             SettingRow(
                 icon = CommonR.drawable.ic_location_main,
@@ -165,8 +164,7 @@ fun MyPageScreen(
             )
             SettingRow(
                 icon = CommonR.drawable.ic_info_mono,
-                title = "버전정보",
-                trailing = versionName
+                title = "버전정보"
             )
             SettingRow(
                 icon = CommonR.drawable.ic_comment_mono,
@@ -201,7 +199,7 @@ private fun EditableAvatar(
                 .semantics(mergeDescendants = true) { contentDescription = "프로필 사진 변경" }
                 .clickable { onEvent(MyPageContract.Event.AvatarClicked) }
         ) {
-            ProfileAvatar(imageUrl = state.profileImageUrl, size = 80.dp, iconSize = 48.dp)
+            ProfileAvatar(imageUrl = state.profileImageUrl, size = 80.dp, iconSize = 40.dp)
             if (state.isUpdatingPhoto) {
                 CircularProgressIndicator(color = Primary, modifier = Modifier.size(32.dp))
             }
@@ -243,8 +241,7 @@ private fun SettingCard(
             text = title,
             color = BlueGray20,
             fontSize = 16.sp,
-            lineHeight = 20.sp,
-            modifier = Modifier.padding(start = 20.dp, top = 20.dp, bottom = 7.dp)
+            modifier = Modifier.padding(start = 20.dp, top = 20.dp, bottom = 8.dp)
         )
         content()
     }
@@ -277,19 +274,18 @@ private fun SettingRow(
             text = title,
             color = BlueGray5,
             fontSize = 16.sp,
-            lineHeight = 24.sp,
+            maxLines = 1,
             modifier = Modifier.weight(1f)
         )
+        Spacer(modifier = Modifier.width(8.dp))
         if (trailing != null) {
             Text(text = trailing, color = BlueGray40, fontSize = 14.sp)
         }
-        if (onClick != null) {
-            Icon(
-                painter = painterResource(id = CommonR.drawable.ic_arrow_right_w),
-                contentDescription = null,
-                tint = Color.Unspecified,
-                modifier = Modifier.size(24.dp)
-            )
-        }
+        Icon(
+            painter = painterResource(id = CommonR.drawable.ic_arrow_right_w),
+            contentDescription = null,
+            tint = BlueGray5,
+            modifier = Modifier.size(18.dp)
+        )
     }
 }
