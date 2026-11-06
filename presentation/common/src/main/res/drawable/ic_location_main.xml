@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
-    <path android:fillColor="#00EEFF" android:pathData="M12 2C7.6 2 4 5.6 4 10C4 15.4 11 21.5 11.3 21.8C11.7 22.1 12.2 22.1 12.6 21.8C13 21.5 20 15.4 20 10C20 5.6 16.4 2 12 2ZM12 14C9.8 14 8 12.2 8 10C8 7.8 9.8 6 12 6C14.2 6 16 7.8 16 10C16 12.2 14.2 14 12 14Z"/>
+<!-- 아이폰 앱 에셋 ic_location_main.svg 와 같은 모양·여백 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="16dp" android:height="20.025dp" android:viewportWidth="16" android:viewportHeight="20.025">
+    <path android:fillColor="#00EEFF" android:pathData="M8 0C3.6 0 0 3.6 0 8C0 13.4 7 19.5 7.3 19.8C7.7 20.1 8.2 20.1 8.6 19.8C9 19.5 16 13.4 16 8C16 3.6 12.4 0 8 0ZM8 12C5.8 12 4 10.2 4 8C4 5.8 5.8 4 8 4C10.2 4 12 5.8 12 8C12 10.2 10.2 12 8 12Z"/>
 </vector>

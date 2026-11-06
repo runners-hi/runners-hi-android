@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
-    <path android:fillColor="#8F97A3" android:pathData="M12 12C14.8 12 17 9.8 17 7C17 4.2 14.8 2 12 2C9.2 2 7 4.2 7 7C7 9.8 9.2 12 12 12ZM21.3 20.8C20 15.7 14.8 12.5 9.7 13.8C6.3 14.7 3.6 17.3 2.7 20.8C2.6 21.3 2.9 21.9 3.5 22C3.6 22 3.7 22 3.7 22H20.3C20.9 22 21.3 21.6 21.3 21C21.3 20.9 21.3 20.8 21.3 20.8Z"/>
+<!-- 아이폰 앱 에셋 ic_user_mono.svg 와 같은 모양·여백 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="18.6189dp" android:height="20dp" android:viewportWidth="18.6189" android:viewportHeight="20">
+    <path android:fillColor="#8F97A3" android:pathData="M9.31895 10C12.1189 10 14.3189 7.8 14.3189 5C14.3189 2.2 12.1189 0 9.31895 0C6.51895 0 4.31895 2.2 4.31895 5C4.31895 7.8 6.51895 10 9.31895 10ZM18.6189 18.8C17.3189 13.7 12.1189 10.5 7.01895 11.8C3.61895 12.7 0.91895 15.3 0.01895 18.8C-0.08105 19.3 0.21895 19.9 0.81895 20C0.91895 20 1.01895 20 1.01895 20H17.6189C18.2189 20 18.6189 19.6 18.6189 19C18.6189 18.9 18.6189 18.8 18.6189 18.8Z"/>
 </vector>
