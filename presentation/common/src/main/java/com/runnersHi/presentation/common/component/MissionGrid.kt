@@ -1,10 +1,8 @@
 package com.runnersHi.presentation.common.component
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import coil.compose.AsyncImage
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,9 +23,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -128,19 +129,23 @@ private fun MissionItemView(
         ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val border = BorderStroke(1.dp, if (item.isCompleted) item.accentColor else BlueGray70)
+        val strokeColor = if (item.isCompleted) item.accentColor else BlueGray70
+        val strokeWidth = 1.dp
         Box(
             modifier = Modifier
                 .size(width = 72.dp, height = 100.dp)
-                // 아이폰 미션 탭에만: .shadow(color: blueGray90 30%, radius: 11, y: 4)
-                .then(
-                    if (style == MissionGridStyle.TAB) {
-                        Modifier.iosShadow(CircleShape, BlueGray90.copy(alpha = 0.3f), radius = 11.dp, y = 4.dp)
-                    } else Modifier
-                )
-                .clip(CircleShape)
-                .background(if (item.isCompleted) item.accentColor.copy(alpha = 0.2f) else BlueGray80)
-                .border(border, CircleShape),
+                // 아이폰 MissionItemView는 홈/탭 공용: .shadow(color: blueGray90 30%, radius: 11, y: 4)
+                .iosShadow(CircleShape, BlueGray90.copy(alpha = 0.3f), radius = 11.dp, y = 4.dp)
+                .background(if (item.isCompleted) item.accentColor.copy(alpha = 0.2f) else BlueGray80, CircleShape)
+                // SwiftUI stroke는 테두리선이 경계 한가운데에 걸친다(안쪽 0.5, 바깥 0.5)
+                .drawBehind {
+                    drawOutline(
+                        outline = CircleShape.createOutline(size, layoutDirection, this),
+                        color = strokeColor,
+                        style = Stroke(width = strokeWidth.toPx())
+                    )
+                }
+                .clip(CircleShape),
             contentAlignment = Alignment.Center
         ) {
             val placement = missionImagePlacement(item.iconName)

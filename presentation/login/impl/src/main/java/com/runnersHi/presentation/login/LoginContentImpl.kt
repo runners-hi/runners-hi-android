@@ -152,7 +152,7 @@ private fun AppleLoginButton(
             containerColor = BlueGray80,
             disabledContainerColor = BlueGray80.copy(alpha = 0.5f)
         ),
-        border = BorderStroke(1.dp, BlueGray70),
+        border = BorderStroke(0.5.dp, BlueGray70), // iOS overlay stroke 1 이 cornerRadius 로 잘려 0.5만 보임
         enabled = enabled
     ) {
         if (isLoading) {

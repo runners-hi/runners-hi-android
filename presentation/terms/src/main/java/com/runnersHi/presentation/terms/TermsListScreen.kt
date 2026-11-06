@@ -108,7 +108,7 @@ fun TermsListRoute(
                         Icon(
                             painter = painterResource(id = R.drawable.ic_arrow_right),
                             contentDescription = "상세보기",
-                            tint = BlueGrayWhite,
+                            tint = BlueGray5,
                             modifier = Modifier.size(24.dp)
                         )
                     }
