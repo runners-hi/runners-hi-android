@@ -3,7 +3,11 @@ package com.runnersHi.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import com.runnersHi.presentation.common.navigation.BottomNavTab
 import androidx.compose.runtime.remember
 import androidx.lifecycle.HasDefaultViewModelProviderFactory
 import androidx.lifecycle.ViewModel
@@ -24,6 +28,9 @@ class AppNavigatorViewModel : ViewModel() {
 
     /** 화면의 저장 상태를 지울 수 있는 쪽(NavHost)이 등록한다. */
     var onScreenDropped: ((Screen) -> Unit)? = null
+
+    /** 메인 밖 화면(계정 관리)의 탭바에서 고른 탭. 메인으로 돌아가면 그 탭을 연다. */
+    var pendingTab by mutableStateOf<BottomNavTab?>(null)
 
     val current: Screen get() = stack.last()
     val canPop: Boolean get() = stack.size > 1

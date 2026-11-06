@@ -15,7 +15,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
+import com.runnersHi.presentation.common.component.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -87,7 +87,7 @@ fun TermsDetailContent(
             text = content,
             color = BlueGrayWhite,
             fontSize = 14.sp,
-            lineHeight = 21.sp,
+            lineHeight = 20.71.sp, // 아이폰: SF 14 줄 높이 16.71 + lineSpacing(4)
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()

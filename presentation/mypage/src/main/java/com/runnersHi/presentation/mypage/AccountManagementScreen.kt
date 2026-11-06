@@ -2,7 +2,14 @@ package com.runnersHi.presentation.mypage
 
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
+import com.runnersHi.presentation.common.theme.BlueGrayWhite
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,11 +19,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
+import com.runnersHi.presentation.common.component.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -45,6 +57,7 @@ fun AccountManagementRoute(
     onBack: () -> Unit,
     onLoggedOut: () -> Unit,
     onWithdrawn: () -> Unit,
+    bottomBar: @Composable () -> Unit = {},
     viewModel: AccountManagementViewModel = hiltViewModel()
 ) {
     val state by viewModel.collectState()
@@ -79,11 +92,18 @@ fun AccountManagementRoute(
     }
     BackHandler(onBack = onBack)
 
+    // 아이폰 3배 화면 실측: 로그아웃 버튼 위 끝 ~ 탭바 위 끝 45.0pt(버튼 52 중 8.0이 탭바에 가려짐). 9.33으로 두면 43.8pt로 1.2 낮았다.
+    var bottomBarHeight by remember { mutableStateOf(0.dp) }
+    val density = LocalDensity.current
+    Box(modifier = Modifier.fillMaxSize().background(BlueGray90)) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(BlueGray90)
-            .systemBarsPadding()
+            .statusBarsPadding()
+            .then(
+                if (bottomBarHeight > 0.dp) Modifier.padding(bottom = bottomBarHeight - 8.0.dp)
+                else Modifier.navigationBarsPadding().padding(bottom = 40.dp)
+            )
     ) {
         // iOS 인라인 내비게이션 바: 높이 44, 가운데 타이틀 17 semibold
         Box(
@@ -92,16 +112,27 @@ fun AccountManagementRoute(
                 .height(44.dp),
             contentAlignment = Alignment.Center
         ) {
-            Icon(
-                painter = painterResource(id = CommonR.drawable.ic_arrow_back),
-                contentDescription = "뒤로가기",
-                tint = Color.Unspecified,
+            // 아이폰 26 기본 뒤로 버튼: 지름 44 원(테두리 0.5) 안에 흰 꺾쇠 10.67x18.67, 꺾쇠는 원 왼쪽에서 15·위에서 13
+            Box(
                 modifier = Modifier
                     .align(Alignment.CenterStart)
                     .padding(start = 16.dp)
-                    .size(24.dp)
+                    .size(44.dp)
+                    .clip(CircleShape)
+                    .border(0.5.dp, BlueGray80, CircleShape)
                     .clickable(onClick = onBack)
-            )
+            ) {
+                Image(
+                    painter = painterResource(id = CommonR.drawable.ic_arrow_right_w_fit),
+                    contentDescription = "뒤로가기",
+                    colorFilter = ColorFilter.tint(BlueGrayWhite),
+                    contentScale = ContentScale.FillBounds,
+                    modifier = Modifier
+                        .padding(start = 15.dp, top = 13.dp)
+                        .size(width = 10.67.dp, height = 18.67.dp)
+                        .graphicsLayer { scaleX = -1f }
+                )
+            }
             Text(
                 text = "계정 관리",
                 color = Color.White,
@@ -123,7 +154,7 @@ fun AccountManagementRoute(
         )
         Box(
             modifier = Modifier
-                .padding(start = 20.dp, end = 20.dp, bottom = 40.dp)
+                .padding(horizontal = 20.dp)
                 .fillMaxWidth()
                 .height(52.dp)
                 .clip(RoundedCornerShape(12.dp))
@@ -138,5 +169,11 @@ fun AccountManagementRoute(
                 fontWeight = FontWeight.SemiBold
             )
         }
+    }
+    Box(
+        modifier = Modifier
+            .align(Alignment.BottomCenter)
+            .onSizeChanged { bottomBarHeight = with(density) { it.height.toDp() } }
+    ) { bottomBar() }
     }
 }

@@ -26,6 +26,7 @@ import com.runnersHi.presentation.main.MainRoute
 import com.runnersHi.presentation.main.MainViewModel
 import com.runnersHi.presentation.mission.MissionRoute
 import com.runnersHi.presentation.mypage.AccountManagementRoute
+import com.runnersHi.presentation.common.navigation.RunnersHiBottomNavigation
 import com.runnersHi.presentation.mypage.MyPageRoute
 import com.runnersHi.presentation.mypage.FeedbackRoute
 import com.runnersHi.presentation.notice.NoticeDetailRoute
@@ -119,6 +120,16 @@ fun RunnersHiNavHost(
                     Screen.TermsList -> TermsListRoute(onBack = { navigator.pop() })
                     Screen.AccountManagement -> AccountManagementRoute(
                         onBack = { navigator.pop() },
+                        // 아이폰: 계정 관리는 마이페이지 탭 안에서 열려 아래 탭바가 그대로 보인다
+                        bottomBar = {
+                            RunnersHiBottomNavigation(
+                                currentTab = BottomNavTab.MY_PAGE,
+                                onTabSelected = { tab ->
+                                    navigator.pendingTab = tab
+                                    navigator.pop()
+                                }
+                            )
+                        },
                         onLoggedOut = {
                             scope.launch {
                                 runCatching { KakaoLoginHandler.logout() }
@@ -172,6 +183,12 @@ private fun MainBlock(navigator: AppNavigatorViewModel, onMainEntered: () -> Uni
     }
 
     LaunchedEffect(Unit) { onMainEntered() }
+    LaunchedEffect(navigator.pendingTab) {
+        navigator.pendingTab?.let {
+            mainViewModel.sendEvent(MainContract.Event.BottomNavClicked(it))
+            navigator.pendingTab = null
+        }
+    }
 
     MainRoute(
         viewModel = mainViewModel,

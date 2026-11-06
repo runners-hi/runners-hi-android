@@ -26,7 +26,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
+import com.runnersHi.presentation.common.component.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -133,7 +133,7 @@ fun TermsAgreementScreen(
                         color = BlueGray5,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.SemiBold,
-                        lineHeight = 29.sp
+                        lineHeight = 28.64.sp
                     )
                 }
             }
