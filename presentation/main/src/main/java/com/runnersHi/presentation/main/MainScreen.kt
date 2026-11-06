@@ -235,7 +235,7 @@ private fun HomeContent(
 
         // Title Bar 하단 고정 영역
         item {
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(8.dp))
         }
 
         // Tier Card
@@ -288,7 +288,7 @@ private fun HomeContent(
             }
         }
 
-        item { Spacer(modifier = Modifier.height(40.dp)) }
+        item { Spacer(modifier = Modifier.height(24.dp)) }
 
         // Mission Event Section
         item {
@@ -297,7 +297,7 @@ private fun HomeContent(
                     missionEvent = missionEvent,
                     onHeaderClick = { onEvent(MainContract.Event.MissionEventClicked) },
                     onMissionClick = { onEvent(MainContract.Event.MissionEventClicked) },
-                    modifier = Modifier.padding(horizontal = 24.dp)
+                    modifier = Modifier.padding(horizontal = 20.dp)
                 )
             }
         }
@@ -310,21 +310,21 @@ private fun TitleBar(onNotificationClick: () -> Unit, modifier: Modifier = Modif
         modifier = modifier
             .fillMaxWidth()
             .height(56.dp)
-            .padding(start = 24.dp, end = 24.dp, top = 12.dp),
+            .padding(horizontal = 24.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
             painter = painterResource(id = CommonR.drawable.img_wordmark),
             contentDescription = "Runners HI",
-            modifier = Modifier.size(width = 95.2.dp, height = 28.dp)
+            modifier = Modifier.size(width = 115.2.dp, height = 33.9.dp)
         )
         Icon(
             painter = painterResource(id = CommonR.drawable.ic_notification_home),
             contentDescription = "알림",
             tint = Color.Unspecified,
             modifier = Modifier
-                .size(28.dp)
+                .size(24.dp)
                 .clickable(onClick = onNotificationClick)
         )
     }
@@ -339,20 +339,18 @@ private fun TierCard(
 ) {
     // 서버가 레벨 진행도를 주지 않으면 진행 막대 없이 줄인다.
     val hasProgress = tierInfo.progressText.isNotBlank()
-    Box(
+    Column(
         modifier = modifier
             .fillMaxWidth()
-            .height(if (hasProgress) 140.dp else 86.dp)
             .clip(RoundedCornerShape(24.dp))
             .background(CardBackground)
             .border(1.dp, CardBorder, RoundedCornerShape(24.dp))
             .clickable(onClick = onClick)
+            .padding(horizontal = 20.dp)
+            .padding(top = 20.dp, bottom = if (hasProgress) 20.dp else 20.dp)
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp, top = 20.dp)
-                .height(46.dp),
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
@@ -362,20 +360,21 @@ private fun TierCard(
                 modifier = Modifier.size(60.dp, 40.dp)
             )
             Spacer(modifier = Modifier.width(16.dp))
-            Box(modifier = Modifier.weight(1f)) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
                 Text(
                     text = tierInfo.tierName,
                     color = TextPrimary,
                     fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    lineHeight = 25.sp
+                    fontWeight = FontWeight.SemiBold
                 )
                 if (tierInfo.level.isNotBlank()) {
                     Text(
                         text = tierInfo.level,
-                        color = TextSecondary,
-                        fontSize = 14.sp,
-                        modifier = Modifier.padding(top = 29.dp)
+                        color = BlueGray5,
+                        fontSize = 14.sp
                     )
                 }
             }
@@ -390,10 +389,8 @@ private fun TierCard(
             )
         }
         if (hasProgress) {
-            TierProgress(
-                tierInfo = tierInfo,
-                modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 82.dp)
-            )
+            Spacer(modifier = Modifier.height(16.dp))
+            TierProgress(tierInfo = tierInfo)
         }
     }
 }
@@ -434,7 +431,7 @@ private fun TierProgress(
             )
             Text(
                 text = tierInfo.progressText,
-                color = BlueGray5,
+                color = TextPrimary,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
                 lineHeight = 18.sp
@@ -452,12 +449,11 @@ private fun TodaysRunCard(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .height(171.dp)
             .clip(RoundedCornerShape(24.dp))
             .background(CardBackground)
             .border(1.dp, CardBorder, RoundedCornerShape(24.dp))
             .clickable(onClick = onClick)
-            .padding(start = 20.dp, end = 20.dp, top = 20.dp)
+            .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 20.dp)
     ) {
         Row(
             modifier = Modifier
@@ -467,7 +463,7 @@ private fun TodaysRunCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Today’s Run",
+                text = "Today's Run",
                 color = TextSecondary,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
@@ -481,7 +477,7 @@ private fun TodaysRunCard(
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -564,7 +560,6 @@ private fun ThisWeekCard(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = 186.dp)
             .clip(RoundedCornerShape(24.dp))
             .background(CardBackground)
             .border(1.dp, CardBorder, RoundedCornerShape(24.dp))
@@ -576,10 +571,9 @@ private fun ThisWeekCard(
             color = TextSecondary,
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
-            lineHeight = 20.sp,
             modifier = Modifier.fillMaxWidth()
         )
-        Spacer(modifier = Modifier.height(15.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = thisWeek.totalDistance,
             color = TextPrimary,
@@ -590,9 +584,9 @@ private fun ThisWeekCard(
         Spacer(modifier = Modifier.height(16.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.Start
         ) {
-            thisWeek.days.forEach { day -> DayIndicator(day = day) }
+            thisWeek.days.forEach { day -> DayIndicator(day = day, modifier = Modifier.weight(1f)) }
         }
     }
 }
@@ -625,20 +619,19 @@ private fun DayIndicator(
                 lineHeight = 18.sp
             )
         }
-        // Distance below pill (only if hasRun)
-        if (day.hasRun && day.distance != null) {
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = day.distance,
-                color = TextSecondary,
-                fontSize = 14.sp,
-                textAlign = TextAlign.Center,
-                softWrap = false,
-                modifier = Modifier
-                    .width(30.dp)
-                    .wrapContentWidth(unbounded = true)
-            )
-        }
+        // Distance below pill (iOS: always, frame height 18)
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = day.distance.orEmpty(),
+            color = TextSecondary,
+            fontSize = 14.sp,
+            textAlign = TextAlign.Center,
+            softWrap = false,
+            maxLines = 1,
+            modifier = Modifier
+                .height(18.dp)
+                .wrapContentWidth(unbounded = true)
+        )
     }
 }
 
@@ -672,7 +665,7 @@ private fun MissionEventSection(
             )
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         missionEvent.banner?.let { banner ->
             SeasonBannerPill(title = banner.title, period = banner.period)
@@ -709,7 +702,7 @@ private fun TodaysRunEmptyCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Today’s Run",
+                text = "Today's Run",
                 color = TextSecondary,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,

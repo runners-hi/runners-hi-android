@@ -120,6 +120,7 @@ fun RunnersHiBottomNavigation(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(top = 8.dp)
                 .height(60.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
@@ -129,6 +130,7 @@ fun RunnersHiBottomNavigation(
                 val color = if (selected) Primary else InactiveColor
 
                 NavTabItem(
+                    modifier = Modifier.weight(1f),
                     item = item,
                     selected = selected,
                     color = color,
@@ -144,21 +146,21 @@ fun RunnersHiBottomNavigation(
 
 @Composable
 private fun NavTabItem(
+    modifier: Modifier,
     item: BottomNavItem,
     selected: Boolean,
     color: Color,
     onClick: () -> Unit
 ) {
     Column(
-        modifier = Modifier
-            .width(72.dp)
+        modifier = modifier
             .height(60.dp)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
                 onClick = onClick
             )
-            .padding(horizontal = 4.dp, vertical = 8.dp),
+            ,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -174,29 +176,15 @@ private fun NavTabItem(
             color = color,
             fontSize = 12.sp,
             fontWeight = FontWeight.Normal,
-            lineHeight = 16.sp
+            lineHeight = 14.3.sp
         )
     }
 }
 
 @Composable
 private fun HomeIndicatorBar() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(28.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Box(
-            modifier = Modifier
-                .width(66.dp)
-                .height(4.dp)
-                .background(
-                    color = BlueGray40,
-                    shape = RoundedCornerShape(2.dp)
-                )
-        )
-    }
+    // iOS: 탭 바 하단 패딩 28 (홈 인디케이터는 시스템이 그린다)
+    Spacer(modifier = Modifier.fillMaxWidth().height(28.dp))
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFF17191C)

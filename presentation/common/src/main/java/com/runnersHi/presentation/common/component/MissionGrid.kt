@@ -60,8 +60,9 @@ enum class MissionGridStyle(
     val subtitleLineHeight: TextUnit,
     val textGap: Dp
 ) {
-    HOME(FontWeight.SemiBold, 21.sp, 19.5.sp, 4.dp),
-    TAB(FontWeight.Normal, 22.4.sp, 20.8.sp, 2.dp)
+    // iOS MissionItemView는 홈/탭 공용: 14 regular, 13 tracking -0.39, 간격 2
+    HOME(FontWeight.Normal, 16.7.sp, 15.5.sp, 2.dp),
+    TAB(FontWeight.Normal, 16.7.sp, 15.5.sp, 2.dp)
 }
 
 /** 시즌 미션 기간을 보여주는 알약 모양 배너 */
@@ -98,7 +99,7 @@ fun MissionGrid(
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         items.chunked(COLUMNS).forEach { row ->
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(18.dp)) {
                 row.forEach { item ->
                     MissionItemView(
                         item = item,
@@ -176,6 +177,7 @@ private fun MissionItemView(
             fontSize = 13.sp,
             letterSpacing = (-0.39).sp,
             lineHeight = style.subtitleLineHeight,
+            maxLines = 1,
             textAlign = TextAlign.Center
         )
     }
