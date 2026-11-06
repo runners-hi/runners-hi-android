@@ -1,0 +1,8 @@
+appId: com.runnersHi
+name: 홈 데이터
+---
+- runFlow: ../subflows/to_home.yaml
+- assertVisible:
+    id: home_tier_card
+- assertNotVisible:
+    id: error_view

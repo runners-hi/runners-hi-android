@@ -2,6 +2,9 @@ package com.runnersHi.presentation.terms
 
 import androidx.lifecycle.viewModelScope
 import com.runnersHi.domain.auth.usecase.LogoutUseCase
+import com.runnersHi.core.common.analytics.AnalyticsEvent
+import com.runnersHi.core.common.analytics.AnalyticsHub
+import com.runnersHi.core.common.analytics.AnalyticsScreen
 import com.runnersHi.domain.terms.usecase.AgreeTermsUseCase
 import com.runnersHi.domain.terms.usecase.GetTermsListUseCase
 import com.runnersHi.presentation.common.mvi.MviViewModel
@@ -29,6 +32,7 @@ class TermsAgreementViewModel @Inject constructor(
             is TermsAgreementContract.Event.ToggleTermItem -> toggleTermItem(event.id)
             is TermsAgreementContract.Event.ProceedClicked -> proceed()
             is TermsAgreementContract.Event.ViewTermsDetail -> {
+                AnalyticsHub.screen(AnalyticsScreen.TERMS_DETAIL)
                 updateState { copy(detailItem = event.termsItem) }
             }
             is TermsAgreementContract.Event.DetailDismissed -> {
@@ -44,7 +48,7 @@ class TermsAgreementViewModel @Inject constructor(
 
     private fun loadTerms() {
         viewModelScope.launch {
-            updateState { copy(isLoading = true) }
+            updateState { copy(isLoading = true, errorMessage = null) }
 
             getTermsListUseCase()
                 .onSuccess { termsList ->
@@ -127,8 +131,17 @@ class TermsAgreementViewModel @Inject constructor(
                 .filter { it.isAgreed }
                 .map { it.id }
 
+            val agreedTitles = state.value.termsItems.filter { it.isAgreed && !it.required }.map { it.title }
             agreeTermsUseCase(agreedTermIds)
                 .onSuccess {
+                    AnalyticsHub.log(
+                        AnalyticsEvent.TERMS_AGREE,
+                        mapOf(
+                            "optional_marketing" to agreedTitles.any { "마케팅" in it },
+                            "optional_sns" to agreedTitles.any { "SNS" in it || "소셜" in it },
+                            "optional_location" to agreedTitles.any { "위치" in it }
+                        )
+                    )
                     updateState { copy(isLoading = false) }
                     sendEffect(TermsAgreementContract.Effect.NavigateToMain)
                 }

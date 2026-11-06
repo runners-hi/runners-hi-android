@@ -7,7 +7,6 @@ import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
 import com.kakao.sdk.user.UserApiClient
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -17,19 +16,15 @@ import kotlin.coroutines.resumeWithException
  */
 object KakaoLoginHandler {
 
-    // 앱 키가 없으면 SDK가 초기화되지 않으므로 Mock 로그인으로 동작
-    private val USE_MOCK = BuildConfig.KAKAO_NATIVE_APP_KEY.isBlank()
+    // 앱 키가 없으면 SDK가 초기화되지 않아 로그인할 수 없다.
+    private val isConfigured = BuildConfig.KAKAO_NATIVE_APP_KEY.isNotBlank()
 
     /**
      * 카카오 로그인 실행
      * @return 카카오 액세스 토큰
      */
     suspend fun login(context: Context): String {
-        // Mock 모드: delay 후 mock 토큰 반환
-        if (USE_MOCK) {
-            delay(1500)
-            return "mock_kakao_access_token_${System.currentTimeMillis()}"
-        }
+        check(isConfigured) { "카카오 로그인 설정이 없어요" }
 
         // 실제 카카오 SDK 로그인
         return suspendCancellableCoroutine { continuation ->
@@ -64,7 +59,7 @@ object KakaoLoginHandler {
      * 카카오 로그아웃
      */
     suspend fun logout() {
-        if (USE_MOCK) return
+        if (!isConfigured) return
         logoutFromSdk()
     }
 
@@ -82,7 +77,7 @@ object KakaoLoginHandler {
      * 카카오 연결 끊기 (회원 탈퇴)
      */
     suspend fun unlink() {
-        if (USE_MOCK) return
+        if (!isConfigured) return
         unlinkFromSdk()
     }
 

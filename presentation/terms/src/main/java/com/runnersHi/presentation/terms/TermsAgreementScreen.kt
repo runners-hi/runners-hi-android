@@ -1,5 +1,9 @@
 package com.runnersHi.presentation.terms
 
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.ui.platform.testTag
+import com.runnersHi.presentation.common.component.ErrorView
+import com.runnersHi.presentation.common.component.LoadingView
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -156,22 +160,22 @@ fun TermsAgreementScreen(
 
             // 약관 목록
             if (state.isLoading && state.termsItems.isEmpty()) {
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(color = Primary)
-                }
+                LoadingView(Modifier.weight(1f).fillMaxWidth())
+            } else if (state.termsItems.isEmpty() && state.errorMessage != null) {
+                ErrorView(
+                    message = state.errorMessage,
+                    onRetry = { onEvent(TermsAgreementContract.Event.LoadTerms) },
+                    modifier = Modifier.weight(1f).fillMaxWidth()
+                )
             } else {
                 LazyColumn(
                     modifier = Modifier
                         .weight(1f)
                         .padding(horizontal = 24.dp)
                 ) {
-                    items(state.termsItems) { item ->
+                    itemsIndexed(state.termsItems) { index, item ->
                         TermsItemRow(
+                            index = index,
                             item = item,
                             onCheckedChange = {
                                 onEvent(TermsAgreementContract.Event.ToggleTermItem(item.id))
@@ -184,13 +188,14 @@ fun TermsAgreementScreen(
                 }
             }
 
-            // 에러 메시지
-            state.errorMessage?.let { error ->
+            // 에러 메시지 (목록이 있을 때의 동작 오류. 목록 자체를 못 받은 오류는 위 ErrorView가 보여 준다)
+            state.errorMessage?.takeIf { state.termsItems.isNotEmpty() }?.let { error ->
                 Text(
                     text = error,
                     color = Color.Red,
                     fontSize = 14.sp,
                     modifier = Modifier
+                        .testTag("terms_error")
                         .padding(horizontal = 24.dp)
                         .padding(vertical = 8.dp)
                 )
@@ -200,6 +205,7 @@ fun TermsAgreementScreen(
             Button(
                 onClick = { onEvent(TermsAgreementContract.Event.ProceedClicked) },
                 modifier = Modifier
+                    .testTag("terms_next_button")
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp)
                     .padding(bottom = 32.dp)
@@ -265,6 +271,7 @@ private fun AllAgreeRow(
 ) {
     Row(
         modifier = modifier
+            .testTag("terms_all_agree")
             .fillMaxWidth()
             .clickable { onCheckedChange() }
             .padding(vertical = 16.dp),
@@ -291,6 +298,7 @@ private fun AllAgreeRow(
 
 @Composable
 private fun TermsItemRow(
+    index: Int,
     item: TermsItemUiModel,
     onCheckedChange: () -> Unit,
     onArrowClick: () -> Unit,
@@ -298,6 +306,7 @@ private fun TermsItemRow(
 ) {
     Row(
         modifier = modifier
+            .testTag("terms_row_$index")
             .fillMaxWidth()
             .clickable { onCheckedChange() }
             .padding(vertical = 16.dp),
@@ -324,6 +333,7 @@ private fun TermsItemRow(
             contentDescription = "상세보기",
             tint = BlueGray5, // iOS arrow_right.svg #F1F2F4
             modifier = Modifier
+                .testTag("terms_detail_$index")
                 .size(24.dp)
                 .clickable { onArrowClick() }
         )

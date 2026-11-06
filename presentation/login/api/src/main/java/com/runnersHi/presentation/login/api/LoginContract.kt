@@ -16,7 +16,8 @@ object LoginContract {
         NONE,
         KAKAO,
         APPLE,
-        REVIEW
+        REVIEW,
+        DEV
     }
 
     /**
@@ -42,6 +43,8 @@ object LoginContract {
         data class AppleTokenReceived(val token: String) : Event
         /** 로고를 7번 눌러 입력한 스토어 심사 코드 */
         data class ReviewCodeSubmitted(val code: String) : Event
+        /** 개발 서버 전용 로그인(userKey만). */
+        data class DevLoginSubmitted(val userKey: String) : Event
         data class LoginFailed(val message: String) : Event
         data object LoginCancelled : Event
         data object ErrorDismissed : Event

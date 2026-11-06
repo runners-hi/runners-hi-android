@@ -1,0 +1,16 @@
+appId: com.runnersHi
+---
+# 프록시(mockwire, 포트 8899)로 붙는다. 에뮬레이터에서 맥은 10.0.2.2.
+- launchApp:
+    clearState: true
+- tapOn:
+    id: server_custom_input
+- eraseText: 60
+- inputText: "http://10.0.2.2:8899"
+- hideKeyboard
+- tapOn:
+    id: server_custom
+- extendedWaitUntil:
+    visible:
+      id: server_badge
+    timeout: 20000

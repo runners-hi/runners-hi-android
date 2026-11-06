@@ -1,0 +1,9 @@
+appId: com.runnersHi
+name: 미션
+---
+- runFlow: ../subflows/to_home.yaml
+- tapOn: "미션"
+- extendedWaitUntil:
+    visible:
+      id: mission_item
+    timeout: 20000

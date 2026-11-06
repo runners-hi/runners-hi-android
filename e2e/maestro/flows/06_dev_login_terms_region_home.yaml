@@ -1,0 +1,22 @@
+appId: com.runnersHi
+name: 개발 - 로그인 약관 지역 홈
+---
+- runFlow: ../subflows/launch_dev.yaml
+- runFlow: ../subflows/dev_login.yaml
+- extendedWaitUntil:
+    visible:
+      id: terms_all_agree
+    timeout: 30000
+# 필수 동의를 하나 안 하면 다음 버튼이 막힌다
+- tapOn:
+    id: terms_row_0
+- tapOn:
+    id: terms_all_agree
+- tapOn:
+    id: terms_detail_0
+- assertVisible:
+    id: terms_detail_content
+- tapOn:
+    id: back_button
+- tapOn:
+    id: terms_next_button

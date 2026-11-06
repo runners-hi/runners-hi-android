@@ -1,5 +1,7 @@
 package com.runnersHi.domain.health
 
+import com.runnersHi.core.common.analytics.AnalyticsEvent
+import com.runnersHi.core.common.analytics.AnalyticsHub
 import com.runnersHi.domain.health.model.ExerciseType
 import com.runnersHi.domain.health.repository.HealthRepository
 import com.runnersHi.domain.health.repository.RunningRecordRepository
@@ -39,6 +41,9 @@ class SyncRunningRecordsUseCaseImpl @Inject constructor(
             val uploaded = runningRecordRepository.uploadedStartTimes(since)
             val pending = records.filter { it.startTime.truncatedTo(ChronoUnit.SECONDS) !in uploaded }
             pending.forEach { runningRecordRepository.upload(it) }
+            if (pending.isNotEmpty()) {
+                AnalyticsHub.log(AnalyticsEvent.RUN_SYNC, mapOf("count" to pending.size))
+            }
             pending.size
         }
     }

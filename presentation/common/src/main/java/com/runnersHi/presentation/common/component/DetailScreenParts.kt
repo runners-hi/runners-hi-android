@@ -1,5 +1,6 @@
 package com.runnersHi.presentation.common.component
 
+import androidx.compose.ui.platform.testTag
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -49,6 +50,7 @@ fun BackTopBar(
             contentDescription = "뒤로가기",
             tint = BlueGray5, // iOS arrow_back.svg #F1F2F4 (벡터 원본은 검정이라 색을 입혀야 보인다)
             modifier = Modifier
+                .testTag("back_button")
                 .size(24.dp)
                 .clickable(onClick = onBack)
         )
@@ -80,7 +82,9 @@ fun TermsDetailContent(
             color = BlueGray5,
             fontSize = 24.sp,
             fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 16.dp, bottom = 24.dp)
+            modifier = Modifier
+                .testTag("terms_detail_title")
+                .padding(start = 24.dp, end = 24.dp, top = 16.dp, bottom = 24.dp)
         )
         // iOS TermsDetailView.swift:40-46: 14pt 본문 한 덩어리, lineSpacing 4, 가로 24
         Text(
@@ -89,6 +93,7 @@ fun TermsDetailContent(
             fontSize = 14.sp,
             lineHeight = 20.71.sp, // 아이폰: SF 14 줄 높이 16.71 + lineSpacing(4)
             modifier = Modifier
+                .testTag("terms_detail_content")
                 .weight(1f)
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
@@ -97,6 +102,7 @@ fun TermsDetailContent(
         if (onAgree != null) {
             Box(
                 modifier = Modifier
+                    .testTag("terms_detail_agree")
                     .padding(start = 24.dp, end = 24.dp, bottom = 32.dp)
                     .fillMaxWidth()
                     .height(56.dp)

@@ -1,5 +1,9 @@
 package com.runnersHi.presentation.notification
 
+import com.runnersHi.presentation.common.component.EmptyView
+import com.runnersHi.presentation.common.component.ErrorView
+import com.runnersHi.presentation.common.component.LoadingView
+import com.runnersHi.presentation.common.component.PullRefresh
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -111,27 +115,19 @@ fun NotificationScreen(
         }
         Spacer(modifier = Modifier.height(8.dp))
         when {
-            state.isLoading -> Box(Modifier.fillMaxSize(), Alignment.Center) {
-                CircularProgressIndicator(color = Primary)
-            }
-            state.errorMessage != null -> Column(
-                modifier = Modifier.fillMaxWidth().padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+            state.isLoading -> LoadingView()
+            state.errorMessage != null -> ErrorView(
+                message = state.errorMessage,
+                onRetry = { onEvent(NotificationContract.Event.Retry) }
+            )
+            state.notifications.isEmpty() -> EmptyView("아직 받은 알림이 없어요")
+            else -> PullRefresh(
+                isRefreshing = false,
+                onRefresh = { onEvent(NotificationContract.Event.Retry) }
             ) {
-                Text(text = state.errorMessage, color = BlueGray40, fontSize = 14.sp)
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "다시 시도",
-                    color = Primary,
-                    fontSize = 16.sp,
-                    modifier = Modifier.clickable { onEvent(NotificationContract.Event.Retry) }
-                )
-            }
-            state.notifications.isEmpty() -> Box(Modifier.fillMaxSize(), Alignment.Center) {
-                Text(text = "아직 받은 알림이 없어요", color = BlueGray40, fontSize = 14.sp)
-            }
-            else -> LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(state.notifications, key = { it.id }) { NotificationRow(it) }
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    items(state.notifications, key = { it.id }) { NotificationRow(it) }
+                }
             }
         }
     }

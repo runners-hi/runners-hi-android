@@ -8,6 +8,7 @@ kotlin {
 }
 
 dependencies {
+    implementation(project(":core:common"))
     api(libs.retrofit)
     implementation(libs.retrofit.kotlinx.serialization)
     implementation(libs.okhttp)

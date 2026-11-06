@@ -1,5 +1,7 @@
 package com.runnersHi.presentation.notification
 
+import com.runnersHi.core.common.analytics.AnalyticsEvent
+import com.runnersHi.core.common.analytics.AnalyticsHub
 import androidx.lifecycle.viewModelScope
 import com.runnersHi.domain.notification.usecase.GetNotificationsUseCase
 import com.runnersHi.domain.notification.usecase.GetPushEnabledUseCase
@@ -53,7 +55,9 @@ class NotificationViewModel @Inject constructor(
         val previous = currentState.pushEnabled
         updateState { copy(pushEnabled = enabled) }
         viewModelScope.launch {
-            setPushEnabled(enabled).onFailure { error ->
+            setPushEnabled(enabled).onSuccess {
+                AnalyticsHub.log(AnalyticsEvent.PUSH_TOGGLE, mapOf("enabled" to enabled))
+            }.onFailure { error ->
                 updateState { copy(pushEnabled = previous) }
                 sendEffect(
                     NotificationContract.Effect.ShowToast(error.message ?: "설정을 바꾸지 못했어요")

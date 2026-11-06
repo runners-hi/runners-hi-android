@@ -1,0 +1,9 @@
+appId: com.runnersHi
+name: 랭킹
+---
+- runFlow: ../subflows/to_home.yaml
+- tapOn: "랭킹"
+- extendedWaitUntil:
+    visible:
+      id: ranking_item
+    timeout: 20000

@@ -8,6 +8,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
+import com.runnersHi.debug.DebugServerGate
 import com.runnersHi.navigation.RunnersHiNavHost
 import com.runnersHi.presentation.common.theme.RunnersHiTheme
 import com.runnersHi.push.PushTokenSync
@@ -43,7 +47,12 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             RunnersHiTheme {
-                RunnersHiNavHost(onMainEntered = ::onMainEntered)
+                @OptIn(androidx.compose.ui.ExperimentalComposeUiApi::class)
+                androidx.compose.foundation.layout.Box(Modifier.semantics { testTagsAsResourceId = true }) {
+                    DebugServerGate {
+                        RunnersHiNavHost(onMainEntered = ::onMainEntered)
+                    }
+                }
             }
         }
     }

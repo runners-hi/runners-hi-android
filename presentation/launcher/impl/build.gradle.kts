@@ -33,6 +33,7 @@ dependencies {
     implementation(project(":presentation:launcher:api"))
     implementation(project(":presentation:splash:api"))
     implementation(project(":presentation:login:api"))
+    implementation(project(":core:common"))
     implementation(project(":presentation:common"))
     implementation(project(":domain:splash:api"))
     implementation(project(":domain:auth:api"))

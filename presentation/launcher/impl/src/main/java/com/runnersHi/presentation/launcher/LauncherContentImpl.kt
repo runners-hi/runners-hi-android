@@ -1,5 +1,7 @@
 package com.runnersHi.presentation.launcher
 
+import com.runnersHi.core.common.analytics.AnalyticsHub
+import com.runnersHi.core.common.analytics.AnalyticsScreen
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.animation.core.Animatable
@@ -42,6 +44,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -81,7 +84,9 @@ fun LauncherRoute(
     onNavigateToTermsAgreement: () -> Unit,
     onNavigateToRegionSelection: () -> Unit,
     onKakaoLogin: (suspend (android.content.Context) -> String)? = null,
-    onAppleLogin: (suspend (android.content.Context) -> String)? = null
+    onAppleLogin: (suspend (android.content.Context) -> String)? = null,
+    /** 디버그 빌드 전용: 값이 있으면 '개발 계정 로그인' 버튼을 보여 준다. */
+    devLoginCode: String? = null
 ) {
     val state by viewModel.collectState()
     val context = LocalContext.current
@@ -155,6 +160,13 @@ fun LauncherRoute(
         }
     }
 
+    // splash/login 화면 이름. 로그인 화면이 열릴 때 한 번씩 남긴다.
+    LaunchedEffect(state.phase == LauncherContract.Phase.LOGIN) {
+        AnalyticsHub.screen(
+            if (state.phase == LauncherContract.Phase.LOGIN) AnalyticsScreen.LOGIN else AnalyticsScreen.SPLASH
+        )
+    }
+
     // 화면 시작 시 앱 상태 체크
     LaunchedEffect(Unit) {
         viewModel.sendEvent(LauncherContract.Event.CheckAppStatus(currentVersion))
@@ -169,16 +181,6 @@ fun LauncherRoute(
         )
     }
 
-    // 버전 확인에 실패하거나 점검 중이면 이유를 보여주고 다시 시도하게 한다.
-    state.splashState.errorMessage?.let { message ->
-        AppStartErrorDialog(
-            message = message,
-            onRetryClick = {
-                viewModel.sendEvent(LauncherContract.Event.CheckAppStatus(currentVersion))
-            }
-        )
-    }
-
     LauncherScreen(
         state = state.copy(
             loginState = state.loginState.copy(showAppleLogin = onAppleLogin != null)
@@ -187,6 +189,32 @@ fun LauncherRoute(
         loginContent = loginContent,
         onEvent = viewModel::sendEvent
     )
+
+    // 버전 확인에 실패하거나 점검 중이면 화면 전체에 이유와 다시 시도 버튼을 보여 준다.
+    state.splashState.errorMessage?.let { message ->
+        androidx.compose.foundation.layout.Box(Modifier.fillMaxSize().background(BlueGray90)) {
+            com.runnersHi.presentation.common.component.ErrorView(
+                message = message,
+                onRetry = { viewModel.sendEvent(LauncherContract.Event.CheckAppStatus(currentVersion)) }
+            )
+        }
+    }
+
+    // 디버그 전용 개발 계정 로그인
+    if (devLoginCode != null && state.phase == LauncherContract.Phase.LOGIN && state.splashState.errorMessage == null) {
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+            androidx.compose.material3.TextButton(
+                onClick = {
+                    viewModel.sendEvent(
+                        LauncherContract.Event.LoginEvent(LoginContract.Event.DevLoginSubmitted(devLoginCode))
+                    )
+                },
+                modifier = Modifier
+                    .padding(top = 96.dp)
+                    .testTag("dev_login_button")
+            ) { Text("개발 계정 로그인") }
+        }
+    }
 }
 
 /**
@@ -305,6 +333,7 @@ fun LauncherScreen(
                     contentDescription = "RunnersHi Logo",
                     modifier = Modifier
                         .size(80.dp)
+                        .testTag("login_logo")
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null,

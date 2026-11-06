@@ -1,0 +1,22 @@
+appId: com.runnersHi
+---
+# 개발 서버 로그인부터 홈까지. 약관·지역 화면이 나오면 통과시킨다.
+- runFlow: launch_dev.yaml
+- runFlow: dev_login.yaml
+- runFlow:
+    when:
+      visible:
+        id: terms_all_agree
+    file: agree_terms.yaml
+- runFlow:
+    when:
+      visible: "지역을 선택해 주세요.*"
+    commands:
+      - tapOn:
+          index: 0
+          text: ".*구"
+      - tapOn: "완료|확인|다음"
+- extendedWaitUntil:
+    visible:
+      id: home_notification_button
+    timeout: 30000

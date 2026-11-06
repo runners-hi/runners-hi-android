@@ -32,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
@@ -138,7 +139,7 @@ fun MyPageScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             EditableAvatar(state = state, onEvent = onEvent)
-            Text(text = state.nickname, color = Color.White, fontSize = 20.sp)
+            Text(text = state.nickname, color = Color.White, fontSize = 20.sp, modifier = Modifier.testTag("mypage_nickname"))
         }
 
         Spacer(modifier = Modifier.height(37.dp))
@@ -147,12 +148,14 @@ fun MyPageScreen(
                 icon = CommonR.drawable.ic_location_main,
                 iconTint = Primary,
                 title = "내 지역 설정",
+                tag = "row_region",
                 onClick = { onEvent(MyPageContract.Event.RegionClicked) }
             )
             SettingRow(
                 icon = CommonR.drawable.ic_notification_main,
                 iconTint = Primary,
                 title = "알림",
+                tag = "row_notifications",
                 onClick = { onEvent(MyPageContract.Event.NotificationsClicked) }
             )
         }
@@ -162,25 +165,30 @@ fun MyPageScreen(
             SettingRow(
                 icon = CommonR.drawable.ic_volume_mono,
                 title = "공지사항",
+                tag = "row_notices",
                 onClick = { onEvent(MyPageContract.Event.NoticesClicked) }
             )
             SettingRow(
                 icon = CommonR.drawable.ic_info_mono,
-                title = "버전정보"
+                title = "버전정보",
+                tag = "row_version"
             )
             SettingRow(
                 icon = CommonR.drawable.ic_comment_mono,
                 title = "개발자에게",
+                tag = "row_feedback",
                 onClick = { onEvent(MyPageContract.Event.FeedbackClicked) }
             )
             SettingRow(
                 icon = CommonR.drawable.ic_info2_mono,
                 title = "이용약관",
+                tag = "row_terms",
                 onClick = { onEvent(MyPageContract.Event.TermsClicked) }
             )
             SettingRow(
                 icon = CommonR.drawable.ic_user_mono,
                 title = "계정 관리",
+                tag = "row_account",
                 onClick = { onEvent(MyPageContract.Event.AccountClicked) }
             )
         }
@@ -262,10 +270,12 @@ private fun SettingRow(
     title: String,
     iconTint: Color = BlueGray40,
     trailing: String? = null,
+    tag: String = "",
     onClick: (() -> Unit)? = null
 ) {
     Row(
         modifier = Modifier
+            .then(if (tag.isNotEmpty()) Modifier.testTag(tag) else Modifier)
             .fillMaxWidth()
             .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
             .padding(horizontal = 20.dp, vertical = 12.dp),

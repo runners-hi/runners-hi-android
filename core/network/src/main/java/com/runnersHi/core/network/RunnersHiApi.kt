@@ -16,6 +16,10 @@ interface RunnersHiApi {
     @POST("api/auth/review")
     suspend fun loginForReview(@Body request: ReviewLoginRequest): ApiEnvelope<AuthResponse>
 
+    /** 개발 서버 전용(상용은 404). */
+    @POST("api/auth/dev")
+    suspend fun loginForDev(@Body request: DevLoginRequest): ApiEnvelope<AuthResponse>
+
     @POST("api/auth/kakao")
     suspend fun loginWithKakao(@Body request: KakaoLoginRequest): ApiEnvelope<AuthResponse>
 

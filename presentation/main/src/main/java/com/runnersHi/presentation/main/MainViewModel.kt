@@ -1,5 +1,7 @@
 package com.runnersHi.presentation.main
 
+import com.runnersHi.core.common.analytics.AnalyticsEvent
+import com.runnersHi.core.common.analytics.AnalyticsHub
 import androidx.lifecycle.viewModelScope
 import com.runnersHi.domain.auth.usecase.GetStoredTokenUseCase
 import com.runnersHi.domain.health.model.ExerciseRecord
@@ -101,6 +103,7 @@ class MainViewModel @Inject constructor(
     }
 
     private fun handleHealthPermissionResult(granted: Boolean) {
+        AnalyticsHub.log(AnalyticsEvent.HEALTH_PERMISSION, mapOf("granted" to granted))
         updateState {
             copy(
                 healthPermissionGranted = granted,

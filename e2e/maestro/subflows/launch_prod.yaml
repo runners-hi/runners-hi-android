@@ -1,0 +1,10 @@
+appId: com.runnersHi
+---
+- launchApp:
+    clearState: true
+- tapOn:
+    id: server_prod
+- extendedWaitUntil:
+    visible:
+      id: server_badge
+    timeout: 20000

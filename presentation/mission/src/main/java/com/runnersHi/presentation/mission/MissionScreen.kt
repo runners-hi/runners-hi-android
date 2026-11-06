@@ -1,5 +1,9 @@
 package com.runnersHi.presentation.mission
 
+import com.runnersHi.presentation.common.component.EmptyView
+import com.runnersHi.presentation.common.component.ErrorView
+import com.runnersHi.presentation.common.component.LoadingView
+import com.runnersHi.presentation.common.component.PullRefresh
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -55,24 +59,16 @@ fun MissionScreen(
                 .wrapContentHeight(Alignment.CenterVertically)
         )
         when {
-            state.isLoading -> Box(Modifier.fillMaxSize(), Alignment.Center) {
-                CircularProgressIndicator(color = Primary)
-            }
-            state.errorMessage != null -> Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(text = state.errorMessage, color = BlueGray40, fontSize = 14.sp)
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "다시 시도",
-                    color = Primary,
-                    fontSize = 16.sp,
-                    modifier = Modifier.clickable { onEvent(MissionContract.Event.Retry) }
-                )
-            }
-            else -> Column(
+            state.isLoading -> LoadingView()
+            state.errorMessage != null -> ErrorView(
+                message = state.errorMessage,
+                onRetry = { onEvent(MissionContract.Event.Retry) }
+            )
+            state.sections.isEmpty() -> EmptyView("아직 미션이 없어요")
+            else -> PullRefresh(
+                isRefreshing = false,
+                onRefresh = { onEvent(MissionContract.Event.Retry) }
+            ) { Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
@@ -80,7 +76,7 @@ fun MissionScreen(
                 verticalArrangement = Arrangement.spacedBy(40.dp)
             ) {
                 state.sections.forEach { section -> SectionView(section) }
-            }
+            } }
         }
     }
 }

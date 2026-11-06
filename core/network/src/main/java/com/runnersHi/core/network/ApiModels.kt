@@ -15,6 +15,7 @@ data class ApiErrorBody(val code: String = "", val message: String = "")
 
 @Serializable data class KakaoLoginRequest(val accessToken: String)
 @Serializable data class ReviewLoginRequest(val code: String)
+@Serializable data class DevLoginRequest(val userKey: String, val onboarded: Boolean = true)
 @Serializable data class AppleLoginRequest(val idToken: String, val authorizationCode: String)
 @Serializable data class RefreshTokenRequest(val refreshToken: String)
 @Serializable data class AuthResponse(val accessToken: String, val refreshToken: String, val isNewUser: Boolean = false)
@@ -44,7 +45,10 @@ data class ApiErrorBody(val code: String = "", val message: String = "")
     val code: String,
     val title: String,
     val required: Boolean,
-    val agreed: Boolean = false
+    val agreed: Boolean = false,
+    /** 본문(plain text, 줄바꿈 \n). 비어 있으면 앱 내장 본문을 쓴다. */
+    val content: String = "",
+    val version: Int = 0
 )
 @Serializable data class TermsAgreementRequest(val agreements: List<TermsAgreementItem>)
 @Serializable data class TermsAgreementItem(val termsId: Long, val agreed: Boolean)

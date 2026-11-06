@@ -1,0 +1,10 @@
+appId: com.runnersHi
+name: 상용 - 로그인 화면(카카오 버튼)
+---
+- runFlow: ../subflows/launch_prod.yaml
+- extendedWaitUntil:
+    visible:
+      id: login_kakao
+    timeout: 30000
+- assertNotVisible:
+    id: dev_login_button

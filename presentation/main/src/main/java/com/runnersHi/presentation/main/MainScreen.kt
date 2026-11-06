@@ -1,5 +1,9 @@
 package com.runnersHi.presentation.main
 
+import androidx.compose.ui.platform.testTag
+import com.runnersHi.presentation.common.component.ErrorView
+import com.runnersHi.presentation.common.component.LoadingView
+import com.runnersHi.presentation.common.component.PullRefresh
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
@@ -174,36 +178,13 @@ fun MainScreen(
                 // 다른 탭은 홈 로딩과 무관하게 바로 보여준다.
                 tabContent(state.currentTab, Modifier.padding(innerPadding))
             } else if (state.isLoading) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(color = Primary)
-                }
+                LoadingView(Modifier.fillMaxSize().padding(innerPadding))
             } else if (state.errorMessage != null) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = state.errorMessage,
-                            color = TextSecondary,
-                            fontSize = 16.sp
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = "다시 시도",
-                            color = Primary,
-                            fontSize = 16.sp,
-                            modifier = Modifier.clickable { onEvent(MainContract.Event.RefreshData) }
-                        )
-                    }
-                }
+                ErrorView(
+                    message = state.errorMessage,
+                    onRetry = { onEvent(MainContract.Event.RefreshData) },
+                    modifier = Modifier.fillMaxSize().padding(innerPadding)
+                )
             } else {
                 HomeContent(
                     state = state,
@@ -228,7 +209,10 @@ private fun HomeContent(
             .background(BlueGray90)
     ) {
         TitleBar(onNotificationClick = { onEvent(MainContract.Event.NotificationClicked) })
-        LazyColumn(
+        PullRefresh(
+            isRefreshing = false,
+            onRefresh = { onEvent(MainContract.Event.RefreshData) }
+        ) { LazyColumn(
             modifier = Modifier.fillMaxSize(),
             // 위 8: 아이폰 스크롤 내용 위 여백, 아래 8: 아이폰 하단 여백 16+40에서 탭 바에 가려지는 48을 뺀 값
             contentPadding = PaddingValues(top = 8.dp, bottom = 8.dp)
@@ -296,7 +280,7 @@ private fun HomeContent(
                     )
                 }
             }
-        }
+        } }
     }
 }
 
@@ -322,6 +306,7 @@ private fun TitleBar(onNotificationClick: () -> Unit, modifier: Modifier = Modif
             contentDescription = "알림",
             tint = Color.Unspecified,
             modifier = Modifier
+                .testTag("home_notification_button")
                 .size(24.dp)
                 .clickable(onClick = onNotificationClick)
         )
@@ -339,6 +324,7 @@ private fun TierCard(
     val hasProgress = tierInfo.progressText.isNotBlank()
     Column(
         modifier = modifier
+            .testTag("home_tier_card")
             .fillMaxWidth()
             .clip(RoundedCornerShape(24.dp))
             .background(CardBackground)
@@ -695,6 +681,7 @@ private fun TodaysRunEmptyCard(
 ) {
     Column(
         modifier = modifier
+            .testTag("empty_view")
             .fillMaxWidth()
             .height(171.dp)
             .clip(RoundedCornerShape(24.dp))

@@ -1,5 +1,7 @@
 package com.runnersHi.presentation.region
 
+import com.runnersHi.core.common.analytics.AnalyticsEvent
+import com.runnersHi.core.common.analytics.AnalyticsHub
 import androidx.lifecycle.viewModelScope
 import com.runnersHi.domain.region.usecase.SearchRegionsUseCase
 import com.runnersHi.domain.region.usecase.SelectRegionUseCase
@@ -116,6 +118,11 @@ class RegionSelectionViewModel @Inject constructor(
 
             selectRegionUseCase(region.id, region.name)
                 .onSuccess {
+                    val parts = region.name.trim().split(" ", limit = 2)
+                    AnalyticsHub.log(
+                        AnalyticsEvent.REGION_SELECT,
+                        mapOf("sido" to parts[0], "sigungu" to parts.getOrElse(1) { "" })
+                    )
                     updateState { copy(isLoading = false) }
                     sendEffect(RegionSelectionContract.Effect.NavigateToMain)
                 }

@@ -44,7 +44,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.runnersHi.domain.home.model.Tier
 import com.runnersHi.domain.ranking.model.RankingEntry
 import com.runnersHi.presentation.common.R as CommonR
+import com.runnersHi.presentation.common.component.EmptyView
+import com.runnersHi.presentation.common.component.ErrorView
+import com.runnersHi.presentation.common.component.LoadingView
 import com.runnersHi.presentation.common.component.ProfileAvatar
+import com.runnersHi.presentation.common.component.PullRefresh
 import com.runnersHi.presentation.common.component.iosShadow
 import com.runnersHi.presentation.common.component.iosImageShadow
 import com.runnersHi.presentation.common.component.iosShadowBlurPx
@@ -76,24 +80,16 @@ fun RankingScreen(
     Column(modifier = modifier.fillMaxSize()) {
         TitleBar(regionName = state.regionName)
         when {
-            state.isLoading -> Box(Modifier.fillMaxSize(), Alignment.Center) {
-                CircularProgressIndicator(color = Primary)
-            }
-            state.errorMessage != null -> Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(text = state.errorMessage, color = BlueGray40, fontSize = 14.sp)
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "다시 시도",
-                    color = Primary,
-                    fontSize = 16.sp,
-                    modifier = Modifier.clickable { onEvent(RankingContract.Event.Retry) }
-                )
-            }
-            else -> RankingList(state)
+            state.isLoading -> LoadingView()
+            state.errorMessage != null -> ErrorView(
+                message = state.errorMessage,
+                onRetry = { onEvent(RankingContract.Event.Retry) }
+            )
+            state.topEntries.isEmpty() -> EmptyView("아직 랭킹이 없어요")
+            else -> PullRefresh(
+                isRefreshing = false,
+                onRefresh = { onEvent(RankingContract.Event.Retry) }
+            ) { RankingList(state) }
         }
     }
 }

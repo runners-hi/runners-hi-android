@@ -1,0 +1,17 @@
+appId: com.runnersHi
+name: 오프라인 - 안내 문구와 다시 시도 (mockwire 필요)
+---
+- runScript: ../scripts/fault_offline_on.js
+- runFlow: ../subflows/launch_custom.yaml
+- extendedWaitUntil:
+    visible:
+      id: error_view
+    timeout: 30000
+- assertVisible: "인터넷 연결을 확인해 주세요"
+- runScript: ../scripts/fault_clear.js
+- tapOn:
+    id: retry_button
+- extendedWaitUntil:
+    visible:
+      id: login_kakao
+    timeout: 30000

@@ -1,0 +1,9 @@
+appId: com.runnersHi
+name: 기록 목록
+---
+- runFlow: ../subflows/to_home.yaml
+- tapOn: "기록"
+- extendedWaitUntil:
+    visible:
+      id: record_item
+    timeout: 20000

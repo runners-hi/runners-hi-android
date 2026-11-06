@@ -1,0 +1,12 @@
+appId: com.runnersHi
+name: 탈퇴 확인창에서 취소만
+---
+- runFlow: ../subflows/to_home.yaml
+- tapOn: "마이"
+- tapOn:
+    id: row_account
+- tapOn:
+    id: withdraw_button
+- assertVisible: "정말 탈퇴할까요?"
+- tapOn: "취소"
+- assertNotVisible: "정말 탈퇴할까요?"

@@ -1,5 +1,10 @@
 package com.runnersHi.presentation.record
 
+import androidx.compose.ui.platform.testTag
+import com.runnersHi.presentation.common.component.EmptyView
+import com.runnersHi.presentation.common.component.ErrorView
+import com.runnersHi.presentation.common.component.LoadingView
+import com.runnersHi.presentation.common.component.PullRefresh
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -92,9 +97,7 @@ fun RecordScreen(
                 .padding(horizontal = 24.dp, vertical = 14.dp)
         )
         when {
-            state.isLoading -> Box(Modifier.fillMaxSize(), Alignment.Center) {
-                CircularProgressIndicator(color = Color.White) // 아이폰: ProgressView.tint(.white)
-            }
+            state.isLoading -> LoadingView()
             state.access == RecordContract.Access.NEEDS_INSTALL -> GuideView(
                 message = "러닝 기록을 보려면 Health Connect가 필요해요",
                 action = "설치하기",
@@ -105,12 +108,14 @@ fun RecordScreen(
                 action = "권한 허용",
                 onAction = { onEvent(RecordContract.Event.GrantPermissionClicked) }
             )
-            state.errorMessage != null -> GuideView(
+            state.errorMessage != null -> ErrorView(
                 message = state.errorMessage,
-                action = "다시 시도",
-                onAction = { onEvent(RecordContract.Event.Refresh) }
+                onRetry = { onEvent(RecordContract.Event.Refresh) }
             )
-            else -> RecordList(state)
+            else -> PullRefresh(
+                isRefreshing = false,
+                onRefresh = { onEvent(RecordContract.Event.Refresh) }
+            ) { RecordList(state) }
         }
     }
 }
@@ -122,14 +127,14 @@ private fun GuideView(message: String, action: String, onAction: () -> Unit) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = message, color = BlueGray40, fontSize = 14.sp)
+        Text(text = message, color = BlueGray40, fontSize = 14.sp, modifier = Modifier.testTag("health_guide"))
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = action,
             color = Primary,
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.clickable(onClick = onAction)
+            modifier = Modifier.testTag("health_action").clickable(onClick = onAction)
         )
     }
 }
@@ -144,6 +149,10 @@ private fun RecordList(state: RecordContract.State) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item(key = "today") { TodayCard(state.today) }
+        if (state.today == null && state.past.isEmpty()) {
+            // 기록이 하나도 없는 계정(상용 신규 등)도 의도된 빈 화면으로 보이게 한다.
+            item(key = "empty") { EmptyView("아직 러닝 기록이 없어요", Modifier.fillMaxWidth().height(96.dp)) }
+        }
         items(state.past, key = { it.id }) { record -> PastCard(record) }
         // 아이폰 하단 여백 100에서 탭 바에 가려지는 48을 뺀 값 (카드 간격 16 포함)
         item(key = "bottom") { Spacer(modifier = Modifier.height(36.dp)) }
@@ -151,10 +160,11 @@ private fun RecordList(state: RecordContract.State) {
 }
 
 @Composable
-private fun RecordCard(content: @Composable ColumnScope.() -> Unit) {
+private fun RecordCard(tag: String, content: @Composable ColumnScope.() -> Unit) {
     val shape = RoundedCornerShape(24.dp)
     Column(
         modifier = Modifier
+            .testTag(tag)
             .fillMaxWidth()
             .clip(shape)
             .background(BlueGray80)
@@ -166,7 +176,7 @@ private fun RecordCard(content: @Composable ColumnScope.() -> Unit) {
 
 @Composable
 private fun TodayCard(today: TodayRecordUiModel?) {
-    RecordCard {
+    RecordCard("record_today") {
         Text(
             text = "Today's Run",
             color = BlueGray20,
@@ -245,7 +255,7 @@ private fun TodayStat(
 
 @Composable
 private fun PastCard(record: PastRecordUiModel) {
-    RecordCard {
+    RecordCard("record_item") {
         Text(
             text = record.date,
             color = BlueGray20,

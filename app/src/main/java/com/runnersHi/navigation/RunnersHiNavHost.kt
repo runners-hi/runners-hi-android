@@ -1,5 +1,8 @@
 package com.runnersHi.navigation
 
+import com.runnersHi.core.common.analytics.AnalyticsEvent
+import com.runnersHi.core.common.analytics.AnalyticsHub
+import com.runnersHi.core.common.analytics.AnalyticsScreen
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
@@ -9,7 +12,9 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import com.runnersHi.presentation.common.mvi.collectState
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -74,6 +79,7 @@ fun RunnersHiNavHost(
         },
         label = "screen_transition"
     ) { screen ->
+        LaunchedEffect(screen) { screen.analyticsName()?.let(AnalyticsHub::screen) }
         // 스택에 남은 화면은 돌아왔을 때 스크롤 위치를 유지하고, 빠진 화면은 지운다.
         DisposableEffect(screen) {
             onDispose {
@@ -87,6 +93,8 @@ fun RunnersHiNavHost(
                         splashContent = SplashContentImpl,
                         loginContent = LoginContentImpl,
                         currentVersion = BuildConfig.VERSION_NAME,
+                        devLoginCode = com.runnersHi.debug.ServerSelection.DEV_LOGIN_CODE
+                            ?.takeIf { com.runnersHi.core.network.ServerEndpoint.baseUrl != com.runnersHi.core.network.ServerEndpoint.PROD_URL },
                         onNavigateToHome = { navigator.resetTo(Screen.Main) },
                         onNavigateToTermsAgreement = { navigator.resetTo(Screen.TermsAgreement) },
                         onNavigateToRegionSelection = { navigator.resetTo(Screen.RegionSelection) },
@@ -148,7 +156,10 @@ fun RunnersHiNavHost(
                     Screen.Feedback -> FeedbackRoute(onBack = { navigator.pop() })
                     Screen.NoticeList -> NoticeListRoute(
                         onBack = { navigator.pop() },
-                        onNoticeClick = { id -> navigator.push(Screen.NoticeDetail(id)) }
+                        onNoticeClick = { id ->
+                            AnalyticsHub.log(AnalyticsEvent.NOTICE_OPEN, mapOf("notice_id" to id))
+                            navigator.push(Screen.NoticeDetail(id))
+                        }
                     )
                     is Screen.NoticeDetail -> NoticeDetailRoute(
                         noticeId = screen.id,
@@ -183,6 +194,18 @@ private fun MainBlock(navigator: AppNavigatorViewModel, onMainEntered: () -> Uni
     }
 
     LaunchedEffect(Unit) { onMainEntered() }
+    val mainState by mainViewModel.collectState()
+    LaunchedEffect(mainState.currentTab) {
+        AnalyticsHub.screen(
+            when (mainState.currentTab) {
+                BottomNavTab.HOME -> AnalyticsScreen.HOME
+                BottomNavTab.RANKING -> AnalyticsScreen.RANKING
+                BottomNavTab.RECORD -> AnalyticsScreen.RECORDS
+                BottomNavTab.MISSION -> AnalyticsScreen.MISSION
+                BottomNavTab.MY_PAGE -> AnalyticsScreen.MYPAGE
+            }
+        )
+    }
     LaunchedEffect(navigator.pendingTab) {
         navigator.pendingTab?.let {
             mainViewModel.sendEvent(MainContract.Event.BottomNavClicked(it))
@@ -227,6 +250,17 @@ private fun MainBlock(navigator: AppNavigatorViewModel, onMainEntered: () -> Uni
 /**
  * 앱 최상위 화면
  */
+/** screen_view 화면 이름. null이면 그 화면이 직접 남긴다(Launcher=splash/login, Main=탭별). */
+private fun Screen.analyticsName(): String? = when (this) {
+    Screen.Launcher, Screen.Main, Screen.Feedback -> null
+    Screen.TermsAgreement, Screen.TermsList -> AnalyticsScreen.TERMS
+    Screen.RegionSelection, Screen.RegionChange -> AnalyticsScreen.REGION
+    Screen.AccountManagement -> AnalyticsScreen.WITHDRAW
+    Screen.Notifications -> AnalyticsScreen.NOTIFICATIONS
+    Screen.NoticeList -> AnalyticsScreen.NOTICE_LIST
+    is Screen.NoticeDetail -> AnalyticsScreen.NOTICE_DETAIL
+}
+
 sealed class Screen {
     data object Launcher : Screen()          // 스플래시 + 로그인 (통합)
     data object TermsAgreement : Screen()    // 신규 유저 이용약관 동의

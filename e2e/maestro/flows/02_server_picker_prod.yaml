@@ -1,0 +1,5 @@
+appId: com.runnersHi
+name: 서버 선택 - 상용
+---
+- runFlow: ../subflows/launch_prod.yaml
+- assertVisible: "PROD"

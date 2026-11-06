@@ -1,0 +1,20 @@
+appId: com.runnersHi
+name: 서버 선택 - 개발
+---
+- launchApp:
+    clearState: true
+- assertVisible:
+    id: server_picker
+- assertVisible:
+    id: server_prod
+- assertVisible:
+    id: server_dev
+- assertVisible:
+    id: server_custom
+- tapOn:
+    id: server_dev
+- extendedWaitUntil:
+    visible:
+      id: server_badge
+    timeout: 20000
+- assertVisible: "DEV"

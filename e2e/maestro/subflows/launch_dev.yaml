@@ -1,0 +1,12 @@
+appId: com.runnersHi
+---
+# 앱을 지우고 새로 띄운 뒤 개발 서버를 고른다.
+- launchApp:
+    clearState: true
+    clearKeychain: true
+- tapOn:
+    id: server_dev
+- extendedWaitUntil:
+    visible:
+      id: server_badge
+    timeout: 20000

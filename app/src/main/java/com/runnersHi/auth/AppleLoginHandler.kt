@@ -5,7 +5,6 @@ import android.content.Intent
 import com.runnersHi.BuildConfig
 import com.runnersHi.domain.auth.model.AppleCredential
 import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.delay
 
 /**
  * Apple 로그인 핸들러
@@ -15,21 +14,16 @@ import kotlinx.coroutines.delay
  */
 object AppleLoginHandler {
 
-    private val isMock = BuildConfig.API_BASE_URL.isBlank()
     private val isConfigured =
         BuildConfig.APPLE_SERVICE_ID.isNotBlank() && BuildConfig.APPLE_REDIRECT_URI.isNotBlank()
 
-    val isAvailable: Boolean = isMock || isConfigured
+    val isAvailable: Boolean = isConfigured
 
     internal var pending: CompletableDeferred<AppleCredential>? = null
         private set
 
     /** @return 서버로 보낼 소셜 토큰 */
     suspend fun login(context: Context): String {
-        if (isMock) {
-            delay(1500)
-            return "mock_apple_id_token_${System.currentTimeMillis()}"
-        }
         pending?.cancel()
         val result = CompletableDeferred<AppleCredential>()
         pending = result

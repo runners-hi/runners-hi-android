@@ -77,10 +77,3 @@ class RemoteRunningRecordRepository @Inject constructor(
         const val HEALTH_CONNECT = "HEALTH_CONNECT"
     }
 }
-
-/** 서버 주소가 없을 때: 올리지 않는다. */
-class NoOpRunningRecordRepository @Inject constructor() : RunningRecordRepository {
-    override suspend fun uploadedStartTimes(since: Instant): Set<Instant> = emptySet()
-    override suspend fun upload(record: ExerciseRecord) = Unit
-    override suspend fun records(since: Instant): List<ExerciseRecord> = emptyList()
-}

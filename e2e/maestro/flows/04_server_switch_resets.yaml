@@ -1,0 +1,15 @@
+appId: com.runnersHi
+name: 서버 바꾸면 처음부터 다시 시작
+---
+- runFlow: ../subflows/launch_prod.yaml
+- tapOn:
+    id: server_badge
+- assertVisible:
+    id: server_picker
+- tapOn:
+    id: server_dev
+- extendedWaitUntil:
+    visible:
+      id: server_badge
+    timeout: 30000
+- assertVisible: "DEV"

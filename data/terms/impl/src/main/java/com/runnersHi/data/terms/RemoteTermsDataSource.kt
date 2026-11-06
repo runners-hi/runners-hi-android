@@ -30,7 +30,9 @@ class RemoteTermsDataSource @Inject constructor(
 internal fun TermsResponse.toItem() = TermsItem(
     id = id.toString(),
     title = title,
-    content = BundledTerms.items.firstOrNull { it.id == BUNDLED_ID[code] }?.content.orEmpty(),
+    content = content.ifBlank {
+        BundledTerms.items.firstOrNull { it.id == BUNDLED_ID[code] }?.content.orEmpty()
+    },
     required = required
 )
 

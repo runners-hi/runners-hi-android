@@ -1,0 +1,9 @@
+appId: com.runnersHi
+name: 강제 업데이트 안내 (mockwire 필요)
+---
+- runScript: ../scripts/fault_force_update.js
+- runFlow: ../subflows/launch_custom.yaml
+- extendedWaitUntil:
+    visible: "업데이트 필요"
+    timeout: 30000
+- runScript: ../scripts/fault_clear.js

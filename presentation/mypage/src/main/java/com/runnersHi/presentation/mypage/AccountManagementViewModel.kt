@@ -1,5 +1,7 @@
 package com.runnersHi.presentation.mypage
 
+import com.runnersHi.core.common.analytics.AnalyticsEvent
+import com.runnersHi.core.common.analytics.AnalyticsHub
 import androidx.lifecycle.viewModelScope
 import com.runnersHi.domain.auth.usecase.LogoutUseCase
 import com.runnersHi.domain.auth.usecase.WithdrawUseCase
@@ -32,6 +34,8 @@ class AccountManagementViewModel @Inject constructor(
         viewModelScope.launch {
             updateState { copy(isLoggingOut = true) }
             logoutUseCase()
+            AnalyticsHub.log(AnalyticsEvent.LOGOUT)
+            AnalyticsHub.setUserId(null)
             sendEffect(AccountManagementContract.Effect.LoggedOut)
         }
     }
@@ -41,7 +45,11 @@ class AccountManagementViewModel @Inject constructor(
         viewModelScope.launch {
             updateState { copy(isWithdrawing = true, showWithdrawConfirm = false) }
             withdrawUseCase()
-                .onSuccess { sendEffect(AccountManagementContract.Effect.Withdrawn) }
+                .onSuccess {
+                    AnalyticsHub.log(AnalyticsEvent.WITHDRAW)
+                    AnalyticsHub.setUserId(null)
+                    sendEffect(AccountManagementContract.Effect.Withdrawn)
+                }
                 .onFailure { error ->
                     updateState { copy(isWithdrawing = false) }
                     sendEffect(

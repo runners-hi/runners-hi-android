@@ -7,7 +7,10 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.serialization.json.Json
 import okhttp3.Authenticator
+import com.runnersHi.core.common.analytics.AnalyticsHub
+import com.runnersHi.core.common.analytics.ApiErrorKind
 import okhttp3.Interceptor
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -45,19 +48,27 @@ object NetworkFactory {
         explicitNulls = false
     }
 
-    fun createApi(baseUrl: String, tokenStore: TokenStore): RunnersHiApi {
+    /**
+     * @param endpoint 요청마다 읽는 서버 주소. 디버그 빌드의 서버 선택이 쓴다. null이면 [baseUrl] 고정.
+     */
+    fun createApi(baseUrl: String, tokenStore: TokenStore, endpoint: (() -> String)? = null): RunnersHiApi {
         val root = if (baseUrl.endsWith("/")) baseUrl else "$baseUrl/"
-        val plainClient = OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            // 쉬던 서버는 깨어나는 데 약 30초 걸린다
-            .readTimeout(60, TimeUnit.SECONDS)
-            .build()
+        val builder = OkHttpClient.Builder()
+            // 무한 로딩 방지: 모든 구간 15초
+            .connectTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .readTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
+            .writeTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        if (endpoint != null) builder.addInterceptor(DynamicBaseUrlInterceptor(endpoint))
+        builder.addInterceptor(ApiErrorLogInterceptor())
+        val plainClient = builder.build()
         val authClient = plainClient.newBuilder()
             .addInterceptor(AuthInterceptor(tokenStore))
             .authenticator(TokenAuthenticator(tokenStore, retrofit(root, plainClient).create(TokenApi::class.java)))
             .build()
         return retrofit(root, authClient).create(RunnersHiApi::class.java)
     }
+
+    private const val TIMEOUT_SECONDS = 15L
 
     private fun retrofit(baseUrl: String, client: OkHttpClient): Retrofit = Retrofit.Builder()
         .baseUrl(baseUrl)
@@ -129,3 +140,45 @@ private const val BEARER = "Bearer "
 
 private fun Request.withBearer(token: String): Request =
     newBuilder().header(AUTHORIZATION, BEARER + token).build()
+
+/** 요청의 scheme·host·port를 현재 선택된 서버로 바꾼다. 경로는 그대로 둔다. */
+internal class DynamicBaseUrlInterceptor(private val endpoint: () -> String) : Interceptor {
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val request = chain.request()
+        val target = endpoint().toHttpUrlOrNull() ?: return chain.proceed(request)
+        val url = request.url.newBuilder()
+            .scheme(target.scheme)
+            .host(target.host)
+            .port(target.port)
+            .build()
+        return chain.proceed(request.newBuilder().url(url).build())
+    }
+}
+
+/** 지금 쓰는 서버 주소. 릴리스는 앱 시작 때 상용으로 정해지고 바뀌지 않는다. */
+object ServerEndpoint {
+    const val PROD_URL = "https://runnershi-api.oguriworks.com"
+
+    @Volatile
+    var baseUrl: String = PROD_URL
+}
+
+/** 행동 로그 api_error를 네트워크 계층 한 곳에서 남긴다. 경로의 숫자 id는 :id로 바꾼다. */
+internal class ApiErrorLogInterceptor : Interceptor {
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val path = chain.request().url.encodedPath
+        val response = try {
+            chain.proceed(chain.request())
+        } catch (e: java.io.IOException) {
+            val kind = if (e is java.net.SocketTimeoutException) ApiErrorKind.TIMEOUT else ApiErrorKind.OFFLINE
+            AnalyticsHub.apiError(path, 0, kind)
+            AnalyticsHub.recordError(e)
+            throw e
+        }
+        if (response.code >= 500) AnalyticsHub.recordError(RuntimeException("HTTP ${response.code} ${AnalyticsHub.normalizePath(path)}"))
+        if (!response.isSuccessful) {
+            AnalyticsHub.apiError(path, response.code, if (response.code >= 500) ApiErrorKind.SERVER else ApiErrorKind.CLIENT)
+        }
+        return response
+    }
+}

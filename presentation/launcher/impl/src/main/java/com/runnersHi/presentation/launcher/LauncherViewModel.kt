@@ -1,6 +1,8 @@
 package com.runnersHi.presentation.launcher
 
 import androidx.lifecycle.viewModelScope
+import com.runnersHi.core.common.analytics.AnalyticsEvent
+import com.runnersHi.core.common.analytics.AnalyticsHub
 import com.runnersHi.domain.auth.model.SocialLoginType
 import com.runnersHi.domain.auth.usecase.CheckLoginStatusUseCase
 import com.runnersHi.domain.auth.usecase.LoginCheckResult
@@ -31,6 +33,22 @@ class LauncherViewModel @Inject constructor(
     initialState = LauncherContract.State()
 ) {
 
+    /** 진행 중인 로그인 방식(login_start/success/fail 파라미터). */
+    private var loginMethod = "kakao"
+    private var loginStartedAtMs = 0L
+    private fun loginElapsedMs() = if (loginStartedAtMs > 0) System.currentTimeMillis() - loginStartedAtMs else 0L
+
+    private fun startLogin(method: String) {
+        loginMethod = method
+        loginStartedAtMs = System.currentTimeMillis()
+        AnalyticsHub.click("login", "login_$method")
+        AnalyticsHub.log(AnalyticsEvent.LOGIN_START, mapOf("method" to method))
+    }
+
+    private fun loginFailed(reason: String) {
+        AnalyticsHub.log(AnalyticsEvent.LOGIN_FAIL, mapOf("method" to loginMethod, "reason" to reason.take(100), "duration_ms" to loginElapsedMs()))
+    }
+
     override fun handleEvent(event: LauncherContract.Event) {
         when (event) {
             // Splash 이벤트
@@ -47,6 +65,7 @@ class LauncherViewModel @Inject constructor(
     private fun handleLoginEvent(event: LoginContract.Event) {
         when (event) {
             is LoginContract.Event.KakaoLoginClicked -> {
+                startLogin("kakao")
                 updateState {
                     copy(
                         phase = LauncherContract.Phase.LOGGING_IN,
@@ -56,6 +75,7 @@ class LauncherViewModel @Inject constructor(
                 sendEffect(LauncherContract.Effect.RequestKakaoLogin)
             }
             is LoginContract.Event.AppleLoginClicked -> {
+                startLogin("apple")
                 updateState {
                     copy(
                         phase = LauncherContract.Phase.LOGGING_IN,
@@ -70,7 +90,18 @@ class LauncherViewModel @Inject constructor(
             is LoginContract.Event.AppleTokenReceived -> {
                 loginWithSocial(SocialLoginType.APPLE, event.token)
             }
+            is LoginContract.Event.DevLoginSubmitted -> {
+                startLogin("dev")
+                updateState {
+                    copy(
+                        phase = LauncherContract.Phase.LOGGING_IN,
+                        loginState = loginState.copy(loadingType = LoginContract.LoadingType.DEV)
+                    )
+                }
+                loginWithSocial(SocialLoginType.DEV, event.userKey)
+            }
             is LoginContract.Event.ReviewCodeSubmitted -> {
+                startLogin("dev")
                 updateState {
                     copy(
                         phase = LauncherContract.Phase.LOGGING_IN,
@@ -80,6 +111,7 @@ class LauncherViewModel @Inject constructor(
                 loginWithSocial(SocialLoginType.REVIEW, event.code)
             }
             is LoginContract.Event.LoginFailed -> {
+                loginFailed(event.message)
                 updateState {
                     copy(
                         phase = LauncherContract.Phase.LOGIN,
@@ -204,6 +236,10 @@ class LauncherViewModel @Inject constructor(
         sendEffect(effect)
     }
 
+    private fun logLoginSuccess(isNewUser: Boolean) {
+        AnalyticsHub.log(AnalyticsEvent.LOGIN_SUCCESS, mapOf("method" to loginMethod, "is_new_user" to isNewUser, "duration_ms" to loginElapsedMs()))
+    }
+
     private fun loginWithSocial(type: SocialLoginType, token: String) {
         viewModelScope.launch {
             // 로딩 상태는 이미 버튼 클릭 시 설정됨
@@ -214,11 +250,16 @@ class LauncherViewModel @Inject constructor(
             loginWithSocialUseCase(type, token)
                 .onSuccess { result ->
                     when (result) {
-                        is LoginResult.Success -> routeAfterAuth()
+                        is LoginResult.Success -> {
+                            logLoginSuccess(isNewUser = false)
+                            routeAfterAuth()
+                        }
                         is LoginResult.NewUser -> {
+                            logLoginSuccess(isNewUser = true)
                             sendEffect(LauncherContract.Effect.NavigateToTermsAgreement)
                         }
                         is LoginResult.Error -> {
+                            loginFailed(result.message)
                             updateState {
                                 copy(
                                     phase = LauncherContract.Phase.LOGIN,
@@ -232,6 +273,7 @@ class LauncherViewModel @Inject constructor(
                     }
                 }
                 .onFailure { error ->
+                    loginFailed(error.message ?: "unknown")
                     updateState {
                         copy(
                             phase = LauncherContract.Phase.LOGIN,

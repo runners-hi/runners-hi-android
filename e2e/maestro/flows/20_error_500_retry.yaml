@@ -1,0 +1,20 @@
+appId: com.runnersHi
+name: 서버 오류 - 오류 화면과 다시 시도 (mockwire 필요)
+env:
+  MOCKWIRE_URL: http://127.0.0.1:8899
+---
+# 앱 시작 시 버전 확인(/api/config 계열)이 500이면 오류 화면이 뜨고, 규칙을 지운 뒤 다시 시도하면 로그인 화면으로 간다.
+- runScript: ../scripts/fault_500.js
+- runFlow: ../subflows/launch_custom.yaml
+- extendedWaitUntil:
+    visible:
+      id: error_view
+    timeout: 30000
+- assertVisible: "잠시 후 다시 시도해 주세요"
+- runScript: ../scripts/fault_clear.js
+- tapOn:
+    id: retry_button
+- extendedWaitUntil:
+    visible:
+      id: login_kakao
+    timeout: 30000

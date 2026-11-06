@@ -32,10 +32,3 @@ class RemoteNoticeDataSource @Inject constructor(
         const val PAGE_SIZE = 20
     }
 }
-
-/** 서버 주소가 없을 때: 공지 내용을 지어내지 않고 빈 목록을 준다. */
-class EmptyNoticeDataSource @Inject constructor() : NoticeRemoteDataSource {
-    override suspend fun fetchNotices(cursor: String?) = NoticePage(emptyList(), null)
-    override suspend fun fetchNoticeDetail(id: String): NoticeDetail =
-        throw NoSuchElementException("공지를 찾을 수 없어요")
-}

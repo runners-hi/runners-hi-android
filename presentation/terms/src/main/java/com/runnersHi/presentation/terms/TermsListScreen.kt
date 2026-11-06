@@ -1,5 +1,9 @@
 package com.runnersHi.presentation.terms
 
+import androidx.compose.ui.platform.testTag
+import com.runnersHi.presentation.common.component.EmptyView
+import com.runnersHi.presentation.common.component.ErrorView
+import com.runnersHi.presentation.common.component.LoadingView
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -70,29 +74,18 @@ fun TermsListRoute(
             modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 16.dp, bottom = 24.dp)
         )
         when {
-            state.isLoading -> Box(Modifier.fillMaxSize(), Alignment.Center) {
-                CircularProgressIndicator(color = Primary)
-            }
-            state.errorMessage != null -> Column(
-                modifier = Modifier.fillMaxWidth().padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(text = state.errorMessage.orEmpty(), color = BlueGray40, fontSize = 14.sp)
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "다시 시도",
-                    color = Primary,
-                    fontSize = 16.sp,
-                    modifier = Modifier.clickable {
-                        viewModel.sendEvent(TermsListContract.Event.Retry)
-                    }
-                )
-            }
+            state.isLoading -> LoadingView()
+            state.errorMessage != null -> ErrorView(
+                message = state.errorMessage.orEmpty(),
+                onRetry = { viewModel.sendEvent(TermsListContract.Event.Retry) }
+            )
+            state.items.isEmpty() -> EmptyView("표시할 약관이 없어요")
             else -> LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(state.items, key = { it.id }) { item ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .testTag("terms_item")
                             .clickable {
                                 viewModel.sendEvent(TermsListContract.Event.ItemClicked(item))
                             }

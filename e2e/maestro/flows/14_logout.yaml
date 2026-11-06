@@ -1,0 +1,13 @@
+appId: com.runnersHi
+name: 로그아웃
+---
+- runFlow: ../subflows/to_home.yaml
+- tapOn: "마이"
+- tapOn:
+    id: row_account
+- tapOn:
+    id: logout_button
+- extendedWaitUntil:
+    visible:
+      id: dev_login_button
+    timeout: 20000

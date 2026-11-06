@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+   >
+
+    <!-- 디버그 빌드만: 로컬 프록시(10.0.2.2·LAN)로 붙으려고 평문 통신을 허용한다. 릴리스에는 이 파일이 없다. -->
+    <application
+        android:networkSecurityConfig="@xml/network_security_config_debug">
+
+        <!-- 디버그·스테이징은 행동 로그를 수집하지 않는다(디버그 메뉴 토글로만 켠다). -->
+        <meta-data
+            android:name="firebase_analytics_collection_enabled"
+            android:value="false" />
+
+        <!-- 서버를 바꾼 뒤 앱 프로세스를 새로 띄운다. 별도 프로세스라 앱 프로세스를 끄고도 살아 있다. -->
+        <activity
+            android:name="com.runnersHi.debug.DebugRestartActivity"
+            android:exported="false"
+            android:process=":debug_restart"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+    </application>
+</manifest>

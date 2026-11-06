@@ -1,0 +1,10 @@
+appId: com.runnersHi
+---
+- extendedWaitUntil:
+    visible:
+      id: terms_all_agree
+    timeout: 20000
+- tapOn:
+    id: terms_all_agree
+- tapOn:
+    id: terms_next_button

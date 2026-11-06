@@ -1,5 +1,10 @@
 package com.runnersHi.presentation.notice
 
+import androidx.compose.ui.platform.testTag
+import com.runnersHi.presentation.common.component.EmptyView
+import com.runnersHi.presentation.common.component.ErrorView
+import com.runnersHi.presentation.common.component.LoadingView
+import com.runnersHi.presentation.common.component.PullRefresh
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -58,14 +63,15 @@ fun NoticeListRoute(
             modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 16.dp, bottom = 24.dp)
         )
         when {
-            state.isLoading -> Loading()
-            state.errorMessage != null -> ErrorRetry(state.errorMessage.orEmpty()) {
+            state.isLoading -> LoadingView()
+            state.errorMessage != null -> ErrorView(state.errorMessage.orEmpty(), onRetry = {
                 viewModel.sendEvent(NoticeListContract.Event.Retry)
-            }
-            state.notices.isEmpty() -> Box(Modifier.fillMaxSize(), Alignment.Center) {
-                Text(text = "공지사항이 없어요", color = BlueGray40, fontSize = 14.sp)
-            }
-            else -> LazyColumn(modifier = Modifier.fillMaxSize()) {
+            })
+            state.notices.isEmpty() -> EmptyView("공지사항이 없어요")
+            else -> PullRefresh(
+                isRefreshing = false,
+                onRefresh = { viewModel.sendEvent(NoticeListContract.Event.Retry) }
+            ) { LazyColumn(modifier = Modifier.fillMaxSize()) {
                 itemsIndexed(state.notices, key = { _, notice -> notice.id }) { index, notice ->
                     if (index == state.notices.lastIndex && state.nextCursor != null) {
                         LaunchedEffect(notice.id) {
@@ -75,6 +81,7 @@ fun NoticeListRoute(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .testTag("notice_item")
                             .clickable { onNoticeClick(notice.id) }
                             .padding(horizontal = 24.dp, vertical = 16.dp)
                     ) {
@@ -83,7 +90,7 @@ fun NoticeListRoute(
                         Text(text = notice.date.display(), color = BlueGray40, fontSize = 13.sp)
                     }
                 }
-            }
+            } }
         }
     }
 }
@@ -103,8 +110,8 @@ fun NoticeDetailRoute(
     NoticeScaffold(onBack = onBack) {
         val notice = state.notice
         when {
-            state.isLoading -> Loading()
-            state.errorMessage != null -> ErrorRetry(state.errorMessage.orEmpty(), load)
+            state.isLoading -> LoadingView()
+            state.errorMessage != null -> ErrorView(state.errorMessage.orEmpty(), onRetry = load)
             notice != null -> Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -113,6 +120,7 @@ fun NoticeDetailRoute(
             ) {
                 Text(
                     text = notice.title,
+                    modifier = Modifier.testTag("notice_detail_title"),
                     color = BlueGray5,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.SemiBold
@@ -136,29 +144,5 @@ private fun NoticeScaffold(onBack: () -> Unit, content: @Composable () -> Unit) 
     ) {
         BackTopBar(onBack = onBack)
         content()
-    }
-}
-
-@Composable
-private fun Loading() {
-    Box(Modifier.fillMaxSize(), Alignment.Center) {
-        CircularProgressIndicator(color = Primary)
-    }
-}
-
-@Composable
-private fun ErrorRetry(message: String, onRetry: () -> Unit) {
-    Column(
-        modifier = Modifier.fillMaxWidth().padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(text = message, color = BlueGray40, fontSize = 14.sp)
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = "다시 시도",
-            color = Primary,
-            fontSize = 16.sp,
-            modifier = Modifier.clickable(onClick = onRetry)
-        )
     }
 }

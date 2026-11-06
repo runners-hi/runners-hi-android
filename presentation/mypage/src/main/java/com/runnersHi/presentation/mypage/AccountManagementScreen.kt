@@ -34,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -147,6 +148,7 @@ fun AccountManagementRoute(
             fontSize = 14.sp,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
+                .testTag("withdraw_button")
                 .clickable(enabled = !state.isWithdrawing) {
                     viewModel.sendEvent(AccountManagementContract.Event.WithdrawClicked)
                 }
@@ -159,6 +161,7 @@ fun AccountManagementRoute(
                 .height(52.dp)
                 .clip(RoundedCornerShape(12.dp))
                 .background(BlueGray70)
+                .testTag("logout_button")
                 .clickable { viewModel.sendEvent(AccountManagementContract.Event.LogoutClicked) },
             contentAlignment = Alignment.Center
         ) {

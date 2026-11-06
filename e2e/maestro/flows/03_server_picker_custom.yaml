@@ -1,0 +1,5 @@
+appId: com.runnersHi
+name: 서버 선택 - 직접 입력
+---
+- runFlow: ../subflows/launch_custom.yaml
+- assertVisible: "CUSTOM.*10.0.2.2:8899"

@@ -1,0 +1,9 @@
+appId: com.runnersHi
+---
+# 개발 서버에서 개발 계정으로 로그인한다(디버그 전용 버튼).
+- extendedWaitUntil:
+    visible:
+      id: dev_login_button
+    timeout: 30000
+- tapOn:
+    id: dev_login_button

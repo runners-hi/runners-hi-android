@@ -1,5 +1,7 @@
 package com.runnersHi.presentation.mypage
 
+import com.runnersHi.core.common.analytics.AnalyticsEvent
+import com.runnersHi.core.common.analytics.AnalyticsHub
 import androidx.lifecycle.viewModelScope
 import com.runnersHi.domain.region.usecase.GetSelectedRegionUseCase
 import com.runnersHi.domain.user.usecase.GetCurrentUserUseCase
@@ -40,6 +42,16 @@ class MyPageViewModel @Inject constructor(
 
     override fun handleEvent(event: MyPageContract.Event) {
         when (event) {
+            MyPageContract.Event.RegionClicked -> AnalyticsHub.click("mypage", "region")
+            MyPageContract.Event.TermsClicked -> AnalyticsHub.click("mypage", "terms")
+            MyPageContract.Event.AccountClicked -> AnalyticsHub.click("mypage", "account")
+            MyPageContract.Event.NoticesClicked -> AnalyticsHub.click("mypage", "notices")
+            MyPageContract.Event.NotificationsClicked -> AnalyticsHub.click("mypage", "notifications")
+            MyPageContract.Event.FeedbackClicked -> AnalyticsHub.click("mypage", "feedback")
+            MyPageContract.Event.AvatarClicked -> AnalyticsHub.click("mypage", "avatar")
+            else -> Unit
+        }
+        when (event) {
             MyPageContract.Event.RegionClicked -> sendEffect(MyPageContract.Effect.NavigateToRegion)
             MyPageContract.Event.TermsClicked -> sendEffect(MyPageContract.Effect.NavigateToTerms)
             MyPageContract.Event.AccountClicked -> sendEffect(MyPageContract.Effect.NavigateToAccount)
@@ -79,6 +91,7 @@ class MyPageViewModel @Inject constructor(
         viewModelScope.launch {
             val result = change()
             updateState { copy(isUpdatingPhoto = false) }
+            result.onSuccess { AnalyticsHub.log(AnalyticsEvent.PROFILE_PHOTO_CHANGE) }
             result.onFailure { error ->
                 sendEffect(MyPageContract.Effect.ShowToast(error.message ?: failureMessage))
             }

@@ -12,6 +12,7 @@ plugins {
 val firebaseConfig = file("google-services.json")
 if (firebaseConfig.exists() && !firebaseConfig.readText().contains("placeholder")) {
     apply(plugin = "com.google.gms.google-services")
+    apply(plugin = "com.google.firebase.crashlytics")
 }
 
 android {
@@ -27,7 +28,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["clearPackageData"] = "true"
 
-        // Kakao SDK App Key: local.properties → gradle property 순으로 읽음 (없으면 Mock 로그인)
+        // Kakao SDK App Key: local.properties → gradle property 순으로 읽음
         val localProperties = Properties().apply {
             val file = rootProject.file("local.properties")
             if (file.exists()) file.inputStream().use { load(it) }
@@ -38,7 +39,7 @@ android {
         buildConfigField("String", "KAKAO_NATIVE_APP_KEY", "\"$kakaoAppKey\"")
         manifestPlaceholders["KAKAO_NATIVE_APP_KEY"] = kakaoAppKey
 
-        // 값은 저장소 밖(-P 옵션 또는 local.properties)에 둔다. 서버 주소가 없으면 목업으로 동작한다.
+        // 값은 저장소 밖(-P 옵션 또는 local.properties)에 둔다. 서버 주소는 항상 상용이고, 디버그 빌드만 앱 안에서 바꾼다.
         fun config(name: String, default: String = ""): String =
             project.findProperty(name) as? String ?: localProperties.getProperty(name) ?: default
         val apiBaseUrl = config("API_BASE_URL")
@@ -50,8 +51,6 @@ android {
             "APPLE_AUTHORIZE_URL",
             "\"${config("APPLE_AUTHORIZE_URL", "https://appleid.apple.com/auth/authorize")}\""
         )
-        // 로컬 서버(http)로 붙을 때만 평문 통신을 허용한다.
-        manifestPlaceholders["usesCleartextTraffic"] = apiBaseUrl.startsWith("http://").toString()
     }
 
     testOptions {
@@ -78,6 +77,17 @@ android {
     }
 
     buildTypes {
+        // 테스터 배포용(컴퓨터에 연결 안 된 기기). 서버 선택 화면이 있고 기본 서버는 개발이다.
+        // debug 소스셋(서버 선택·평문 허용)을 같이 쓰고, 디버그 키로 서명한다.
+        create("staging") {
+            initWith(getByName("debug"))
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-dev"
+            matchingFallbacks += listOf("debug")
+            signingConfig = signingConfigs.getByName("debug")
+            isDebuggable = false
+            isMinifyEnabled = false
+        }
         release {
             isMinifyEnabled = true
             isShrinkResources = true
@@ -86,6 +96,13 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+    }
+    sourceSets {
+        getByName("staging") {
+            java.srcDir("src/debug/java")
+            res.srcDir("src/debug/res")
+            manifest.srcFile("src/debug/AndroidManifest.xml")
         }
     }
     compileOptions {
@@ -103,6 +120,8 @@ android {
 dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.messaging)
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
     // Module dependencies
     implementation(project(":core:common"))
     implementation(project(":core:network"))

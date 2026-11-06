@@ -1,0 +1,19 @@
+appId: com.runnersHi
+name: 마이페이지 메뉴
+---
+- runFlow: ../subflows/to_home.yaml
+- tapOn: "마이"
+- assertVisible:
+    id: mypage_nickname
+- tapOn:
+    id: row_notifications
+- tapOn:
+    id: back_button
+- tapOn:
+    id: row_terms
+- extendedWaitUntil:
+    visible:
+      id: terms_item
+    timeout: 20000
+- tapOn:
+    id: back_button
