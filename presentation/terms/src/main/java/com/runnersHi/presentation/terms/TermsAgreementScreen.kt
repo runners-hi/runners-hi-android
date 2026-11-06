@@ -122,13 +122,11 @@ fun TermsAgreementScreen(
                 color = BlueGray5,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.SemiBold,
-                lineHeight = 36.sp,
+                lineHeight = 33.sp, // 24pt 글줄 ~29 + iOS VStack spacing 4
                 modifier = Modifier
                     .padding(horizontal = 24.dp)
-                    .padding(top = 24.dp)
+                    .padding(top = 16.dp, bottom = 32.dp)
             )
-
-            Spacer(modifier = Modifier.height(40.dp))
 
             // 전체 동의
             AllAgreeRow(
@@ -137,13 +135,11 @@ fun TermsAgreementScreen(
                 onCheckedChange = {
                     if (state.termsItems.isNotEmpty()) onEvent(TermsAgreementContract.Event.ToggleAllAgreed)
                 },
-                onArrowClick = { /* 전체 약관 상세 */ },
                 modifier = Modifier.padding(horizontal = 24.dp)
             )
 
             // 구분선
             HorizontalDivider(
-                modifier = Modifier.padding(vertical = 8.dp),
                 thickness = 1.dp,
                 color = BlueGray70
             )
@@ -196,7 +192,7 @@ fun TermsAgreementScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp)
-                    .padding(bottom = 20.dp)
+                    .padding(bottom = 32.dp)
                     .height(56.dp),
                 shape = RoundedCornerShape(71.dp),
                 colors = ButtonDefaults.buttonColors(
@@ -240,7 +236,6 @@ private fun TopNavigationBar(
             modifier = Modifier
                 .align(Alignment.CenterStart)
                 .padding(start = 12.dp)
-                .offset(y = 8.dp)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow_back),
@@ -256,7 +251,6 @@ private fun TopNavigationBar(
 private fun AllAgreeRow(
     isChecked: Boolean,
     onCheckedChange: () -> Unit,
-    onArrowClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -281,14 +275,6 @@ private fun AllAgreeRow(
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.weight(1f)
-        )
-        Icon(
-            painter = painterResource(id = R.drawable.ic_arrow_right),
-            contentDescription = "상세보기",
-            tint = BlueGrayWhite,
-            modifier = Modifier
-                .size(24.dp)
-                .clickable { onArrowClick() }
         )
     }
 }

@@ -1,13 +1,12 @@
 package com.runnersHi.presentation.ranking
 
-import android.graphics.BlurMaskFilter
 import androidx.compose.foundation.Image
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
-import androidx.compose.ui.graphics.Paint
-import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -35,7 +34,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -47,6 +45,9 @@ import com.runnersHi.domain.home.model.Tier
 import com.runnersHi.domain.ranking.model.RankingEntry
 import com.runnersHi.presentation.common.R as CommonR
 import com.runnersHi.presentation.common.component.ProfileAvatar
+import com.runnersHi.presentation.common.component.iosShadow
+import com.runnersHi.presentation.common.component.iosShadowBlurPx
+import com.runnersHi.presentation.common.theme.BlueGray95
 import com.runnersHi.presentation.common.mvi.collectState
 import com.runnersHi.presentation.common.theme.BlueGray30
 import com.runnersHi.presentation.common.theme.BlueGray40
@@ -102,26 +103,24 @@ private fun TitleBar(regionName: String) {
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp)
-            .padding(start = 24.dp, end = 24.dp, top = 12.dp),
+            .padding(horizontal = 24.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(text = "랭킹", color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.weight(1f))
-        if (regionName.isNotEmpty()) {
-            Icon(
-                painter = painterResource(id = CommonR.drawable.ic_location_main),
-                contentDescription = null,
-                tint = BlueGray40,
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                text = regionName,
-                color = BlueGray40,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
+        Icon(
+            painter = painterResource(id = CommonR.drawable.ic_location_main),
+            contentDescription = null,
+            tint = BlueGray40,
+            modifier = Modifier.size(20.dp)
+        )
+        Spacer(modifier = Modifier.width(4.dp))
+        Text(
+            text = regionName,
+            color = BlueGray40,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.SemiBold
+        )
     }
 }
 
@@ -135,13 +134,13 @@ private fun RankingList(state: RankingContract.State) {
     ) {
         state.topEntries.firstOrNull()?.let { first ->
             item(key = "first") {
-                FirstPlaceCard(first, Modifier.padding(bottom = 10.dp))
+                FirstPlaceCard(first, Modifier.padding(bottom = 4.dp))
             }
         }
         items(state.topEntries.drop(1), key = { it.rank }) { entry -> RankingRow(entry) }
         state.myEntry?.let { me ->
             item(key = "ellipsis") {
-                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                Box(modifier = Modifier.fillMaxWidth().height(24.dp), contentAlignment = Alignment.Center) {
                     Icon(
                         painter = painterResource(id = CommonR.drawable.ic_more_mono),
                         contentDescription = null,
@@ -152,7 +151,8 @@ private fun RankingList(state: RankingContract.State) {
             }
             item(key = "me") { RankingRow(me) }
         }
-        item(key = "bottom") { Spacer(modifier = Modifier.height(16.dp)) }
+        // 아이폰 하단 여백 120에서 탭 바에 가려지는 48을 뺀 값
+        item(key = "bottom") { Spacer(modifier = Modifier.height(72.dp)) }
     }
 }
 
@@ -162,84 +162,85 @@ private fun FirstPlaceCard(entry: RankingEntry, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = 34.dp),
+            .padding(top = 50.dp),
         contentAlignment = Alignment.TopCenter
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(184.dp)
-                .primaryGlow(radius = 40.dp, blur = 16.dp)
+                .primaryGlow(RoundedCornerShape(40.dp))
                 .clip(shape)
                 .background(BlueGray80)
-                .border(1.dp, Primary, shape)
-                .padding(start = 20.dp, end = 20.dp, top = 74.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .border(1.dp, Primary, shape),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            Spacer(modifier = Modifier.height(58.dp))
             Row(
-                modifier = Modifier.height(24.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ProfileAvatar(imageUrl = entry.profileImageUrl, size = 24.dp, iconSize = 12.dp)
-                Spacer(modifier = Modifier.width(4.dp))
+                Box(modifier = Modifier.primaryGlow(CircleShape)) {
+                    ProfileAvatar(imageUrl = entry.profileImageUrl, size = 24.dp, iconSize = 14.4.dp)
+                }
+                Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = entry.displayNickname,
                     color = Color.White,
                     fontSize = 16.sp,
-                    lineHeight = 24.sp,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    style = LocalTextStyle.current.copy(shadow = primaryTextGlow())
                 )
             }
-            Spacer(modifier = Modifier.height(6.dp))
-            TierLabel(entry.tier)
-            Spacer(modifier = Modifier.height(16.dp))
+            TierLabel(entry.tier, glow = true)
             Text(
                 text = entry.distanceKm.toKm(),
                 color = Primary,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold,
-                lineHeight = 24.sp
+                style = LocalTextStyle.current.copy(shadow = primaryTextGlow()),
+                modifier = Modifier.padding(top = 2.dp)
             )
+            Spacer(modifier = Modifier.height(20.dp))
         }
         Image(
             painter = painterResource(id = CommonR.drawable.ranking_gold),
             contentDescription = "1위",
             modifier = Modifier
                 .size(100.dp)
-                .offset(y = (-34).dp)
+                .offset(y = (-50).dp)
         )
     }
 }
 
-/** Figma의 box-shadow 0 0 blur Primary 78% */
-private fun Modifier.primaryGlow(radius: Dp, blur: Dp): Modifier = drawBehind {
-    val paint = Paint().asFrameworkPaint().apply {
-        color = Primary.copy(alpha = 0.78f).toArgb()
-        maskFilter = BlurMaskFilter(blur.toPx(), BlurMaskFilter.Blur.NORMAL)
-    }
-    drawIntoCanvas { canvas ->
-        canvas.nativeCanvas.drawRoundRect(
-            0f, 0f, size.width, size.height, radius.toPx(), radius.toPx(), paint
-        )
-    }
-}
+// 아이폰 1위 카드: .shadow(color: primary 78%, radius: 16) — SwiftUI는 카드 안 프로필·글자·티어에도 하나씩 그린다
+private val GlowRadius = 16.dp
+private val GlowColor = Primary.copy(alpha = 0.78f)
+
+@Composable
+private fun primaryTextGlow(): Shadow = Shadow(
+    color = GlowColor,
+    offset = Offset.Zero,
+    blurRadius = with(LocalDensity.current) { iosShadowBlurPx(GlowRadius) }
+)
+
+private fun Modifier.primaryGlow(shape: Shape): Modifier = iosShadow(shape, GlowColor, GlowRadius)
 
 @Composable
 private fun RankingRow(entry: RankingEntry) {
     val shape = RoundedCornerShape(36.dp)
-    val shadow = Color.Black.copy(alpha = 0.25f)
+    val shadow = BlueGray95.copy(alpha = 0.25f)
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(64.dp)
-            .shadow(elevation = 4.dp, shape = shape, ambientColor = shadow, spotColor = shadow)
+            .iosShadow(shape, shadow, radius = 2.dp, y = 4.dp) // 아이폰: 0C0D0E 25%, radius 2, y 4
             .clip(shape)
             .background(BlueGray80)
             .padding(start = 12.dp, end = 19.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(modifier = Modifier.width(40.dp), contentAlignment = Alignment.Center) {
+        Box(modifier = Modifier.width(60.dp), contentAlignment = Alignment.Center) {
             val medal = when (entry.rank) {
                 2 -> CommonR.drawable.ranking_silver
                 3 -> CommonR.drawable.ranking_bronze
@@ -255,7 +256,6 @@ private fun RankingRow(entry: RankingEntry) {
                 Text(text = entry.rank.toString(), color = Color.White, fontSize = 14.sp)
             }
         }
-        Spacer(modifier = Modifier.width(10.dp))
         Column(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -264,7 +264,7 @@ private fun RankingRow(entry: RankingEntry) {
                 modifier = Modifier.height(20.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ProfileAvatar(imageUrl = entry.profileImageUrl, size = 20.dp, iconSize = 10.dp)
+                ProfileAvatar(imageUrl = entry.profileImageUrl, size = 20.dp, iconSize = 12.dp)
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     text = entry.displayNickname,
@@ -276,7 +276,6 @@ private fun RankingRow(entry: RankingEntry) {
             }
             TierLabel(entry.tier)
         }
-        Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = entry.distanceKm.toKm(),
             color = if (entry.rank <= 3) Primary else Color.White,
@@ -287,15 +286,22 @@ private fun RankingRow(entry: RankingEntry) {
 }
 
 @Composable
-private fun TierLabel(tier: Tier) {
+private fun TierLabel(tier: Tier, glow: Boolean = false) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Image(
             painter = painterResource(id = tier.iconRes()),
             contentDescription = null,
-            modifier = Modifier.size(width = 18.dp, height = 12.dp)
+            modifier = Modifier
+                .then(if (glow) Modifier.primaryGlow(RoundedCornerShape(6.dp)) else Modifier)
+                .size(width = 18.dp, height = 12.dp)
         )
-        Spacer(modifier = Modifier.width(5.dp))
-        Text(text = tier.displayName(), color = BlueGray30, fontSize = 14.sp, lineHeight = 16.sp)
+        Spacer(modifier = Modifier.width(4.dp))
+        Text(
+            text = tier.displayName(),
+            color = BlueGray30,
+            fontSize = 14.sp,
+            style = if (glow) LocalTextStyle.current.copy(shadow = primaryTextGlow()) else LocalTextStyle.current
+        )
     }
 }
 

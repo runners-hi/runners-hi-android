@@ -222,83 +222,80 @@ private fun HomeContent(
     onEvent: (MainContract.Event) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(
+    // 아이폰처럼 로고·알림 줄은 위에 고정하고 그 아래만 스크롤한다
+    Column(
         modifier = modifier
             .fillMaxSize()
-            .background(BlueGray90),
-        contentPadding = PaddingValues(bottom = 40.dp)
+            .background(BlueGray90)
     ) {
-        // Title Bar
-        item {
-            TitleBar(onNotificationClick = { onEvent(MainContract.Event.NotificationClicked) })
-        }
-
-        // Title Bar 하단 고정 영역
-        item {
-            Spacer(modifier = Modifier.height(20.dp))
-        }
-
-        // Tier Card
-        item {
-            state.tierInfo?.let { tierInfo ->
-                TierCard(
-                    tierInfo = tierInfo,
-                    onClick = { onEvent(MainContract.Event.TierCardClicked) },
-                    onArrowClick = { onEvent(MainContract.Event.TierArrowClicked) },
-                    modifier = Modifier.padding(horizontal = 20.dp)
-                )
+        TitleBar(onNotificationClick = { onEvent(MainContract.Event.NotificationClicked) })
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            // 위 8: 아이폰 스크롤 내용 위 여백, 아래 8: 아이폰 하단 여백 16+40에서 탭 바에 가려지는 48을 뺀 값
+            contentPadding = PaddingValues(top = 8.dp, bottom = 8.dp)
+        ) {
+            // Tier Card
+            item {
+                state.tierInfo?.let { tierInfo ->
+                    TierCard(
+                        tierInfo = tierInfo,
+                        onClick = { onEvent(MainContract.Event.TierCardClicked) },
+                        onArrowClick = { onEvent(MainContract.Event.TierArrowClicked) },
+                        modifier = Modifier.padding(horizontal = 20.dp)
+                    )
+                }
             }
-        }
 
-        item { Spacer(modifier = Modifier.height(16.dp)) }
+            item { Spacer(modifier = Modifier.height(16.dp)) }
 
-        // Today's Run Card (Empty State or Normal)
-        item {
-            if (state.isTodayEmpty) {
-                TodaysRunEmptyCard(
-                    onClick = { onEvent(MainContract.Event.TodaysRunClicked) },
-                    modifier = Modifier.padding(horizontal = 20.dp)
-                )
-            } else {
-                state.todaysRun?.let { todaysRun ->
-                    TodaysRunCard(
-                        todaysRun = todaysRun,
+            // Today's Run Card (Empty State or Normal)
+            item {
+                if (state.isTodayEmpty) {
+                    TodaysRunEmptyCard(
                         onClick = { onEvent(MainContract.Event.TodaysRunClicked) },
                         modifier = Modifier.padding(horizontal = 20.dp)
                     )
+                } else {
+                    state.todaysRun?.let { todaysRun ->
+                        TodaysRunCard(
+                            todaysRun = todaysRun,
+                            onClick = { onEvent(MainContract.Event.TodaysRunClicked) },
+                            modifier = Modifier.padding(horizontal = 20.dp)
+                        )
+                    }
                 }
             }
-        }
 
-        item { Spacer(modifier = Modifier.height(16.dp)) }
+            item { Spacer(modifier = Modifier.height(16.dp)) }
 
-        // This Week Card (Empty State or Normal)
-        item {
-            if (state.isWeekEmpty) {
-                ThisWeekEmptyCard(
-                    modifier = Modifier.padding(horizontal = 20.dp)
-                )
-            } else {
-                state.thisWeek?.let { thisWeek ->
-                    ThisWeekCard(
-                        thisWeek = thisWeek,
+            // This Week Card (Empty State or Normal)
+            item {
+                if (state.isWeekEmpty) {
+                    ThisWeekEmptyCard(
+                        modifier = Modifier.padding(horizontal = 20.dp)
+                    )
+                } else {
+                    state.thisWeek?.let { thisWeek ->
+                        ThisWeekCard(
+                            thisWeek = thisWeek,
+                            modifier = Modifier.padding(horizontal = 20.dp)
+                        )
+                    }
+                }
+            }
+
+            item { Spacer(modifier = Modifier.height(24.dp)) }
+
+            // Mission Event Section
+            item {
+                state.missionEvent?.let { missionEvent ->
+                    MissionEventSection(
+                        missionEvent = missionEvent,
+                        onHeaderClick = { onEvent(MainContract.Event.MissionEventClicked) },
+                        onMissionClick = { onEvent(MainContract.Event.MissionEventClicked) },
                         modifier = Modifier.padding(horizontal = 20.dp)
                     )
                 }
-            }
-        }
-
-        item { Spacer(modifier = Modifier.height(40.dp)) }
-
-        // Mission Event Section
-        item {
-            state.missionEvent?.let { missionEvent ->
-                MissionEventSection(
-                    missionEvent = missionEvent,
-                    onHeaderClick = { onEvent(MainContract.Event.MissionEventClicked) },
-                    onMissionClick = { onEvent(MainContract.Event.MissionEventClicked) },
-                    modifier = Modifier.padding(horizontal = 24.dp)
-                )
             }
         }
     }
@@ -310,21 +307,21 @@ private fun TitleBar(onNotificationClick: () -> Unit, modifier: Modifier = Modif
         modifier = modifier
             .fillMaxWidth()
             .height(56.dp)
-            .padding(start = 24.dp, end = 24.dp, top = 12.dp),
+            .padding(horizontal = 24.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
             painter = painterResource(id = CommonR.drawable.img_wordmark),
             contentDescription = "Runners HI",
-            modifier = Modifier.size(width = 95.2.dp, height = 28.dp)
+            modifier = Modifier.size(width = 115.2.dp, height = 33.9.dp)
         )
         Icon(
             painter = painterResource(id = CommonR.drawable.ic_notification_home),
             contentDescription = "알림",
             tint = Color.Unspecified,
             modifier = Modifier
-                .size(28.dp)
+                .size(24.dp)
                 .clickable(onClick = onNotificationClick)
         )
     }
@@ -339,20 +336,18 @@ private fun TierCard(
 ) {
     // 서버가 레벨 진행도를 주지 않으면 진행 막대 없이 줄인다.
     val hasProgress = tierInfo.progressText.isNotBlank()
-    Box(
+    Column(
         modifier = modifier
             .fillMaxWidth()
-            .height(if (hasProgress) 140.dp else 86.dp)
             .clip(RoundedCornerShape(24.dp))
             .background(CardBackground)
             .border(1.dp, CardBorder, RoundedCornerShape(24.dp))
             .clickable(onClick = onClick)
+            .padding(horizontal = 20.dp)
+            .padding(top = 20.dp, bottom = if (hasProgress) 20.dp else 20.dp)
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp, top = 20.dp)
-                .height(46.dp),
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
@@ -362,20 +357,21 @@ private fun TierCard(
                 modifier = Modifier.size(60.dp, 40.dp)
             )
             Spacer(modifier = Modifier.width(16.dp))
-            Box(modifier = Modifier.weight(1f)) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
                 Text(
                     text = tierInfo.tierName,
                     color = TextPrimary,
                     fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    lineHeight = 25.sp
+                    fontWeight = FontWeight.SemiBold
                 )
                 if (tierInfo.level.isNotBlank()) {
                     Text(
                         text = tierInfo.level,
-                        color = TextSecondary,
-                        fontSize = 14.sp,
-                        modifier = Modifier.padding(top = 29.dp)
+                        color = BlueGray5,
+                        fontSize = 14.sp
                     )
                 }
             }
@@ -390,10 +386,8 @@ private fun TierCard(
             )
         }
         if (hasProgress) {
-            TierProgress(
-                tierInfo = tierInfo,
-                modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 82.dp)
-            )
+            Spacer(modifier = Modifier.height(16.dp))
+            TierProgress(tierInfo = tierInfo)
         }
     }
 }
@@ -429,15 +423,13 @@ private fun TierProgress(
             Text(
                 text = "Progress to next level",
                 color = TextTertiary,
-                fontSize = 14.sp,
-                lineHeight = 18.sp
+                fontSize = 14.sp
             )
             Text(
                 text = tierInfo.progressText,
-                color = BlueGray5,
+                color = TextPrimary,
                 fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                lineHeight = 18.sp
+                fontWeight = FontWeight.SemiBold
             )
         }
     }
@@ -452,12 +444,11 @@ private fun TodaysRunCard(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .height(171.dp)
             .clip(RoundedCornerShape(24.dp))
             .background(CardBackground)
             .border(1.dp, CardBorder, RoundedCornerShape(24.dp))
             .clickable(onClick = onClick)
-            .padding(start = 20.dp, end = 20.dp, top = 20.dp)
+            .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 20.dp)
     ) {
         Row(
             modifier = Modifier
@@ -467,21 +458,20 @@ private fun TodaysRunCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Today’s Run",
+                text = "Today's Run",
                 color = TextSecondary,
                 fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
-                lineHeight = 20.sp
+                fontWeight = FontWeight.SemiBold
             )
             Icon(
-                painter = painterResource(id = R.drawable.ic_arrow_right_mono),
+                painter = painterResource(id = R.drawable.ic_arrow_right_small),
                 contentDescription = "상세 보기",
                 tint = Color.Unspecified,
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(14.dp)
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -544,7 +534,6 @@ private fun RunDataItem(
             color = TextPrimary,
             fontSize = 20.sp,
             fontWeight = FontWeight.SemiBold,
-            lineHeight = 24.sp,
             maxLines = 1
         )
         Spacer(modifier = Modifier.height(4.dp))
@@ -564,7 +553,6 @@ private fun ThisWeekCard(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = 186.dp)
             .clip(RoundedCornerShape(24.dp))
             .background(CardBackground)
             .border(1.dp, CardBorder, RoundedCornerShape(24.dp))
@@ -576,23 +564,21 @@ private fun ThisWeekCard(
             color = TextSecondary,
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold,
-            lineHeight = 20.sp,
             modifier = Modifier.fillMaxWidth()
         )
-        Spacer(modifier = Modifier.height(15.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = thisWeek.totalDistance,
             color = TextPrimary,
             fontSize = 24.sp,
-            fontWeight = FontWeight.SemiBold,
-            lineHeight = 29.sp
+            fontWeight = FontWeight.SemiBold
         )
         Spacer(modifier = Modifier.height(16.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.Start
         ) {
-            thisWeek.days.forEach { day -> DayIndicator(day = day) }
+            thisWeek.days.forEach { day -> DayIndicator(day = day, modifier = Modifier.weight(1f)) }
         }
     }
 }
@@ -621,24 +607,22 @@ private fun DayIndicator(
             Text(
                 text = day.label,
                 color = if (day.hasRun) Primary else TextTertiary,
-                fontSize = 14.sp,
-                lineHeight = 18.sp
+                fontSize = 14.sp
             )
         }
-        // Distance below pill (only if hasRun)
-        if (day.hasRun && day.distance != null) {
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = day.distance,
-                color = TextSecondary,
-                fontSize = 14.sp,
-                textAlign = TextAlign.Center,
-                softWrap = false,
-                modifier = Modifier
-                    .width(30.dp)
-                    .wrapContentWidth(unbounded = true)
-            )
-        }
+        // Distance below pill (iOS: always, frame height 18)
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = day.distance.orEmpty(),
+            color = TextSecondary,
+            fontSize = 14.sp,
+            textAlign = TextAlign.Center,
+            softWrap = false,
+            maxLines = 1,
+            modifier = Modifier
+                .height(18.dp)
+                .wrapContentWidth(unbounded = true)
+        )
     }
 }
 
@@ -661,18 +645,20 @@ private fun MissionEventSection(
                 text = "미션 이벤트",
                 color = TextPrimary,
                 fontSize = 20.sp,
-                fontWeight = FontWeight.SemiBold,
-                lineHeight = 24.sp
+                fontWeight = FontWeight.SemiBold
             )
+            // 아이폰: SF 기호 chevron.right 20pt (화면에서 9x16.7, 오른쪽 2pt 여백)
             Icon(
-                painter = painterResource(id = CommonR.drawable.ic_arrow_right_w),
+                painter = painterResource(id = CommonR.drawable.ic_arrow_right_w_fit),
                 contentDescription = "더보기",
-                tint = Color.Unspecified,
-                modifier = Modifier.size(24.dp)
+                tint = TextPrimary,
+                modifier = Modifier
+                    .padding(end = 2.dp)
+                    .size(width = 9.dp, height = 16.7.dp)
             )
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         missionEvent.banner?.let { banner ->
             SeasonBannerPill(title = banner.title, period = banner.period)
@@ -709,17 +695,17 @@ private fun TodaysRunEmptyCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Today’s Run",
+                text = "Today's Run",
                 color = TextSecondary,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
                 lineHeight = 20.sp
             )
             Icon(
-                painter = painterResource(id = R.drawable.ic_arrow_right_mono),
+                painter = painterResource(id = R.drawable.ic_arrow_right_small),
                 contentDescription = "상세 보기",
                 tint = Color.Unspecified,
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(14.dp)
             )
         }
 
@@ -976,7 +962,7 @@ private fun MainScreenPreview() {
                 ),
                 todaysRun = TodaysRunUiModel(
                     distance = "7.4 km",
-                    pace = "8’00’’",
+                    pace = "8'00\"",
                     time = "40:00"
                 ),
                 thisWeek = ThisWeekUiModel(
@@ -995,7 +981,7 @@ private fun MainScreenPreview() {
                     banner = EventBannerUiModel("추석 이벤트", "2025.10.01 - 2025.10.31"),
                     missions = listOf(
                         MissionItemModel("1", "문라이트", "10월 러닝 인증", "mission_moonlight", true, PrimaryAmber),
-                        MissionItemModel("2", "전력질주", "페이스 5’00”", "mission_sprint", false, PrimaryAmber),
+                        MissionItemModel("2", "전력질주", "페이스 5'00\"", "mission_sprint", false, PrimaryAmber),
                         MissionItemModel("3", "밤톨 러닝", "1km", "mission_acorn", true, PrimaryAmber)
                     )
                 )

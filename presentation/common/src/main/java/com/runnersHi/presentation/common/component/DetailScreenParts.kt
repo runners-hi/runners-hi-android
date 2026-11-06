@@ -81,21 +81,22 @@ fun TermsDetailContent(
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(start = 24.dp, end = 24.dp, top = 16.dp, bottom = 24.dp)
         )
+        // iOS TermsDetailView.swift:40-46: 14pt 본문 한 덩어리, lineSpacing 4, 가로 24
         Text(
             text = content,
             color = Color.White,
             fontSize = 14.sp,
-            lineHeight = 22.sp,
+            lineHeight = 21.sp,
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp, vertical = 8.dp)
+                .padding(horizontal = 24.dp)
         )
         if (onAgree != null) {
             Box(
                 modifier = Modifier
-                    .padding(start = 24.dp, end = 24.dp, top = 16.dp, bottom = 32.dp)
+                    .padding(start = 24.dp, end = 24.dp, bottom = 32.dp)
                     .fillMaxWidth()
                     .height(56.dp)
                     .clip(RoundedCornerShape(71.dp))

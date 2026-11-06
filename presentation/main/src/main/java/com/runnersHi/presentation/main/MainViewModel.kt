@@ -194,7 +194,7 @@ class MainViewModel @Inject constructor(
 
         return TodaysRunUiModel(
             distance = String.format("%.1f km", distanceKm),
-            pace = "${paceMinutes}’${paceSeconds.toString().padStart(2, '0')}’’",
+            pace = "${paceMinutes}'${paceSeconds.toString().padStart(2, '0')}\"", // 아이폰 홈: 5'24\" (기록 화면은 5'24'')
             time = "${totalMinutes}:${totalSeconds.toString().padStart(2, '0')}"
         )
     }

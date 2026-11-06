@@ -99,7 +99,7 @@ class MainViewModelTest {
         val state = viewModel().state.value
 
         assertEquals("5.0 km", state.todaysRun?.distance)
-        assertEquals("5’00’’", state.todaysRun?.pace)
+        assertEquals("5'00\"", state.todaysRun?.pace)
         assertFalse(state.isTodayEmpty)
         assertFalse(state.isLoading)
     }

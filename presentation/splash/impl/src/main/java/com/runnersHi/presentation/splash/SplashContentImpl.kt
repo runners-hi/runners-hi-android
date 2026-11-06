@@ -56,10 +56,12 @@ private fun SplashProgressBar(
             text = "Loading",
             color = Primary,
             fontSize = 14.sp,
-            fontWeight = FontWeight.Normal
+            fontWeight = FontWeight.Normal,
+            letterSpacing = (-0.42).sp
         )
 
-        Spacer(modifier = Modifier.height(8.dp))
+        // Figma 357:5543: 글자 아래와 바 위 사이 18
+        Spacer(modifier = Modifier.height(17.dp))
 
         // Progress Bar
         Box(

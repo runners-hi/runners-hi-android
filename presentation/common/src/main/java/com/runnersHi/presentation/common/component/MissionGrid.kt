@@ -41,6 +41,7 @@ import com.runnersHi.presentation.common.theme.BlueGray40
 import com.runnersHi.presentation.common.theme.BlueGray5
 import com.runnersHi.presentation.common.theme.BlueGray70
 import com.runnersHi.presentation.common.theme.BlueGray80
+import com.runnersHi.presentation.common.theme.BlueGray90
 
 @Immutable
 data class MissionItemModel(
@@ -60,8 +61,9 @@ enum class MissionGridStyle(
     val subtitleLineHeight: TextUnit,
     val textGap: Dp
 ) {
-    HOME(FontWeight.SemiBold, 21.sp, 19.5.sp, 4.dp),
-    TAB(FontWeight.Normal, 22.4.sp, 20.8.sp, 2.dp)
+    // iOS MissionItemView는 홈/탭 공용: 14 regular, 13 tracking -0.39, 간격 2
+    HOME(FontWeight.Normal, 16.7.sp, 15.5.sp, 2.dp),
+    TAB(FontWeight.Normal, 16.7.sp, 15.5.sp, 2.dp)
 }
 
 /** 시즌 미션 기간을 보여주는 알약 모양 배너 */
@@ -98,7 +100,7 @@ fun MissionGrid(
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         items.chunked(COLUMNS).forEach { row ->
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(18.dp)) {
                 row.forEach { item ->
                     MissionItemView(
                         item = item,
@@ -130,6 +132,12 @@ private fun MissionItemView(
         Box(
             modifier = Modifier
                 .size(width = 72.dp, height = 100.dp)
+                // 아이폰 미션 탭에만: .shadow(color: blueGray90 30%, radius: 11, y: 4)
+                .then(
+                    if (style == MissionGridStyle.TAB) {
+                        Modifier.iosShadow(CircleShape, BlueGray90.copy(alpha = 0.3f), radius = 11.dp, y = 4.dp)
+                    } else Modifier
+                )
                 .clip(CircleShape)
                 .background(if (item.isCompleted) item.accentColor.copy(alpha = 0.2f) else BlueGray80)
                 .border(border, CircleShape),
@@ -176,6 +184,7 @@ private fun MissionItemView(
             fontSize = 13.sp,
             letterSpacing = (-0.39).sp,
             lineHeight = style.subtitleLineHeight,
+            maxLines = 1,
             textAlign = TextAlign.Center
         )
     }

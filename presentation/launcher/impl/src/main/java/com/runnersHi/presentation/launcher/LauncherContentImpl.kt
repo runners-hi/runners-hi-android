@@ -12,6 +12,9 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -36,7 +39,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
@@ -201,8 +204,11 @@ fun LauncherScreen(
     onEvent: (LauncherContract.Event) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val configuration = LocalConfiguration.current
-    val screenHeightDp = configuration.screenHeightDp
+    // iOS LoginView: 로고는 (상단 안전영역 ~ 버튼 영역 위) 한가운데, 버튼은 안전영역 위 56
+    val density = LocalDensity.current
+    val safeTopDp = WindowInsets.systemBars.getTop(density) / density.density
+    val safeBottomDp = WindowInsets.systemBars.getBottom(density) / density.density
+    val buttonsBlockDp = if (state.loginState.showAppleLogin) 136f else 56f // 56 + 24 + 56
 
     // 로그인 UI 표시 여부
     val showLoginUI = state.phase == LauncherContract.Phase.LOGIN ||
@@ -231,7 +237,8 @@ fun LauncherScreen(
     // 로그인 UI 전환 애니메이션
     LaunchedEffect(showLoginUI) {
         if (showLoginUI) {
-            val targetOffset = -(screenHeightDp * 0.0935f)
+            // iOS LoginView.swift:15-37,92 (Spacer / 로고 VStack / Spacer / 버튼 padding.bottom 56)
+            val targetOffset = (safeTopDp - safeBottomDp - 56f - buttonsBlockDp) / 2f
 
             // 동시에 실행
             launch {
@@ -306,6 +313,7 @@ fun LauncherScreen(
             }
 
             if (showLoginUI) {
+                Spacer(modifier = Modifier.height(16.dp)) // iOS LoginView.swift:17 spacing 16
                 Image(
                     painter = painterResource(id = CommonR.drawable.img_wordmark),
                     contentDescription = "Runners HI",
@@ -317,17 +325,7 @@ fun LauncherScreen(
             }
         }
 
-        // 스플래시 컨텐츠 (외부에서 주입받음)
-        if (state.phase == LauncherContract.Phase.SPLASH) {
-            splashContent(
-                state.splashState,
-                Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(horizontal = 24.dp)
-                    .padding(bottom = 60.dp)
-                    .alpha(loadingAlpha.value)
-            )
-        }
+        // iOS SplashView에는 Loading 문구/프로그레스 바가 없다 (로고만) -> splashContent는 그리지 않는다
 
         // 로그인 컨텐츠 (외부에서 주입받음)
         if (showLoginUI) {
@@ -336,8 +334,9 @@ fun LauncherScreen(
                 { loginEvent -> onEvent(LauncherContract.Event.LoginEvent(loginEvent)) },
                 Modifier
                     .align(Alignment.BottomCenter)
+                    .navigationBarsPadding()
                     .padding(horizontal = 24.dp)
-                    .padding(bottom = 68.dp)
+                    .padding(bottom = 56.dp)
                     .alpha(buttonsAlpha.value)
                     .offset { IntOffset(0, buttonsOffsetY.value.dp.roundToPx()) }
             )
