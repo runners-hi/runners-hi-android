@@ -235,6 +235,12 @@ fun LauncherScreen(
     val buttonsAlpha = remember { Animatable(0f) }
     val buttonsOffsetY = remember { Animatable(100f) }
 
+    // 아이폰 SplashView: 배경만 ignoresSafeArea, 로고 VStack은 안전영역 한가운데(화면 가운데보다 (위-아래 여백)/2 아래)
+    // 아이폰 3배 화면 실측: 로고 가운데 y 451 = 62 + (874 - 62 - 34) / 2
+    LaunchedEffect(safeTopDp, safeBottomDp) {
+        if (!showLoginUI) logoOffsetY.snapTo((safeTopDp - safeBottomDp) / 2f)
+    }
+
     // 로그인 UI 전환 애니메이션
     LaunchedEffect(showLoginUI) {
         if (showLoginUI) {
