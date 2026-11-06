@@ -46,6 +46,7 @@ import com.runnersHi.domain.ranking.model.RankingEntry
 import com.runnersHi.presentation.common.R as CommonR
 import com.runnersHi.presentation.common.component.ProfileAvatar
 import com.runnersHi.presentation.common.component.iosShadow
+import com.runnersHi.presentation.common.component.iosImageShadow
 import com.runnersHi.presentation.common.component.iosShadowBlurPx
 import com.runnersHi.presentation.common.theme.BlueGray95
 import com.runnersHi.presentation.common.mvi.collectState
@@ -269,7 +270,8 @@ private fun RankingRow(entry: RankingEntry) {
                     painter = painterResource(id = medal),
                     contentDescription = "${entry.rank}위",
                     modifier = Modifier
-                        .rowShadow(CircleShape)
+                        // 아이폰 그림자는 메달 그림 모양을 따라간다(원 모양 아님)
+                        .iosImageShadow(medal, RowShadowColor, RowShadowRadius, y = RowShadowY)
                         .size(40.dp)
                 )
             } else {

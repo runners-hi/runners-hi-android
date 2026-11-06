@@ -275,7 +275,7 @@ private fun AllAgreeRow(
                 id = if (isChecked) R.drawable.ic_check_on else R.drawable.ic_check_off
             ),
             contentDescription = if (isChecked) "선택됨" else "선택 안됨",
-            tint = if (isChecked) Color.Unspecified else BlueGray70, // iOS check_gray #454B54
+            tint = if (isChecked) Color.Unspecified else Color.White, // 아이폰 check_gray.svg 채움 흰색
             modifier = Modifier.size(24.dp).scale(if (isChecked) 1.2f else 1f) // iOS check_main 은 20 뷰박스를 24 에 꽉 채움
         )
         Spacer(modifier = Modifier.width(16.dp))
@@ -308,7 +308,7 @@ private fun TermsItemRow(
                 id = if (item.isAgreed) R.drawable.ic_check_on else R.drawable.ic_check_off
             ),
             contentDescription = if (item.isAgreed) "동의함" else "동의 안함",
-            tint = if (item.isAgreed) Color.Unspecified else BlueGray70, // iOS check_gray #454B54
+            tint = if (item.isAgreed) Color.Unspecified else Color.White, // 아이폰 check_gray.svg 채움 흰색
             modifier = Modifier.size(24.dp).scale(if (item.isAgreed) 1.2f else 1f) // iOS check_main 은 20 뷰박스를 24 에 꽉 채움
         )
         Spacer(modifier = Modifier.width(16.dp))

@@ -310,10 +310,12 @@ private fun TitleBar(onNotificationClick: () -> Unit, modifier: Modifier = Modif
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(
-            painter = painterResource(id = CommonR.drawable.img_wordmark),
+        // 아이폰 titleBar: Image("logo_text").renderingMode(.template) 흰색, 높이 20, 비율 유지(131.016:23.605)
+        Icon(
+            painter = painterResource(id = CommonR.drawable.ic_logo_text),
             contentDescription = "Runners HI",
-            modifier = Modifier.size(width = 115.2.dp, height = 33.9.dp)
+            tint = TextPrimary,
+            modifier = Modifier.size(width = 111.0.dp, height = 20.dp)
         )
         Icon(
             painter = painterResource(id = CommonR.drawable.ic_notification_home),
