@@ -12,7 +12,8 @@ class MockTermsDataSource @Inject constructor() : TermsRemoteDataSource {
     override suspend fun getTermsList(): List<TermsItem> {
         // API 호출 시뮬레이션
         delay(500)
-        return BundledTerms.items
+        // 서버(terms 테이블 display_order)와 같은 5개·같은 순서로 준다
+        return MOCK_ORDER.mapNotNull { id -> BundledTerms.items.firstOrNull { it.id == id } }
     }
 
     override suspend fun agreeTerms(agreedTermIds: List<String>) {
@@ -20,3 +21,5 @@ class MockTermsDataSource @Inject constructor() : TermsRemoteDataSource {
         delay(300)
     }
 }
+
+private val MOCK_ORDER = listOf("service", "privacy", "marketing", "sns", "age")

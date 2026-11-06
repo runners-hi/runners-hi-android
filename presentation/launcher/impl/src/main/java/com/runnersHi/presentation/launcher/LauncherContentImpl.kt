@@ -231,7 +231,7 @@ fun LauncherScreen(
     // 로그인 UI 전환 애니메이션
     LaunchedEffect(showLoginUI) {
         if (showLoginUI) {
-            val targetOffset = -(screenHeightDp * 0.0935f)
+            val targetOffset = -(screenHeightDp * 0.0879f) // Figma 341:4046: 900에서 로고 위 324
 
             // 동시에 실행
             launch {
@@ -324,7 +324,7 @@ fun LauncherScreen(
                 Modifier
                     .align(Alignment.BottomCenter)
                     .padding(horizontal = 24.dp)
-                    .padding(bottom = 60.dp)
+                    .padding(bottom = 68.dp)
                     .alpha(loadingAlpha.value)
             )
         }
