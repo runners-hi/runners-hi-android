@@ -2,7 +2,20 @@ appId: com.runnersHi
 name: 강제 업데이트 안내 (mockwire 필요)
 ---
 - runScript: ../scripts/fault_force_update.js
-- runFlow: ../subflows/launch_custom.yaml
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: server_picker
+    timeout: 30000
+- tapOn:
+    id: server_custom_input
+- eraseText: 60
+- inputText: "http://10.0.2.2:8899"
+- hideKeyboard
+- tapOn:
+    id: server_custom
+# 강제 업데이트 창이 뜨면 그 창이 포커스를 가져가 배지는 안 보인다
 - extendedWaitUntil:
     visible: "업데이트 필요"
     timeout: 30000
