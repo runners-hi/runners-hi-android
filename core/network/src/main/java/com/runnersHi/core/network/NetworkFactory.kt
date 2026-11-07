@@ -146,11 +146,18 @@ internal class DynamicBaseUrlInterceptor(private val endpoint: () -> String) : I
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
         val target = endpoint().toHttpUrlOrNull() ?: return chain.proceed(request)
-        val url = request.url.newBuilder()
+        // 서버 주소에 경로가 있으면(예: 호스팅 목 /s/<세션>) 요청 경로 앞에 붙인다.
+        val prefix = target.pathSegments.filter { it.isNotEmpty() }
+        val builder = request.url.newBuilder()
             .scheme(target.scheme)
             .host(target.host)
             .port(target.port)
-            .build()
+        if (prefix.isNotEmpty()) {
+            val original = request.url.pathSegments
+            builder.encodedPath("/")
+            (prefix + original).forEach { builder.addPathSegment(it) }
+        }
+        val url = builder.build()
         return chain.proceed(request.newBuilder().url(url).build())
     }
 }

@@ -1,0 +1,22 @@
+appId: com.runnersHi
+name: 호스팅 목 직접 입력 - 오류 화면 (규칙은 mockwire CLI로 먼저 건다. 토큰은 환경변수)
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: server_picker
+    timeout: 30000
+- tapOn:
+    id: server_custom_input
+- eraseText: 60
+- inputText: "https://runnershi-mock.oguriworks.com/s/android-ci"
+- hideKeyboard
+- tapOn:
+    id: server_custom
+- extendedWaitUntil:
+    visible:
+      id: error_view
+    timeout: 40000
+- assertVisible:
+    id: retry_button

@@ -2,6 +2,10 @@ appId: com.runnersHi
 ---
 - launchApp:
     clearState: true
+- extendedWaitUntil:
+    visible:
+      id: server_picker
+    timeout: 30000
 - tapOn:
     id: server_prod
 - extendedWaitUntil:

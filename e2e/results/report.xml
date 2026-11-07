@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<testsuites>
+  <testsuite name="Test Suite" device="rh36" tests="19" failures="0" time="306.912" timestamp="2026-11-08T00:29:22">
+    <testcase id="서버 선택 - 상용" name="서버 선택 - 상용" classname="서버 선택 - 상용" file="e2e/maestro/flows/02_server_picker_prod.yaml" time="6.761" timestamp="2026-11-08T00:29:22" status="SUCCESS"/>
+    <testcase id="상용 - 로그인 화면(카카오 버튼)" name="상용 - 로그인 화면(카카오 버튼)" classname="상용 - 로그인 화면(카카오 버튼)" file="e2e/maestro/flows/05_prod_login_screen.yaml" time="6.771" timestamp="2026-11-08T00:29:29" status="SUCCESS"/>
+    <testcase id="서버 선택 - 직접 입력" name="서버 선택 - 직접 입력" classname="서버 선택 - 직접 입력" file="e2e/maestro/flows/03_server_picker_custom.yaml" time="18.26" timestamp="2026-11-08T00:29:36" status="SUCCESS"/>
+    <testcase id="오프라인 - 안내 문구와 다시 시도 (mockwire 필요)" name="오프라인 - 안내 문구와 다시 시도 (mockwire 필요)" classname="오프라인 - 안내 문구와 다시 시도 (mockwire 필요)" file="e2e/maestro/flows/21_error_offline_retry.yaml" time="20.626" timestamp="2026-11-08T00:29:54" status="SUCCESS"/>
+    <testcase id="강제 업데이트 안내 (mockwire 필요)" name="강제 업데이트 안내 (mockwire 필요)" classname="강제 업데이트 안내 (mockwire 필요)" file="e2e/maestro/flows/23_force_update.yaml" time="17.352" timestamp="2026-11-08T00:30:15" status="SUCCESS"/>
+    <testcase id="공지 목록과 상세" name="공지 목록과 상세" classname="공지 목록과 상세" file="e2e/maestro/flows/11_notices.yaml" time="20.043" timestamp="2026-11-08T00:30:32" status="SUCCESS"/>
+    <testcase id="로그아웃" name="로그아웃" classname="로그아웃" file="e2e/maestro/flows/14_logout.yaml" time="19.901" timestamp="2026-11-08T00:30:52" status="SUCCESS"/>
+    <testcase id="서버 오류 - 오류 화면과 다시 시도 (mockwire 필요)" name="서버 오류 - 오류 화면과 다시 시도 (mockwire 필요)" classname="서버 오류 - 오류 화면과 다시 시도 (mockwire 필요)" file="e2e/maestro/flows/20_error_500_retry.yaml" time="19.115" timestamp="2026-11-08T00:31:12" status="SUCCESS"/>
+    <testcase id="탈퇴 확인창에서 취소만" name="탈퇴 확인창에서 취소만" classname="탈퇴 확인창에서 취소만" file="e2e/maestro/flows/13_withdraw_cancel.yaml" time="23.519" timestamp="2026-11-08T00:31:31" status="SUCCESS"/>
+    <testcase id="홈 데이터" name="홈 데이터" classname="홈 데이터" file="e2e/maestro/flows/07_home_data.yaml" time="15.38" timestamp="2026-11-08T00:31:55" status="SUCCESS"/>
+    <testcase id="상용 - 빈 목록 화면(신규 계정은 데이터 없음)" name="상용 - 빈 목록 화면(신규 계정은 데이터 없음)" classname="상용 - 빈 목록 화면(신규 계정은 데이터 없음)" file="e2e/maestro/flows/15_prod_empty_states.yaml" time="5.646" timestamp="2026-11-08T00:32:10" status="SUCCESS"/>
+    <testcase id="서버 바꾸면 처음부터 다시 시작" name="서버 바꾸면 처음부터 다시 시작" classname="서버 바꾸면 처음부터 다시 시작" file="e2e/maestro/flows/04_server_switch_resets.yaml" time="11.935" timestamp="2026-11-08T00:32:16" status="SUCCESS"/>
+    <testcase id="미션" name="미션" classname="미션" file="e2e/maestro/flows/10_missions.yaml" time="16.46" timestamp="2026-11-08T00:32:28" status="SUCCESS"/>
+    <testcase id="서버 선택 - 개발" name="서버 선택 - 개발" classname="서버 선택 - 개발" file="e2e/maestro/flows/01_server_picker_dev.yaml" time="5.711" timestamp="2026-11-08T00:32:44" status="SUCCESS"/>
+    <testcase id="개발 - dev 로그인 후 홈(온보딩 완료 계정은 약관·지역을 건너뛴다)" name="개발 - dev 로그인 후 홈(온보딩 완료 계정은 약관·지역을 건너뛴다)" classname="개발 - dev 로그인 후 홈(온보딩 완료 계정은 약관·지역을 건너뛴다)" file="e2e/maestro/flows/06_dev_login_terms_region_home.yaml" time="8.327" timestamp="2026-11-08T00:32:50" status="SUCCESS"/>
+    <testcase id="기록 목록" name="기록 목록" classname="기록 목록" file="e2e/maestro/flows/08_records_list.yaml" time="16.94" timestamp="2026-11-08T00:32:58" status="SUCCESS"/>
+    <testcase id="랭킹" name="랭킹" classname="랭킹" file="e2e/maestro/flows/09_ranking.yaml" time="16.796" timestamp="2026-11-08T00:33:15" status="SUCCESS"/>
+    <testcase id="마이페이지 메뉴" name="마이페이지 메뉴" classname="마이페이지 메뉴" file="e2e/maestro/flows/12_mypage_rows.yaml" time="23.73" timestamp="2026-11-08T00:33:32" status="SUCCESS"/>
+    <testcase id="응답 없음 - 15초 안에 오류 화면 (mockwire 필요)" name="응답 없음 - 15초 안에 오류 화면 (mockwire 필요)" classname="응답 없음 - 15초 안에 오류 화면 (mockwire 필요)" file="e2e/maestro/flows/22_error_timeout.yaml" time="33.569" timestamp="2026-11-08T00:33:56" status="SUCCESS"/>
+  </testsuite>
+</testsuites>
