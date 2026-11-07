@@ -2,7 +2,7 @@ appId: com.runnersHi
 name: 공지 목록과 상세
 ---
 - runFlow: ../subflows/to_home.yaml
-- tapOn: "마이"
+- tapOn: "마이페이지"
 - tapOn:
     id: row_notices
 - extendedWaitUntil:

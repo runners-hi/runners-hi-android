@@ -2,7 +2,7 @@ appId: com.runnersHi
 name: 로그아웃
 ---
 - runFlow: ../subflows/to_home.yaml
-- tapOn: "마이"
+- tapOn: "마이페이지"
 - tapOn:
     id: row_account
 - tapOn:

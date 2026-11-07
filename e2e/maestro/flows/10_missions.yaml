@@ -4,6 +4,5 @@ name: 미션
 - runFlow: ../subflows/to_home.yaml
 - tapOn: "미션"
 - extendedWaitUntil:
-    visible:
-      id: mission_item
+    visible: "11월 러닝 챌린지"
     timeout: 20000

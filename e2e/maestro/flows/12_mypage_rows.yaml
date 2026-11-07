@@ -2,7 +2,7 @@ appId: com.runnersHi
 name: 마이페이지 메뉴
 ---
 - runFlow: ../subflows/to_home.yaml
-- tapOn: "마이"
+- tapOn: "마이페이지"
 - assertVisible:
     id: mypage_nickname
 - tapOn:

@@ -4,6 +4,5 @@ name: 랭킹
 - runFlow: ../subflows/to_home.yaml
 - tapOn: "랭킹"
 - extendedWaitUntil:
-    visible:
-      id: ranking_item
+    visible: ".*km"
     timeout: 20000

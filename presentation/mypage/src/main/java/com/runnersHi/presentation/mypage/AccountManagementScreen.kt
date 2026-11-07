@@ -93,7 +93,7 @@ fun AccountManagementRoute(
     }
     BackHandler(onBack = onBack)
 
-    // 아이폰 3배 화면 실측: 로그아웃 버튼 위 끝 ~ 탭바 위 끝 45.0pt(버튼 52 중 8.0이 탭바에 가려짐). 9.33으로 두면 43.8pt로 1.2 낮았다.
+    // 로그아웃 버튼이 탭바에 가리지 않도록 탭바 높이 + 16dp 위에서 끝낸다(사용자 요청으로 아이폰의 8pt 겹침은 따르지 않음).
     var bottomBarHeight by remember { mutableStateOf(0.dp) }
     val density = LocalDensity.current
     Box(modifier = Modifier.fillMaxSize().background(BlueGray90)) {
@@ -102,7 +102,7 @@ fun AccountManagementRoute(
             .fillMaxSize()
             .statusBarsPadding()
             .then(
-                if (bottomBarHeight > 0.dp) Modifier.padding(bottom = bottomBarHeight - 8.0.dp)
+                if (bottomBarHeight > 0.dp) Modifier.padding(bottom = bottomBarHeight + 16.dp)
                 else Modifier.navigationBarsPadding().padding(bottom = 40.dp)
             )
     ) {

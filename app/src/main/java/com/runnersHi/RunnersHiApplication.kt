@@ -15,6 +15,9 @@ class RunnersHiApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
+        // 디버그 재시작용 별도 프로세스(:debug_restart)에서는 아무것도 초기화하지 않는다(Firebase 등이 없다).
+        if (getProcessName() != packageName) return
+
         RunnersHiMessagingService.createChannel(this)
 
         ServerSelection.init(this)
