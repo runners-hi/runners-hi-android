@@ -5,7 +5,6 @@ import androidx.health.connect.client.HealthConnectClient
 import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.DistanceRecord
 import androidx.health.connect.client.records.ExerciseSessionRecord
-import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 import androidx.health.connect.client.request.ReadRecordsRequest
 import androidx.health.connect.client.time.TimeRangeFilter
 import com.runnersHi.domain.health.model.ExerciseRecord
@@ -32,8 +31,7 @@ class HealthConnectDataSource @Inject constructor(
 
     private val requiredPermissions = setOf(
         HealthPermission.getReadPermission(ExerciseSessionRecord::class),
-        HealthPermission.getReadPermission(DistanceRecord::class),
-        HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class)
+        HealthPermission.getReadPermission(DistanceRecord::class)
     )
 
     override suspend fun checkPermissionStatus(): HealthPermissionStatus {
@@ -80,7 +78,6 @@ class HealthConnectDataSource @Inject constructor(
                 .filter { it.exerciseType == ExerciseSessionRecord.EXERCISE_TYPE_RUNNING }
                 .map { session ->
                     val distance = getDistanceForSession(client, session.startTime, session.endTime)
-                    val calories = getCaloriesForSession(client, session.startTime, session.endTime)
 
                     ExerciseRecord(
                         id = session.metadata.id,
@@ -92,7 +89,7 @@ class HealthConnectDataSource @Inject constructor(
                             session.startTime,
                             session.endTime
                         ).toMillis(),
-                        calories = calories
+                        calories = null
                     )
                 }
         } catch (e: Exception) {
@@ -118,29 +115,10 @@ class HealthConnectDataSource @Inject constructor(
         }
     }
 
-    private suspend fun getCaloriesForSession(
-        client: HealthConnectClient,
-        startTime: Instant,
-        endTime: Instant
-    ): Double? {
-        return try {
-            val response = client.readRecords(
-                ReadRecordsRequest(
-                    recordType = TotalCaloriesBurnedRecord::class,
-                    timeRangeFilter = TimeRangeFilter.between(startTime, endTime)
-                )
-            )
-            response.records.sumOf { it.energy.inKilocalories }
-        } catch (e: Exception) {
-            null
-        }
-    }
-
     companion object {
         fun getRequiredPermissions(): Set<String> = setOf(
             HealthPermission.getReadPermission(ExerciseSessionRecord::class),
-            HealthPermission.getReadPermission(DistanceRecord::class),
-            HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class)
+            HealthPermission.getReadPermission(DistanceRecord::class)
         )
     }
 }

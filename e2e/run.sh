@@ -13,7 +13,7 @@ if [ -z "${NO_BUILD:-}" ]; then
 fi
 
 # 헬스커넥트 권한(홈·기록 화면이 안내 화면에서 멈추지 않게)
-for p in READ_STEPS READ_DISTANCE READ_EXERCISE READ_HEART_RATE READ_ACTIVE_CALORIES_BURNED READ_TOTAL_CALORIES_BURNED READ_EXERCISE_ROUTES; do
+for p in READ_DISTANCE READ_EXERCISE; do
   adb shell pm grant com.runnersHi "android.permission.health.$p" >/dev/null 2>&1 || true
 done
 adb shell pm grant com.runnersHi android.permission.POST_NOTIFICATIONS >/dev/null 2>&1 || true

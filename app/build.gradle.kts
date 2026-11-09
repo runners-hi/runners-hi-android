@@ -23,7 +23,7 @@ android {
         applicationId = "com.runnersHi"
         minSdk = 26
         targetSdk = 36
-        versionCode = 4
+        versionCode = 7
         versionName = "1.0.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments["clearPackageData"] = "true"

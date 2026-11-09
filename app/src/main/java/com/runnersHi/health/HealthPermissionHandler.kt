@@ -9,14 +9,12 @@ import androidx.health.connect.client.PermissionController
 import androidx.health.connect.client.permission.HealthPermission
 import androidx.health.connect.client.records.DistanceRecord
 import androidx.health.connect.client.records.ExerciseSessionRecord
-import androidx.health.connect.client.records.TotalCaloriesBurnedRecord
 
 object HealthPermissionHandler {
 
     val REQUIRED_PERMISSIONS = setOf(
         HealthPermission.getReadPermission(ExerciseSessionRecord::class),
-        HealthPermission.getReadPermission(DistanceRecord::class),
-        HealthPermission.getReadPermission(TotalCaloriesBurnedRecord::class)
+        HealthPermission.getReadPermission(DistanceRecord::class)
     )
 
     fun isHealthConnectAvailable(context: Context): Boolean {
